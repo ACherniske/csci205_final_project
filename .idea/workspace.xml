@@ -6,11 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/settings.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org/five_nights_at_dana/DanaEngineering.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/DanaEngineering.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/csci205_final_project/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +39,13 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Enum" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -144,5 +146,9 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
