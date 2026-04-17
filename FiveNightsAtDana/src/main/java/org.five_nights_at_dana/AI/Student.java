@@ -10,6 +10,7 @@
  * Class: Student
  *
  * Description:
+ *      Represents an AI-controlled student.
  *
  * ****************************************
  */
@@ -29,18 +30,33 @@ public class Student {
     private double awarenessLevel;
     private boolean sprinting;
 
+    /**
+     * Constructs a student.
+     */
     public Student(String name, String question, Personality p) {
         this.name = name;
         this.question = question;
         this.personality = p;
     }
 
+    /**
+     * Updates AI behavior.
+     */
     public void update() {
         attemptMove();
     }
 
-    public void increaseDifficulty() {}
-    public void startSprint() { sprinting = true; }
+    /** Increases difficulty scaling. */
+    public void increaseDifficulty() {
+        // TODO scale movement frequency/aggression
+    }
+
+    /** Starts sprint behavior. */
+    public void startSprint() {
+        sprinting = true;
+    }
+
+    /** @return true if sprinting */
     public boolean isSprinting() { return sprinting; }
 
     public String getName() { return name; }
@@ -48,6 +64,17 @@ public class Student {
     public Personality getPersonality() { return personality; }
     public Location getCurrentLocation() { return currentLocation; }
 
-    private void attemptMove() {}
-    private void resetMovementTimer() {}
+    /**
+     * Attempts movement.
+     */
+    private void attemptMove() {
+        // TODO implement pathing logic
+    }
+
+    /**
+     * Resets movement timer.
+     */
+    private void resetMovementTimer() {
+        // TODO reset cooldown timer
+    }
 }
