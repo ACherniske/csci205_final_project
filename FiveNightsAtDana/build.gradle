@@ -58,6 +58,6 @@ dependencies {
 }
 
 application {
-    mainModule.set("FiveNightsAtDana.main")
+    mainModule.set("csci205_final_project")
     mainClass.set("org.five_nights_at_dana.DanaEngineering")
 }

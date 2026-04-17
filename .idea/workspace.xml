@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/settings.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/settings.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org/five_nights_at_dana/DanaEngineering.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/DanaEngineering.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csci205_final_project/.idea/workspace.xml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,6 +22,9 @@
   </component>
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+    <projectState path="$PROJECT_DIR$/FiveNightsAtDana">
       <ProjectState />
     </projectState>
   </component>
@@ -56,6 +64,10 @@
     &quot;second&quot;: &quot;cf001c61-5d5a-4fe1-bc13-4e2bff77a73c&quot;
   }
 }</component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -75,8 +87,12 @@
     "git-widget-placeholder": "feat/scaffold",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "fileTemplates",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -84,6 +100,27 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Aiden Cherniske\Downloads\currentWork\csci205_final_project" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Aiden Cherniske\Downloads\currentWork\csci205_final_project\FiveNightsAtDana\src\main\java" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="tests" factoryName="Autodetect">
+      <module name="gradle" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="RUN_TOOL" value="" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -101,15 +138,11 @@
       <option name="presentableId" value="Default" />
       <updated>1776285291954</updated>
       <workItem from="1776285293308" duration="2328000" />
-      <workItem from="1776391901641" duration="69000" />
+      <workItem from="1776391741157" duration="159000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>
