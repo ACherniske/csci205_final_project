@@ -14,7 +14,7 @@
  * ****************************************
  */
 
-package org.five_nights_at_dana.AI;
+package org.five_nights_at_dana.AI.enums;
 
 public enum Location {
     // TODO Finalize Rooms

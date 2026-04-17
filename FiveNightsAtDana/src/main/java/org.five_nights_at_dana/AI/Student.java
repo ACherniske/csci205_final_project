@@ -17,6 +17,10 @@
 
 package org.five_nights_at_dana.AI;
 
+import org.five_nights_at_dana.AI.enums.Location;
+import org.five_nights_at_dana.AI.enums.PathType;
+import org.five_nights_at_dana.AI.enums.Personality;
+
 public class Student {
 
     private String name;
