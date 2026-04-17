@@ -74,7 +74,7 @@
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "org.infernus.idea.checkstyle.CheckStyleConfigurable",
+    "settings.editor.selected.configurable": "fileTemplates",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -99,7 +99,7 @@
       <option name="presentableId" value="Default" />
       <updated>1776285291954</updated>
       <workItem from="1776285293308" duration="2328000" />
-      <workItem from="1776391901641" duration="69000" />
+      <workItem from="1776391741157" duration="159000" />
     </task>
     <servers />
   </component>
