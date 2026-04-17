@@ -10,6 +10,7 @@
  * Class: OfficeViewManager
  *
  * Description:
+ *      Handles office camera rotation and object interaction.
  *
  * ****************************************
  */
@@ -24,7 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Handles office rotation and rendering.
+ * Handles office camera rotation and object interaction.
  */
 public class OfficeViewManager {
 
@@ -32,43 +33,75 @@ public class OfficeViewManager {
     private double targetX;
     private AnimationState state;
 
-    private Image backgroundStrip;
-    private Image foregroundStrip;
-    private List<InteractiveObject> allObjects;
+    /**
+     * Constructs office manager.
+     */
+    public OfficeViewManager() {}
 
-    private Timeline rotationTimeline;
-
-    private static final double BACKGROUND_PARALLAX = 0.5;
-    private static final double FOREGROUND_PARALLAX = 1.0;
-
-    public OfficeViewManager() {
-        allObjects = new ArrayList<>();
-        createInteractiveObjects();
+    /** Rotates view left. */
+    public void rotateLeft() {
+        // TODO adjust targetX
     }
 
-    public void rotateLeft() {}
-    public void rotateRight() {}
+    /** Rotates view right. */
+    public void rotateRight() {
+        // TODO adjust targetX
+    }
 
+    /**
+     * Renders office scene.
+     * @param gc graphics context
+     */
     public void render(GraphicsContext gc) {
-        renderParallaxView(gc);
-        for (InteractiveObject obj : allObjects) {
-            obj.render(gc, (int) viewportX, 0);
-        }
+        // TODO draw parallax + objects
     }
 
-    public void update() {}
+    /** Updates rotation animation. */
+    public void update() {
+        // TODO smooth interpolation
+    }
 
-    public void handleClick(double x, double y) {}
-    public void handleInput(KeyCode key) {}
-    public void handleMouseMove(double x, double y) {}
+    /**
+     * Handles click interaction.
+     */
+    public void handleClick(double x, double y) {
+        // TODO detect clicked object
+    }
+
+    /**
+     * Handles keyboard input.
+     */
+    public void handleInput(KeyCode key) {
+        // TODO map to rotation
+    }
+
+    /**
+     * Handles mouse hover.
+     */
+    public void handleMouseMove(double x, double y) {
+        // TODO update hovered objects
+    }
 
     public double getViewportX() { return viewportX; }
     public AnimationState getState() { return state; }
-    public boolean isRotating() { return state != AnimationState.IDLE; }
 
-    private void startRotation() {}
-    private void renderParallaxView(GraphicsContext gc) {}
+    /** @return true if rotating */
+    public boolean isRotating() {
+        return state != AnimationState.IDLE;
+    }
+
+    /** Starts rotation animation. */
+    private void startRotation() {
+        // TODO trigger timeline
+    }
+
+    /** Renders parallax layers. */
+    private void renderParallaxView(GraphicsContext gc) {
+        // TODO implement layered scrolling
+    }
+
+    /** Creates interactive objects. */
     private void createInteractiveObjects() {
-        allObjects.add(new DoorWithBlinds(100, 300, 100, 200));
+        // TODO instantiate objects
     }
 }
