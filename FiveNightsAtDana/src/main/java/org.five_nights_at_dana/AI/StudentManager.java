@@ -17,6 +17,9 @@
 
 package org.five_nights_at_dana.AI;
 
+import org.five_nights_at_dana.AI.enums.Location;
+import org.five_nights_at_dana.AI.enums.Personality;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
