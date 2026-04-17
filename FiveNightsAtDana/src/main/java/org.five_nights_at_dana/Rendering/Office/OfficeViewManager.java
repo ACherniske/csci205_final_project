@@ -14,7 +14,7 @@
  * ****************************************
  */
 
-package org.five_nights_at_dana.Managers;
+package org.five_nights_at_dana.Rendering.Office;
 
 import javafx.animation.Timeline;
 import javafx.scene.canvas.GraphicsContext;
