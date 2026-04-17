@@ -15,8 +15,9 @@
  * ****************************************
  */
 
-package org.five_nights_at_dana.AI;
+package org.five_nights_at_dana.Managers;
 
+import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.AI.enums.Location;
 import org.five_nights_at_dana.AI.enums.Personality;
 
