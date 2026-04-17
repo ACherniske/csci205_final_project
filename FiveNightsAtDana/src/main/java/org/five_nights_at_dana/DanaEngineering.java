@@ -1,17 +1,44 @@
 package org.five_nights_at_dana;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class DanaAfterDark {
-    public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+import javafx.animation.AnimationTimer;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+/**
+ * Main entry point for Five Nights At Dana.
+ */
+public class DanaEngineering extends Application {
+
+    private Stage primaryStage;
+    private Scene scene;
+    private GamePane gamePane;
+    private AnimationTimer gameLoop;
+
+    @Override
+    public void start(Stage stage) {
+        this.primaryStage = stage;
+
+        AssetManager.preloadAll();
+
+        gamePane = new GamePane();
+        scene = new Scene(gamePane, 1280, 720);
+
+        stage.setScene(scene);
+        stage.setTitle("Five Nights At Dana");
+        stage.show();
+
+        gameLoop = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                gamePane.update();
+                gamePane.render();
+            }
+        };
+        gameLoop.start();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }
