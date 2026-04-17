@@ -1,9 +1,8 @@
-module FiveNightsAtDana.main {
+module FiveNightsAtDana {
     requires java.base;
     requires java.desktop;
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
-
-    exports org.five_nights_at_dana;
+    requires javafx.media;
 }
