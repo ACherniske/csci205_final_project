@@ -36,7 +36,7 @@ public class StudentManager {
     /**
      * Updates all students for the current frame.
      *
-     * Responsibilities:
+     * <p>Responsibilities:
      * - Calls update() on each student
      * - Ensures AI behavior progresses each frame
      */
@@ -101,7 +101,7 @@ public class StudentManager {
     /**
      * Increases difficulty for all students.
      *
-     * Effects:
+     * <p>Effects:
      * - Faster movement
      * - More aggressive behavior
      * - Higher chance of sprinting (for RUNNER)
@@ -115,7 +115,7 @@ public class StudentManager {
     /**
      * Resets all students to initial state.
      *
-     * Used when:
+     * <p>Used when:
      * - Restarting the game
      * - Resetting difficulty
      */
