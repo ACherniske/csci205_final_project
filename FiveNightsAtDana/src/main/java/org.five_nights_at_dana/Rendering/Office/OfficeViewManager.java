@@ -21,6 +21,8 @@ import javafx.animation.Timeline;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import org.five_nights_at_dana.Core.AnimationState;
+
 import java.util.ArrayList;
 import java.util.List;
 

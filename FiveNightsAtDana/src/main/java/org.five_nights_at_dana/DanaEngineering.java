@@ -4,6 +4,8 @@ import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.five_nights_at_dana.Core.GamePane;
+import org.five_nights_at_dana.Managers.AssetManager;
 
 /**
  * Main entry point for Five Nights At Dana.

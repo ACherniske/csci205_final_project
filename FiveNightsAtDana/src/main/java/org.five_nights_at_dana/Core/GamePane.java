@@ -20,6 +20,15 @@ package org.five_nights_at_dana.Core;
 import javafx.scene.canvas.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
+import org.five_nights_at_dana.Managers.StudentManager;
+import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
+import org.five_nights_at_dana.Rendering.Office.OfficeViewManager;
+import org.five_nights_at_dana.Systems.Classroom.ClassroomMechanic;
+import org.five_nights_at_dana.Systems.Elevator.ElevatorSystem;
+import org.five_nights_at_dana.Systems.Stairwells.LeftStairwell;
+import org.five_nights_at_dana.Systems.Stairwells.MiddleStairwell;
+import org.five_nights_at_dana.Systems.Stairwells.RightStairwell;
+import org.five_nights_at_dana.Systems.Vent.VentSystem;
 
 public class GamePane extends Pane {
 
