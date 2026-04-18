@@ -17,68 +17,79 @@
 
 package org.five_nights_at_dana.AI;
 
-import org.five_nights_at_dana.AI.enums.Location;
-import org.five_nights_at_dana.AI.enums.PathType;
-import org.five_nights_at_dana.AI.enums.Personality;
+import org.five_nights_at_dana.AI.Pathing.Location;
+import org.five_nights_at_dana.AI.Pathing.Path;
+import org.five_nights_at_dana.AI.Pathing.PathPoint;
+import org.five_nights_at_dana.AI.Personalities.Personality;
 
 public class Student {
+    private final int difficulty;
+    private final Personality personality;
+    private PathPoint currentLocation;
+    private double movementTimer;
+    private boolean jumpScared;
 
-    private String name;
-    private String question;
-    private Personality personality;
-    private Location currentLocation;
-    private PathType currentPath;
-
-    private int movementTimer;
-    private int difficulty;
-    private double awarenessLevel;
-    private boolean sprinting;
-
-    /**
-     * Constructs a student.
-     */
-    public Student(String name, String question, Personality p) {
-        this.name = name;
-        this.question = question;
-        this.personality = p;
+    public Student(Personality personality, int difficulty) {
+        this.personality = personality;
+        this.difficulty = difficulty;
+        setLocation(Path.getRandomFirstFloor());
+        movementTimer = 0.0;
+        this.jumpScared = false;
     }
 
-    /**
-     * Updates AI behavior.
-     */
-    public void update() {
-        attemptMove();
+    public void update(double deltaTime, boolean isDoorClosed, boolean isSeenOnCam) {
+        movementTimer += deltaTime;
+
+        if (isSeenOnCam)
+        {
+            personality.reactToCamera(this);
+        }
+
+        if (personality.getMovementInterval() <= movementTimer) {
+            if (currentLocation.getLocation() == Location.IN_OFFICE) {
+                personality.jumpscare();
+                jumpScared = true;
+                return;
+            }
+
+            attemptMove(isDoorClosed);
+            resetMovementTimer();
+        }
+
     }
 
-    /** Increases difficulty scaling. */
-    public void increaseDifficulty() {
-        // TODO scale movement frequency/aggression
+    public void attemptMove(boolean isDoorClosed) {
+        if (Math.random() * 20 <= difficulty) {
+            PathPoint nextMove = personality.chooseNextPoint(currentLocation);
+
+            if (nextMove.getLocation() == Location.IN_OFFICE && isDoorClosed) {
+                System.out.println("BANG");
+                setLocation(Path.getRandomFirstFloor());
+            }
+            else {
+                setLocation(nextMove);
+            }
+        }
     }
 
-    /** Starts sprint behavior. */
-    public void startSprint() {
-        sprinting = true;
+    public boolean isJumpScared() {
+        return jumpScared;
     }
 
-    /** @return true if sprinting */
-    public boolean isSprinting() { return sprinting; }
-
-    public String getName() { return name; }
-    public String getQuestion() { return question; }
-    public Personality getPersonality() { return personality; }
-    public Location getCurrentLocation() { return currentLocation; }
-
-    /**
-     * Attempts movement.
-     */
-    private void attemptMove() {
-        // TODO implement pathing logic
+    public PathPoint getCurrentLocation() {
+        return currentLocation;
     }
 
-    /**
-     * Resets movement timer.
-     */
-    private void resetMovementTimer() {
-        // TODO reset cooldown timer
+    public void setLocation(PathPoint location) {
+        this.currentLocation = location;
     }
+
+    public void resetMovementTimer() {
+        movementTimer = 0;
+    }
+
+//    public Image getSilhouetteSprite() {
+//        // TODO: Return the silhouette sprite image
+//        return null;
+//    }
 }
