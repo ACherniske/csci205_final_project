@@ -1,17 +1,22 @@
 package org.five_nights_at_dana.AI;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import org.five_nights_at_dana.AI.Pathing.Path;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Personalities.Eager;
 import org.five_nights_at_dana.AI.Personalities.Lazy;
 import org.five_nights_at_dana.AI.Personalities.Shy;
 
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
+/**
+ * A console based test for some mechanics like pathing and student behavior
+ */
 public class MVP {
+    /**
+     * main for game loop for console testing
+     * @param args to be passed
+     */
     public static void main(String[] args) {
         Student shyGuy = new Student(new Shy(), 15);
         Student eagerGuy = new Student(new Eager(), 15);
@@ -51,7 +56,7 @@ public class MVP {
                 break;
             } else if ((input.equals("d") || input.equals("door") && power >= 2)) {
                 isDoorClosed = true;
-                power-= 2;
+                power -= 2;
                 System.out.println("*CLUNK*");
             } else if ((input.equals("c") || input.equals("camera")) && power >= 1) {
                 power--;
@@ -100,7 +105,8 @@ public class MVP {
             }
 
             for (Student student : students) {
-                boolean isLookingAtStudent = currentCameraRoom == student.getCurrentLocation() && isLookingAtCam;
+                boolean isLookingAtStudent = currentCameraRoom == student.getCurrentLocation()
+                                                && isLookingAtCam;
 
                 student.update(1, isDoorClosed, isLookingAtStudent);
 
@@ -115,7 +121,9 @@ public class MVP {
             if (ticksPassed >= 10) {
                 ticksPassed = 0;
                 inGameHour++;
-                if (inGameHour == 13) inGameHour = 1;
+                if (inGameHour == 13) {
+                    inGameHour = 1;
+                }
 
                 System.out.println(inGameHour + " AM");
             }

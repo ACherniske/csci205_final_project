@@ -3,6 +3,13 @@ package org.five_nights_at_dana.AI.Pathing;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Class for the pathing a student can take
+ *
+ * To read it, the first parameter and name of variable is the from,
+ * and whatever comes after is the list of possible locations the could go from that location
+ * For example RIGHT_STAIRS3 leads to HALLWAY_3B or the office
+ */
 public class Path {
 
     // Dead ends
@@ -80,6 +87,10 @@ public class Path {
             HALLWAY_1A,
             HALLWAY_1B);
 
+    /**
+     * Gets a random point in the first floor
+     * @return a random point in the fitrst floor
+     */
     public static PathPoint getRandomFirstFloor() {
         List<PathPoint> floor1Locations = Arrays.asList(
                 ENTRANCE,

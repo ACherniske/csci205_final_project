@@ -5,4 +5,5 @@ module csci205_final_project  {
     requires javafx.media;
 
     exports org.five_nights_at_dana;
+    exports org.five_nights_at_dana.AI;
 }

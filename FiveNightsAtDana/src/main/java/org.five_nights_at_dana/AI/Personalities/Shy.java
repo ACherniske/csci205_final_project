@@ -1,11 +1,16 @@
 package org.five_nights_at_dana.AI.Personalities;
 
+import java.util.List;
 import org.five_nights_at_dana.AI.Pathing.Location;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Student;
 
-import java.util.List;
-
+/**
+ * Shy personality
+ * 4 second movement interval
+ * Moves randomly till they reach the classroom
+ * Being seen on camera resets movement interval
+ */
 public class Shy implements Personality {
     @Override
     public double getMovementInterval() {
@@ -22,11 +27,11 @@ public class Shy implements Personality {
             return currentPoint;
         }
 
-        for (PathPoint point : path)
-            if (point.getLocation() == Location.FLOOR3_CLASSROOM)
-            {
+        for (PathPoint point : path) {
+            if (point.getLocation() == Location.FLOOR3_CLASSROOM) {
                 return point;
             }
+        }
 
         return path.get(rand);
     }

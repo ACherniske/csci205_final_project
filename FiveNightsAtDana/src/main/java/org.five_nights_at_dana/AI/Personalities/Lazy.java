@@ -1,10 +1,14 @@
 package org.five_nights_at_dana.AI.Personalities;
 
+import java.util.List;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Personalities.Personality;
 
-import java.util.List;
-
+/**
+ * Lazy Personality
+ * 6 second movement interval
+ * Takes longest path to the office
+ */
 public class Lazy implements Personality {
     @Override
     public double getMovementInterval() {

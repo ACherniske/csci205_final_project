@@ -22,6 +22,9 @@ import org.five_nights_at_dana.AI.Pathing.Path;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Personalities.Personality;
 
+/**
+ * Student class
+ */
 public class Student {
     private final int difficulty;
     private final Personality personality;
@@ -29,6 +32,11 @@ public class Student {
     private double movementTimer;
     private boolean jumpScared;
 
+    /**
+     * Constructs a student object with a set personality and difficulity
+     * @param personality dictates the behavior of the student
+     * @param difficulty an int from 1-20 that sets the odds of a movement opportunity passing
+     */
     public Student(Personality personality, int difficulty) {
         this.personality = personality;
         this.difficulty = difficulty;
@@ -37,6 +45,12 @@ public class Student {
         this.jumpScared = false;
     }
 
+    /**
+     * Updates the student object to react to the changing state of the game
+     * @param deltaTime is to keep track of time, and lining up movement intervals
+     * @param isDoorClosed the state of the door, whether closed or open
+     * @param isSeenOnCam is the player on the cam where the student is
+     */
     public void update(double deltaTime, boolean isDoorClosed, boolean isSeenOnCam) {
         movementTimer += deltaTime;
 
@@ -58,6 +72,11 @@ public class Student {
 
     }
 
+    /**
+     * Makes the student attempt of moving with the odds being if the random is less than the student's difficulty
+     * @param isDoorClosed if a movement opportunity succeceds and the next move is into the office but the door is closed
+     *                     the student is sent to a random place in the first floor.
+     */
     public void attemptMove(boolean isDoorClosed) {
         if (Math.random() * 20 <= difficulty) {
             PathPoint nextMove = personality.chooseNextPoint(currentLocation);

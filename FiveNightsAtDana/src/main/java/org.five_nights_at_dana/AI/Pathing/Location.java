@@ -16,6 +16,9 @@
 
 package org.five_nights_at_dana.AI.Pathing;
 
+/**
+ * Location enum
+ */
 public enum Location {
     FLOOR1_ENTRANCE,
     FLOOR1_LEFT_STAIRS,

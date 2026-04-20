@@ -18,8 +18,8 @@
 package org.five_nights_at_dana.Managers;
 
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.AI.enums.Location;
-import org.five_nights_at_dana.AI.enums.Personality;
+import org.five_nights_at_dana.AI.Pathing.Location;
+import org.five_nights_at_dana.AI.Personalities.Personality;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,11 +139,11 @@ public class StudentManager {
     private void createStudents() {
         // TODO expand with full roster and variety
 
-        students.add(new Student("Alex", "Can you help me?", Personality.EAGER));
-        students.add(new Student("Jamie", "I'm confused...", Personality.CONFUSED));
-        students.add(new Student("Taylor", "I have a question.", Personality.PERSISTENT));
-        students.add(new Student("Morgan", "Uh... hello?", Personality.SHY));
-        students.add(new Student("Riley", "I need help NOW!", Personality.RUNNER));
-        students.add(new Student("Jordan", "Excuse me?", Personality.EAGER));
+//        students.add(new Student("Alex", "Can you help me?", Personality.EAGER));
+//        students.add(new Student("Jamie", "I'm confused...", Personality.CONFUSED));
+//        students.add(new Student("Taylor", "I have a question.", Personality.PERSISTENT));
+//        students.add(new Student("Morgan", "Uh... hello?", Personality.SHY));
+//        students.add(new Student("Riley", "I need help NOW!", Personality.RUNNER));
+//        students.add(new Student("Jordan", "Excuse me?", Personality.EAGER));
     }
 }

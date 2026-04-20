@@ -1,5 +1,7 @@
 package org.five_nights_at_dana.AI;
 
+//TODO: This class is if we want to make it so that student ask questions that must be answered in order to ward them off
+
 public enum Question {
     Q1("",""),
     Q2("",""),
