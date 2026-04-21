@@ -134,7 +134,7 @@ public class GamePane extends Pane {
      */
     private void initializeSystems() {
         officeView = new OfficeViewManager();
-        studentManager = new StudentManager();
+//        studentManager = new StudentManager();
         cameraSystem = new CameraSystem(this);
 
         elevator = new ElevatorSystem();

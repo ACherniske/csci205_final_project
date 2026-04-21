@@ -4,45 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Opponent Movement">
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_apiguardian_apiguardian_api_1_1_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_api_5_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_engine_5_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_jupiter_junit_jupiter_params_5_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_platform_junit_platform_commons_1_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_platform_junit_platform_engine_1_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_junit_platform_junit_platform_launcher_1_10_0.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_base_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_base_win_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_controls_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_controls_win_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_fxml_win_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_graphics_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_openjfx_javafx_graphics_win_21_0_2.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Gradle__org_opentest4j_opentest4j_1_3_0.xml" beforeDir="false" />
+    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Adding javadocs to student behavior and pathing. (and other file changes im unsure of hopefully they dont break everything)">
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Systems/Power.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/csci205_final_project.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/csci205_final_project.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/csci205_final_project.main.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/csci205_final_project.test.iml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/module-info.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/MVP.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/MVP.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/Location.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/Location.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/Path.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/Path.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/PathPoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Pathing/PathPoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Eager.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Eager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Lazy.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Lazy.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Persistent.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Persistent.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Personality.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Personality.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Shy.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Personalities/Shy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Question.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Question.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/enums/PathType.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/AI/enums/Personality.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Core/GamePane.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Core/GamePane.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Managers/StudentManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Managers/StudentManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -136,39 +109,39 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.DanaEngineering.executor&quot;: &quot;Run&quot;,
-    &quot;Application.MVP.executor&quot;: &quot;Run&quot;,
-    &quot;Application.org.five_nights_at_dana.AI.MVP.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Build csci205_final_project.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.csci205_final_project [:org.example.Main.main()].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;SHELLCHECK.PATH&quot;: &quot;I do mind&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/fares/IdeaProjects/csci205_final_project/src/main/java/org/example/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;SDKs&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;fileTemplates&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.DanaEngineering.executor": "Run",
+    "Application.MVP.executor": "Run",
+    "Application.org.five_nights_at_dana.AI.MVP.executor": "Run",
+    "Gradle.Build csci205_final_project.executor": "Run",
+    "Gradle.csci205_final_project [:org.example.Main.main()].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "SHELLCHECK.PATH": "I do mind",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "dev",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/fares/IdeaProjects/csci205_final_project/src/main/java/org/example/Main.java",
+    "project.structure.last.edited": "Facets",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Aiden Cherniske\Downloads\currentWork\csci205_final_project" />
@@ -181,43 +154,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Application.MVP">
-    <configuration name="DanaEngineering" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.five_nights_at_dana.DanaEngineering" />
-      <module name="csci205_final_project" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.five_nights_at_dana.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="MVP" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.five_nights_at_dana.AI.MVP" />
-      <module name="csci205_final_project" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="org.five_nights_at_dana.AI.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="currentWork.csci205_final_project" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="currentWork.csci205_final_project" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="currentWork.csci205_final_project" />
       <option name="ENV_FILES" value="" />
@@ -270,6 +206,48 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration name="DanaEngineering" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.five_nights_at_dana.DanaEngineering" />
+      <module name="csci205_final_project" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.five_nights_at_dana.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MVP" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="21" />
+      <option name="MAIN_CLASS_NAME" value="org.five_nights_at_dana.AI.MVP" />
+      <module name="csci205_final_project" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.five_nights_at_dana.AI.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="currentWork.csci205_final_project" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="currentWork.csci205_final_project" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Application.DanaEngineering" />
+      <item itemvalue="Application.MVP" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.MVP" />
@@ -301,7 +279,10 @@
       <workItem from="1776634473666" duration="1000" />
       <workItem from="1776634482207" duration="17000" />
       <workItem from="1776671018859" duration="56000" />
-      <workItem from="1776719606952" duration="2516000" />
+      <workItem from="1776719606952" duration="4170000" />
+      <workItem from="1776723806693" duration="99000" />
+      <workItem from="1776723955842" duration="980000" />
+      <workItem from="1776728951107" duration="1450000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'feat/scaffold' into dev">
       <option name="closed" value="true" />
@@ -327,7 +308,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776532710916</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Adding javadocs to student behavior and pathing. (and other file changes im unsure of hopefully they dont break everything)">
+      <option name="closed" value="true" />
+      <created>1776722239406</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1776722239406</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -337,10 +326,16 @@
     <MESSAGE value="ci: Update IntelliJ configs" />
     <MESSAGE value="Merge branch 'feat/scaffold' into dev" />
     <MESSAGE value="Opponent Movement" />
-    <option name="LAST_COMMIT_MESSAGE" value="Opponent Movement" />
+    <MESSAGE value="Adding javadocs to student behavior and pathing. (and other file changes im unsure of hopefully they dont break everything)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding javadocs to student behavior and pathing. (and other file changes im unsure of hopefully they dont break everything)" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/csci205_final_project$MVP.ic" NAME="MVP Coverage Results" MODIFIED="1776729069794" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>org.five_nights_at_dana.AI.*</FILTER>
+    </SUITE>
   </component>
 </project>

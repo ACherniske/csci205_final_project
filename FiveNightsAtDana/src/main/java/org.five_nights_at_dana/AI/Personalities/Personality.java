@@ -16,8 +16,12 @@
 
 package org.five_nights_at_dana.AI.Personalities;
 
+import org.five_nights_at_dana.AI.Pathing.Location;
+import org.five_nights_at_dana.AI.Pathing.Path;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Student;
+
+import java.util.List;
 
 /**
  * Personality Interface
@@ -34,7 +38,17 @@ public interface Personality {
      * @param currentPoint the current location a student is at
      * @return the next location a student will go to
      */
-    PathPoint chooseNextPoint(PathPoint currentPoint);
+    default PathPoint chooseNextPoint(PathPoint currentPoint) {
+        List<PathPoint> path = currentPoint.getNextLocations();
+        int rand = (int) (Math.random() * path.size());
+
+        // Student in office or classroom
+        if (path.isEmpty()) {
+            return currentPoint;
+        }
+
+        return path.get(rand);
+    }
 
     /**
      * Jumpscare boo
@@ -47,5 +61,9 @@ public interface Personality {
      */
     default void reactToCamera(Student student) {
         // Nothing happens unless personality is a camera reacting type
+    }
+
+    default void resetLocation(Student student) {
+        student.setLocation(Path.getRandomFirstFloor());
     }
 }

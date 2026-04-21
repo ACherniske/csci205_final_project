@@ -17,10 +17,11 @@
 
 package org.five_nights_at_dana.Managers;
 
+import org.five_nights_at_dana.AI.Pathing.PathPoint;
+import org.five_nights_at_dana.AI.Personalities.*;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.AI.Pathing.Location;
-import org.five_nights_at_dana.AI.Personalities.Personality;
-
+import org.five_nights_at_dana.AI.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,12 +29,13 @@ import java.util.stream.Collectors;
 public class StudentManager {
 
     private List<Student> students;
-
+    private Player player;
     /**
      * Constructs the StudentManager and initializes students.
      */
-    public StudentManager() {
+    public StudentManager(Player player) {
         students = new ArrayList<>();
+        this.player = player;
         createStudents();
     }
 
@@ -46,7 +48,13 @@ public class StudentManager {
      */
     public void update() {
         for (Student student : students) {
-            student.update();
+
+            boolean isLookingAtStudent = player.getCurrentCameraRoom() == student.getCurrentLocation()
+                    && player.isLookingAtCam();
+
+            student.update(1, player.isDoorClosed(), isLookingAtStudent);
+
+            System.out.println("Student in " + student.getCurrentLocation().getLocation());
         }
     }
 
@@ -57,13 +65,15 @@ public class StudentManager {
      *
      * @implNote Assumes only one student can occupy the door at a time
      */
-    public Student getStudentAtDoor() {
+    public List<Student> getStudentsAtDoor() {
+        List<Student> studentAtDoor = new ArrayList<>();
         for (Student student : students) {
-            if (student.getCurrentLocation() == Location.FLOOR3_AT_DOOR) {
-                return student;
+            PathPoint nextMove = student.getPersonality().chooseNextPoint(student.getCurrentLocation());
+            if (nextMove.getLocation() == Location.IN_OFFICE) {
+                studentAtDoor.add(student);
             }
         }
-        return null;
+        return studentAtDoor;
     }
 
     /**
@@ -72,7 +82,7 @@ public class StudentManager {
      * @return true if at least one student is at the door
      */
     public boolean isStudentAtDoor() {
-        return getStudentAtDoor() != null;
+        return getStudentsAtDoor() != null;
     }
 
     /**
@@ -84,12 +94,10 @@ public class StudentManager {
      * @implNote Uses String comparison for flexibility, but could be optimized
      * to use Location enum directly.
      */
-    public List<Student> getStudentsAt(String locationName) {
-        // TODO consider changing to Location parameter instead of String
-
+    public List<Student> getStudentsAt(PathPoint locationName) {
         return students.stream()
                 .filter(s -> s.getCurrentLocation() != null &&
-                        s.getCurrentLocation().name().equals(locationName))
+                        s.getCurrentLocation().equals(locationName))
                 .collect(Collectors.toList());
     }
 
@@ -138,12 +146,10 @@ public class StudentManager {
      */
     private void createStudents() {
         // TODO expand with full roster and variety
-
-//        students.add(new Student("Alex", "Can you help me?", Personality.EAGER));
-//        students.add(new Student("Jamie", "I'm confused...", Personality.CONFUSED));
-//        students.add(new Student("Taylor", "I have a question.", Personality.PERSISTENT));
-//        students.add(new Student("Morgan", "Uh... hello?", Personality.SHY));
-//        students.add(new Student("Riley", "I need help NOW!", Personality.RUNNER));
-//        students.add(new Student("Jordan", "Excuse me?", Personality.EAGER));
+        // Guy is gender neurtal im not just making them all males btw if that was a think u were thinking
+        Student shyGuy = new Student(new Shy(), 15);
+        Student eagerGuy = new Student(new Eager(), 15);
+        Student lazyGuy = new Student(new Lazy(), 15);
+        Student persistentGuy = new Student(new Persistent(), 15);
     }
 }

@@ -101,5 +101,19 @@ public class Path {
         int randomFloorIndex = (int) (Math.random() * floor1Locations.size());
         return floor1Locations.get(randomFloorIndex);
     }
+
+    public static PathPoint getRandomSecondFloor() {
+        List<PathPoint> floor2Locations = Arrays.asList(
+                MIDDLE_STAIRS_2,
+                RIGHT_STAIRS_2,
+                LEFT_STAIRS_2,
+                HALLWAY_2C,
+                HALLWAY_2A,
+                HALLWAY_2B
+        );
+
+        int randomFloorIndex = (int) (Math.random() * floor2Locations.size());
+        return floor2Locations.get(randomFloorIndex);
+    }
 }
 

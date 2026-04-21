@@ -26,7 +26,7 @@ import org.five_nights_at_dana.AI.Personalities.Personality;
  * Student class
  */
 public class Student {
-    private final int difficulty;
+    private int difficulty;
     private final Personality personality;
     private PathPoint currentLocation;
     private double movementTimer;
@@ -83,7 +83,7 @@ public class Student {
 
             if (nextMove.getLocation() == Location.IN_OFFICE && isDoorClosed) {
                 System.out.println("BANG");
-                setLocation(Path.getRandomFirstFloor());
+                personality.resetLocation(this);
             }
             else {
                 setLocation(nextMove);
@@ -105,6 +105,14 @@ public class Student {
 
     public void resetMovementTimer() {
         movementTimer = 0;
+    }
+
+    public void increaseDifficulty() {
+        this.difficulty++;
+    }
+
+    public Personality getPersonality() {
+        return this.personality;
     }
 
 //    public Image getSilhouetteSprite() {
