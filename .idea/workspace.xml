@@ -4,7 +4,32 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Merge branch 'feat/scaffold' into dev" />
+    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Merge branch 'feat/scaffold' into dev">
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera10RightStairwell3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera11OfficeDoor.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera12Classroom.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera1EntranceHall.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera2MiddleStairWell1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera3Hallway1A.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera4Elevator1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera5Leftstairwell2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera6Hallway2A.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera7Hallway2B.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera8MiddleStairwell3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera9Hallway3B.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/FirstFloorCameraSelectionView.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/GameOverScreen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/JumpscareScreen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/MainMenu.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/OfficeView.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/PlaceHolder.psd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/SecondFloorCameraSelectionView.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/ThirdFloorCameraSelectionView.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Systems/Classroom/ClassroomMechanic.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Systems/Classroom/ClassroomMechanic.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -88,32 +113,33 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "SHELLCHECK.PATH": "I do mind",
-    "git-widget-placeholder": "dev",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "fileTemplates",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;I do mind&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;MBranch&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Aiden Cherniske/Downloads/currentWork/csci205_final_project&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;fileTemplates&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Aiden Cherniske\Downloads\currentWork\csci205_final_project" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images" />
       <recent name="C:\Users\Aiden Cherniske\Downloads\currentWork\csci205_final_project\FiveNightsAtDana\src\main\java" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -121,17 +147,6 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration default="true" type="JetRunConfigurationType">
-      <module name="currentWork.csci205_final_project" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
-      <module name="currentWork.csci205_final_project" />
-      <option name="filePath" />
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="currentWork.csci205_final_project" />
       <option name="ENV_FILES" value="" />
@@ -184,6 +199,17 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method v="2" />
     </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="currentWork.csci205_final_project" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="currentWork.csci205_final_project" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -202,6 +228,8 @@
       <updated>1776285291954</updated>
       <workItem from="1776285293308" duration="2328000" />
       <workItem from="1776391741157" duration="159000" />
+      <workItem from="1776736300606" duration="6439000" />
+      <workItem from="1776866663354" duration="832000" />
     </task>
     <task id="LOCAL-00001" summary="Merge branch 'feat/scaffold' into dev">
       <option name="closed" value="true" />

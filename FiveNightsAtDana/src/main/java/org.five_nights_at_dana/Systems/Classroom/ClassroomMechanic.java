@@ -26,7 +26,7 @@ public class ClassroomMechanic {
     private Student runner;
 
     private static final int MAX_ACTIVITY = 100;
-    private static final double ACTIVITY_INCREASE_RATE = 0.5;
+    private static final double ACTIVITY_INCREASE_RATE = 20;
     private static final int RESET_COOLDOWN = 60;
 
     public ClassroomMechanic() {
@@ -38,7 +38,12 @@ public class ClassroomMechanic {
      */
     public void update() {
         // TODO increase activity and trigger sprint
+        activityLevel += ACTIVITY_INCREASE_RATE;
+        if (activityLevel >= MAX_ACTIVITY) {
+            triggerSprint();
+        }
     }
+
 
     /**
      * Resets activity (called when camera is checked).
@@ -84,5 +89,6 @@ public class ClassroomMechanic {
      */
     private void triggerSprint() {
         // TODO set sprinting state and notify systems
+        sprinting = true;
     }
 }

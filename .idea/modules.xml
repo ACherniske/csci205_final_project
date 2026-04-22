@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FiveNightsAtDana.iml" filepath="$PROJECT_DIR$/.idea/modules/FiveNightsAtDana.iml" group="FiveNightsAtDana" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FiveNightsAtDana_main.iml" filepath="$PROJECT_DIR$/.idea/modules/FiveNightsAtDana_main.iml" group="FiveNightsAtDana" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FiveNightsAtDana_test.iml" filepath="$PROJECT_DIR$/.idea/modules/FiveNightsAtDana_test.iml" group="FiveNightsAtDana" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/currentWork.csci205_final_project.iml" filepath="$PROJECT_DIR$/.idea/modules/currentWork.csci205_final_project.iml" group="csci205_final_project" />
+      <module fileurl="file://$PROJECT_DIR$/csci205_final_project.iml" filepath="$PROJECT_DIR$/csci205_final_project.iml" />
     </modules>
   </component>
 </project>
