@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Merge branch 'feat/scaffold' into dev">
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera10RightStairwell3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera11OfficeDoor.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera12Classroom.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera1EntranceHall.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera2MiddleStairWell1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera3Hallway1A.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera4Elevator1.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera5Leftstairwell2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera6Hallway2A.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera7Hallway2B.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera8MiddleStairwell3.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/Camera9Hallway3B.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/FirstFloorCameraSelectionView.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/GameOverScreen.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/JumpscareScreen.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/MainMenu.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/OfficeView.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/PlaceHolder.psd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/SecondFloorCameraSelectionView.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/resources/assets/images/ThirdFloorCameraSelectionView.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Systems/Classroom/ClassroomMechanic.java" beforeDir="false" afterPath="$PROJECT_DIR$/FiveNightsAtDana/src/main/java/org.five_nights_at_dana/Systems/Classroom/ClassroomMechanic.java" afterDir="false" />
-    </list>
+    <list default="true" id="2cf38666-a668-4d6b-9bc3-a07f975b6538" name="Changes" comment="Merge branch 'feat/scaffold' into dev" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,6 +24,9 @@
   <component name="ExternalProjectsManager">
     <system id="GRADLE">
       <state>
+        <task path="$PROJECT_DIR$">
+          <activation />
+        </task>
         <projects_view>
           <tree_state>
             <expand>
@@ -60,12 +38,6 @@
                 <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
                 <item name="csci205_final_project" type="f1a62948:ProjectNode" />
                 <item name="Tasks" type="e4a08cd1:TasksNode" />
-              </path>
-              <path>
-                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
-                <item name="csci205_final_project" type="f1a62948:ProjectNode" />
-                <item name="Tasks" type="e4a08cd1:TasksNode" />
-                <item name="build setup" type="c8890929:TasksNode$1" />
               </path>
             </expand>
             <select />
@@ -247,7 +219,15 @@
       <option name="project" value="LOCAL" />
       <updated>1776416380007</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Merge branch 'feat/scaffold' into dev">
+      <option name="closed" value="true" />
+      <created>1776867731299</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1776867731299</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
