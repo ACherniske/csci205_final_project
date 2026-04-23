@@ -119,3 +119,7 @@ build
 # Ignore .idea/ and .iml generated
 .idea/
 *.iml
+
+# Ignore AI files
+.ai
+.claude
