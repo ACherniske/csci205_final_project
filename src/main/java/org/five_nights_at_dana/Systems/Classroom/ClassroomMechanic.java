@@ -20,13 +20,18 @@ import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.AudioManager;
 
 /**
- * Runner mechanic for Computer Lab (CAM 3D).
- * Student sits here and must be watched.
+ * Manages the "Runner" mechanic in the Computer Lab.
+ * Tracks activity levels and triggers a sprint event if the student is not monitored.
  */
 public class ClassroomMechanic {
 
+    /** Maximum activity threshold before the runner sprints. */
     private static final int MAX_ACTIVITY = 100;
+
+    /** Rate at which activity increases per frame when not watched. */
     private static final double ACTIVITY_INCREASE_RATE = 0.05;
+
+    /** Frames to wait before activity begins increasing (3s). */
     private static final int RESET_COOLDOWN = 180; // frames -> 3s
 
     private double activityLevel;
@@ -34,17 +39,26 @@ public class ClassroomMechanic {
     private int framesSinceCheck;
     private Student runner;
 
+    /**
+     * Constructs a new ClassroomMechanic and initializes default state.
+     */
     public ClassroomMechanic() {
         reset();
     }
 
+    /**
+     * Assigns the runner student to this mechanic.
+     *
+     * @param runner The Student object representing the runner.
+     */
     public void setRunner(Student runner) {
         this.runner = runner;
         System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
     }
 
     /**
-     * Updates classroom behavior.
+     * Updates the classroom behavior logic. Increments activity levels and
+     * handles the threshold triggers for warnings and sprinting.
      */
     public void update() {
         if (sprinting) return;
@@ -66,28 +80,7 @@ public class ClassroomMechanic {
     }
 
     /**
-     * @return true if sprinting
-     */
-    public boolean isSprinting() {
-        return sprinting;
-    }
-
-    /**
-     * @return raw activity value
-     */
-    public double getActivityLevel() {
-        return activityLevel;
-    }
-
-    /**
-     * @return activity percentage
-     */
-    public double getActivityPercentage() {
-        return activityLevel / MAX_ACTIVITY;
-    }
-
-    /**
-     * Triggers sprint event.
+     * Initiates the sprint event for the runner if conditions are met.
      */
     private void triggerSprint() {
         if (sprinting || runner == null) return;
@@ -99,7 +92,8 @@ public class ClassroomMechanic {
     }
 
     /**
-     * Resets activity (called when camera is checked).
+     * Resets the activity level to 0. Must be called when the player monitors
+     * the camera (CAM 3D). If the runner is already sprinting, this will fail.
      */
     public void resetActivity() {
         if (sprinting) {
@@ -113,7 +107,35 @@ public class ClassroomMechanic {
     }
 
     /**
-     * Resets system.
+     * Checks if the runner is currently sprinting.
+     *
+     * @return true if sprinting, false otherwise.
+     */
+    public boolean isSprinting() {
+        return sprinting;
+    }
+
+    /**
+     * Gets the raw accumulated activity value.
+     *
+     * @return The current activity level.
+     */
+    public double getActivityLevel() {
+        return activityLevel;
+    }
+
+    /**
+     * Calculates the activity level as a percentage (0.0 to 1.0).
+     *
+     * @return Activity level percentage.
+     */
+    public double getActivityPercentage() {
+        return activityLevel / MAX_ACTIVITY;
+    }
+
+    /**
+     * Resets the entire system to its initial state, clearing activity,
+     * resetting the timer, and removing the reference to the runner.
      */
     public void reset() {
         activityLevel = 0;
