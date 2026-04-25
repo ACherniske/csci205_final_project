@@ -14,7 +14,7 @@
  * ****************************************
  */
 
-package org.five_nights_at_dana.AI.Pathing;
+package org.five_nights_at_dana.AI;
 
 /**
  * Location enum

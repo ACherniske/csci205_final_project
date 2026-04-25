@@ -19,9 +19,8 @@ package org.five_nights_at_dana.Managers;
 
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Personalities.*;
-import org.five_nights_at_dana.AI.Player;
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.AI.Pathing.Location;
+import org.five_nights_at_dana.AI.Location;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

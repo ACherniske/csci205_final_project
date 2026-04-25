@@ -17,7 +17,6 @@
 
 package org.five_nights_at_dana.AI;
 
-import org.five_nights_at_dana.AI.Pathing.Location;
 import org.five_nights_at_dana.AI.Pathing.Path;
 import org.five_nights_at_dana.AI.Pathing.PathPoint;
 import org.five_nights_at_dana.AI.Personalities.Personality;
