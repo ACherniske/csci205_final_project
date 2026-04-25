@@ -122,6 +122,10 @@ public class Student {
         return name;
     }
 
+    public void startSprint() {
+        // TODO: Implement startRunning
+    }
+
     //    public Image getSilhouetteSprite() {
 //        // TODO: Return the silhouette sprite image
 //        return null;
