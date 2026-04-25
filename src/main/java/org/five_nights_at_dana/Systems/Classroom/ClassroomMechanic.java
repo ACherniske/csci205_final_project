@@ -10,7 +10,8 @@
  * Class: ClassroomMechanic
  *
  * Description:
- *
+ * Runner mechanic for Computer Lab (CAM 3D).
+ * Student sits here and must be watched.
  * ****************************************
  */
 
