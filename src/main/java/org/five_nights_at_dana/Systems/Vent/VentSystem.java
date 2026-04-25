@@ -71,6 +71,14 @@ public class VentSystem {
         }
     }
 
+    /**
+     * Attempts to register a student into the vent system.
+     *
+     * @param student    The student object entering the vent.
+     * @param entryPoint The specific location (vent entrance) the student is using.
+     * @return true if the student successfully entered; false if the vent is sealed,
+     * already occupied, or the entry point is invalid.
+     */
     public boolean studentEnterVent(Student student, Student.Location entryPoint) {
         if (ventSealed || studentInVent != null) {
             return false;
@@ -97,6 +105,10 @@ public class VentSystem {
         return true;
     }
 
+    /**
+     * Handles the logic for when a student finishes their transit through the vent.
+     * Triggers the exit audio and clears the student from the system.
+     */
     private void studentExitVent() {
         if (studentInVent == null) return;
 
@@ -112,9 +124,10 @@ public class VentSystem {
     }
 
     /**
-     * Seals the vent.
+     * Seals the vent, preventing student entry and ejecting any student currently inside.
      *
-     * @return true if successful
+     * @return true if the seal was successfully applied; false if the vent is already
+     * sealed or the system is on cooldown.
      */
     public boolean sealVent() {
         if (sealCooldown > 0 || ventSealed) {
@@ -136,7 +149,7 @@ public class VentSystem {
     }
 
     /**
-     * Ejects students in the vent.
+     * Forcefully ejects a student from the vent if the seal is activated.
      */
     private void ejectStudent() {
         if (studentInVent == null) return;
@@ -152,7 +165,7 @@ public class VentSystem {
     }
 
     /**
-     * Unseals the vent.
+     * Resets the vent state to unsealed and clears all active timers and student data.
      */
     private void unsealVent() {
         ventSealed = false;
@@ -161,41 +174,70 @@ public class VentSystem {
     }
 
     /**
-     * @return whether vent is sealed
+     * Checks if the vent is currently in a sealed state.
+     *
+     * @return true if sealed, false otherwise.
      */
     public boolean isSealed() {
         return ventSealed;
     }
 
+    /**
+     * Checks if a student is currently inside the vent.
+     *
+     * @return true if occupied, false otherwise.
+     */
     public boolean hasStudent() {
         return studentInVent != null;
     }
 
+    /**
+     * Retrieves the student currently inside the vent.
+     *
+     * @return The Student object, or null if empty.
+     */
     public Student getStudentInVent() {
         return studentInVent;
     }
 
+    /**
+     * Calculates the remaining travel time for the student currently in the vent.
+     *
+     * @return Remaining time in seconds, or 0 if no student is inside.
+     */
     public int getTravelTimeRemainingSeconds() {
         return studentInVent == null ? 0 : travelTimer / 60;
     }
 
     /**
-     * @return power drain
+     * Returns the current power drain rate of the vent system.
+     *
+     * @return The power drain value if sealed, 0.0 otherwise.
      */
     public double getPowerDrain() {
         return ventSealed ? SEAL_POWER_DRAIN : 0.0;
     }
 
+    /**
+     * Checks if the user is allowed to seal the vent (not currently sealed and no cooldown).
+     *
+     * @return true if sealing is permitted.
+     */
     public boolean canSeal() {
         return sealCooldown == 0 && !ventSealed;
     }
 
+    /**
+     * Gets the remaining time on the seal cooldown.
+     *
+     * @return Cooldown remaining in seconds.
+     */
     public int getSealCooldownSeconds() {
         return sealCooldown / 60;
     }
 
     /**
-     * Resets system.
+     * Resets the system to its initial state, useful for level transitions or game overs.
      */
     public void reset() {
         ventSealed = false;
