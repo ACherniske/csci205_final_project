@@ -17,40 +17,52 @@
 package org.five_nights_at_dana.Systems.Classroom;
 
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.AudioManager;
 
+/**
+ * Runner mechanic for Computer Lab (CAM 3D).
+ * Student sits here and must be watched.
+ */
 public class ClassroomMechanic {
+
+    private static final int MAX_ACTIVITY = 100;
+    private static final double ACTIVITY_INCREASE_RATE = 0.05;
+    private static final int RESET_COOLDOWN = 180; // frames -> 3s
 
     private double activityLevel;
     private boolean sprinting;
     private int framesSinceCheck;
     private Student runner;
 
-    private static final int MAX_ACTIVITY = 100;
-    private static final double ACTIVITY_INCREASE_RATE = 20;
-    private static final int RESET_COOLDOWN = 60;
-
     public ClassroomMechanic() {
         reset();
+    }
+
+    public void setRunner(Student runner) {
+        this.runner = runner;
+        System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
     }
 
     /**
      * Updates classroom behavior.
      */
     public void update() {
-        // TODO increase activity and trigger sprint
-        activityLevel += ACTIVITY_INCREASE_RATE;
-        if (activityLevel >= MAX_ACTIVITY) {
-            triggerSprint();
+        if (sprinting) return;
+
+        framesSinceCheck++;
+
+        if (framesSinceCheck > RESET_COOLDOWN) {
+            activityLevel += ACTIVITY_INCREASE_RATE;
+
+            if (activityLevel >= MAX_ACTIVITY) {
+                activityLevel = MAX_ACTIVITY;
+                triggerSprint();
+            }
         }
-    }
 
-
-    /**
-     * Resets activity (called when camera is checked).
-     */
-    public void resetActivity() {
-        activityLevel = 0;
-        framesSinceCheck = 0;
+        if (activityLevel >= 75 && activityLevel < 75.1) {
+            AudioManager.play("runner_warning");
+        }
     }
 
     /**
@@ -75,6 +87,32 @@ public class ClassroomMechanic {
     }
 
     /**
+     * Triggers sprint event.
+     */
+    private void triggerSprint() {
+        if (sprinting || runner == null) return;
+
+        sprinting = true;
+        runner.startSprint();
+        AudioManager.play("runner_sprint");
+        System.out.println("ClassroomMechanic: Runner SPRINTING");
+    }
+
+    /**
+     * Resets activity (called when camera is checked).
+     */
+    public void resetActivity() {
+        if (sprinting) {
+            System.out.println("ClassroomMechanic: Too Late!");
+            return;
+        }
+
+        activityLevel = 0;
+        framesSinceCheck = 0;
+        System.out.println("ClassroomMechanic: Activity reset (CAM 3D checked)");
+    }
+
+    /**
      * Resets system.
      */
     public void reset() {
@@ -82,13 +120,5 @@ public class ClassroomMechanic {
         sprinting = false;
         framesSinceCheck = 0;
         runner = null;
-    }
-
-    /**
-     * Triggers sprint event.
-     */
-    private void triggerSprint() {
-        // TODO set sprinting state and notify systems
-        sprinting = true;
     }
 }
