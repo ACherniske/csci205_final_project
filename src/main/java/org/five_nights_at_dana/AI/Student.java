@@ -10,121 +10,198 @@
  * Class: Student
  *
  * Description:
- *      Represents an AI-controlled student.
+ * Represents a student AI trying to reach Professor Lily's office.
+ * Manages pathfinding logic, movement timers based on difficulty/personality,
+ * and state transitions through the building's location nodes.
  *
  * ****************************************
  */
 
 package org.five_nights_at_dana.AI;
 
-import org.five_nights_at_dana.AI.Pathing.Path;
-import org.five_nights_at_dana.AI.Pathing.PathPoint;
-import org.five_nights_at_dana.AI.Personalities.Personality;
-
 /**
- * Student class
+ * Represents an individual student AI.
+ * Each student uses a personality-based state machine to navigate
+ * the building via different {@link PathType} options.
  */
 public class Student {
-    private int difficulty;
+
     private String name;
-    private final Personality personality;
-    private PathPoint currentLocation;
-    private double movementTimer;
-    private boolean jumpScared;
+    private String question;
+    private Personality personality;
+    private Location currentLocation;
+    private PathType preferredPath;
+    private int movementTimer;
+    private int difficulty;
+    private double awarenessLevel;
+    private boolean sprinting;
 
     /**
-     * Constructs a student object with a set personality and difficulity
-     * @param name is name of student
-     * @param personality dictates the behavior of the student
-     * @param difficulty an int from 1-20 that sets the odds of a movement opportunity passing
+     * Constructs a new Student and determines their starting location and
+     * preferred path based on their personality profile.
+     * @param name        The display name of the student.
+     * @param question    The dialogue triggered during a jumpscare.
+     * @param personality The {@link Personality} governing movement speed and pathing.
      */
-    public Student(String name, Personality personality, int difficulty) {
+    public Student(String name, String question, Personality personality) {
         this.name = name;
+        this.question = question;
         this.personality = personality;
-        this.difficulty = difficulty;
-        setLocation(Path.getRandomFirstFloor());
-        movementTimer = 0.0;
-        this.jumpScared = false;
+        this.difficulty = 0;
+        this.awarenessLevel = 0.5;
+        this.sprinting = false;
+
+        if (personality == Personality.RUNNER) {
+            this.currentLocation = Location.FLOOR3_COMPUTER_LAB;
+        } else {
+            this.currentLocation = Location.FLOOR1_ENTRANCE;
+        }
+
+        selectPreferredPath();
+        resetMovementTimer();
     }
 
     /**
-     * Updates the student object to react to the changing state of the game
-     * @param deltaTime is to keep track of time, and lining up movement intervals
-     * @param isDoorClosed the state of the door, whether closed or open
-     * @param isSeenOnCam is the player on the cam where the student is
+     * Assigns the {@link PathType} preference based on the student's personality.
      */
-    public void update(double deltaTime, boolean isDoorClosed, boolean isSeenOnCam) {
-        movementTimer += deltaTime;
+    private void selectPreferredPath() {
+        switch (personality) {
+            case EAGER:
+                preferredPath = PathType.ELEVATOR;
+                break;
+            case SHY:
+                preferredPath = PathType.VENT;
+                break;
+            case CONFUSED:
+                preferredPath = PathType.MIDDLE_STAIRS;
+                break;
+            case PERSISTENT:
+                preferredPath = PathType.LEFT_STAIRS;
+                break;
+            default:
+                preferredPath = PathType.RIGHT_STAIRS;
+        }
+    }
 
-        if (isSeenOnCam)
-        {
-            personality.reactToCamera(this);
+    /**
+     * Updates student behavior per frame. Decrements the movement timer
+     * and triggers pathfinding attempts when the timer expires.
+     */
+    public void update() {
+        if (personality == Personality.RUNNER && !sprinting) {
+            return;
         }
 
-        if (personality.getMovementInterval() <= movementTimer) {
-            if (currentLocation.getLocation() == Location.IN_OFFICE) {
-                personality.jumpscare();
-                jumpScared = true;
-                return;
-            }
-
-            attemptMove(isDoorClosed);
+        movementTimer--;
+        if (movementTimer <= 0) {
+            attemptMove();
             resetMovementTimer();
         }
-
     }
 
     /**
-     * Makes the student attempt of moving with the odds being if the random is less than the student's difficulty
-     * @param isDoorClosed if a movement opportunity succeceds and the next move is into the office but the door is closed
-     *                     the student is sent to a random place in the first floor.
+     * Logic to determine if the student moves this frame based on calculated
+     * probability and updates the current location node.
      */
-    public void attemptMove(boolean isDoorClosed) {
-        if (Math.random() * 20 <= difficulty) {
-            PathPoint nextMove = personality.chooseNextPoint(currentLocation);
+    public void attemptMove() {
+        double moveChance = calculateMoveChance();
 
-            if (nextMove.getLocation() == Location.IN_OFFICE && isDoorClosed) {
-                System.out.println("BANG");
-                personality.resetLocation(this);
-            }
-            else {
-                setLocation(nextMove);
+        if (Math.random() < moveChance) {
+            Location nextLocation = calculateNextLocation();
+            if (nextLocation != null) {
+                currentLocation = nextLocation;
+                System.out.println(name + "moved to" + currentLocation);
             }
         }
     }
 
-    public boolean isJumpScared() {
-        return jumpScared;
+    /**
+     * Calculates the probability of moving this frame based on personality,
+     * difficulty, and active states.
+     * * @return A double between 0.0 and 1.0 representing movement chance.
+     */
+    private double calculateMoveChance() {
+        double baseChance = 0.15 + (difficulty * 0.1);
+
+        switch (personality) {
+            case EAGER:
+                return baseChance * 1.5;
+            case SHY:
+                return baseChance * 0.7;
+            case CONFUSED:
+                return baseChance * (Math.random() * 2);
+            case PERSISTENT:
+                return baseChance * 1.2;
+            case RUNNER:
+                return sprinting ? 1.0 : 0.0;
+        }
+        return baseChance;
     }
 
-    public PathPoint getCurrentLocation() {
-        return currentLocation;
+    /**
+     * The core pathfinding state machine. Determines the next valid {@link Location}
+     * based on the student's current node and preferred pathing.
+     * * @return The next Location node, or null if movement is blocked.
+     */
+    private Location calculateNextLocation() {
+        // TODO [Logic Implementation]
+        // ... switch cases for transitions ...
+        return null;
     }
 
-    public void setLocation(PathPoint location) {
+    /**
+     * Determines initial pathing choice from the entrance.
+     */
+    private Location chooseFloor1Path() {
+        // TODO logic
+        return Location.FLOOR1_HALLWAY_LEFT;
+    }
+
+    // TODO logic
+    private Location transitionToFloor2Stairs() { /* ... */ return null; }
+    private Location transitionToFloor3Stairs() { /* ... */ return null; }
+
+    /**
+     * Resets the movement cooldown timer. Higher difficulty reduces the wait time,
+     * making students move more frequently.
+     */
+    private void resetMovementTimer() {
+        // TODO logic
+    }
+
+    /**
+     * Increments the global difficulty level, speeding up AI behavior.
+     */
+    public void increaseDifficulty() {
+        difficulty = Math.min(6, difficulty + 1);
+        System.out.println(name + " difficulty → " + difficulty);
+    }
+
+    /**
+     * Triggers the sprint event for the RUNNER personality type.
+     */
+    public void startSprint() {
+        if (personality == Personality.RUNNER) {
+            sprinting = true;
+            resetMovementTimer();
+            System.out.println(name + " SPRINTING!");
+        }
+    }
+
+    /**
+     * Updates the student's location. Used by external system mechanics.
+     * @param location The new {@link Location} for the student.
+     */
+    public void setLocation(Location location) {
         this.currentLocation = location;
     }
 
-    public void resetMovementTimer() {
-        movementTimer = 0;
-    }
-
-    public void increaseDifficulty() {
-        this.difficulty++;
-    }
-
-    public Personality getPersonality() {
-        return this.personality;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    //    public Image getSilhouetteSprite() {
-//        // TODO: Return the silhouette sprite image
-//        return null;
-//    }
-
-
+    public String getName() { return name; }
+    public String getQuestion() { return question; }
+    public Personality getPersonality() { return personality; }
+    public Location getCurrentLocation() { return currentLocation; }
+    public PathType getPreferredPath() { return preferredPath; }
+    public int getDifficulty() { return difficulty; }
+    public double getAwarenessLevel() { return awarenessLevel; }
+    public boolean isSprinting() { return sprinting; }
 }
