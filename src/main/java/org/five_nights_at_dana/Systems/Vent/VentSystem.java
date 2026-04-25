@@ -19,6 +19,7 @@
 package org.five_nights_at_dana.Systems.Vent;
 
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.AI.Pathing.Location;
 import org.five_nights_at_dana.Managers.AudioManager;
 
 public class VentSystem {
@@ -33,7 +34,7 @@ public class VentSystem {
 
     private boolean ventSealed;
     private Student studentInVent;
-    private Student.Location ventEntryPoint;
+    private Location ventEntryPoint;
     private int travelTimer;
     private int sealTimer;
     private int sealCooldown;
@@ -79,7 +80,7 @@ public class VentSystem {
      * @return true if the student successfully entered; false if the vent is sealed,
      * already occupied, or the entry point is invalid.
      */
-    public boolean studentEnterVent(Student student, Student.Location entryPoint) {
+    public boolean studentEnterVent(Student student, Location entryPoint) {
         if (ventSealed || studentInVent != null) {
             return false;
         }
@@ -116,7 +117,7 @@ public class VentSystem {
         AudioManager.play("vent_exit");
 
         // Student now at door
-        // TODO: studentInVent.setLocation(Student.Location.FLOOR3_AT_DOOR);
+        // TODO: studentInVent.setLocation(Location.FLOOR3_AT_DOOR);
 
         studentInVent = null;
         ventEntryPoint = null;
