@@ -1,0 +1,107 @@
+digraph G {
+    rankdir=TB;
+    node [shape=box, style=filled, fillcolor=white];
+
+    subgraph cluster_FLOOR1 {
+        label="Floor 1";
+        "FLOOR1_ENTRANCE";
+        "FLOOR1_LOUNGE";
+        "FLOOR1_HALLWAY_LEFT";
+        "FLOOR1_GARDNER";
+        "FLOOR1_MAKER_E";
+        "FLOOR1_HALLWAY_RIGHT";
+        "FLOOR1_STAIR_LEFT";
+        "FLOOR1_STAIR_MID";
+        "FLOOR1_STAIR_RIGHT";
+        "FLOOR1_ELEVATOR";
+    }
+    subgraph cluster_FLOOR2 {
+        label="Floor 2";
+        "FLOOR2_HALLWAY_LEFT";
+        "FLOOR2_CLASSROOM";
+        "FLOOR2_COMPUTER_LAB";
+        "FLOOR2_HALLWAY_CENTER";
+        "FLOOR2_HALLWAY_RIGHT";
+        "FLOOR2_STAIR_LEFT";
+        "FLOOR2_STAIR_MID";
+        "FLOOR2_STAIR_RIGHT";
+    }
+    subgraph cluster_FLOOR3 {
+        label="Floor 3";
+        "FLOOR3_TESTING_LAB";
+        "FLOOR3_HALLWAY_LEFT";
+        "FLOOR3_HALLWAY_CENTER";
+        "FLOOR3_COMPUTER_LAB";
+        "FLOOR3_HALLWAY_RIGHT";
+        "FLOOR3_STAIR_LEFT";
+        "FLOOR3_STAIR_MID";
+        "FLOOR3_STAIR_RIGHT";
+        "FLOOR3_ELEVATOR_EXIT";
+        "FLOOR3_AT_DOOR";
+    }
+    subgraph cluster_special {
+        label="Special Nodes";
+        "IN_VENT"; "IN_ELEVATOR"; "IN_OFFICE";
+    }
+
+    "FLOOR1_STAIR_LEFT" -> "FLOOR2_STAIR_LEFT" [label="LEFT_STAIRS", color="green"];
+    "FLOOR1_MAKER_E" -> "FLOOR1_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR2_COMPUTER_LAB" -> "FLOOR2_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR3_AT_DOOR" -> "IN_OFFICE" [label="NORMAL", color="black"];
+    "FLOOR1_HALLWAY_LEFT" -> "FLOOR1_ENTRANCE" [label="NORMAL", color="black"];
+    "FLOOR1_HALLWAY_LEFT" -> "FLOOR1_GARDNER" [label="NORMAL", color="black"];
+    "FLOOR1_HALLWAY_LEFT" -> "FLOOR1_MAKER_E" [label="NORMAL", color="black"];
+    "FLOOR1_HALLWAY_LEFT" -> "FLOOR1_STAIR_LEFT" [label="LEFT_STAIRS", color="green"];
+    "FLOOR2_CLASSROOM" -> "FLOOR2_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR2_CLASSROOM" -> "IN_VENT" [label="VENT", color="purple"];
+    "IN_VENT" -> "FLOOR1_GARDNER" [label="VENT", color="purple"];
+    "IN_VENT" -> "FLOOR2_CLASSROOM" [label="VENT", color="purple"];
+    "IN_VENT" -> "FLOOR3_HALLWAY_RIGHT" [label="VENT", color="purple"];
+    "FLOOR3_STAIR_LEFT" -> "FLOOR3_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR3_STAIR_RIGHT" -> "FLOOR3_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR3_STAIR_MID" -> "FLOOR3_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_RIGHT" -> "FLOOR3_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_RIGHT" -> "FLOOR3_COMPUTER_LAB" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_RIGHT" -> "FLOOR3_AT_DOOR" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_CENTER" -> "FLOOR3_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_CENTER" -> "FLOOR3_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_LEFT" -> "FLOOR2_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_LEFT" -> "FLOOR3_STAIR_LEFT" [label="LEFT_STAIRS", color="green"];
+    "FLOOR1_GARDNER" -> "FLOOR1_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR1_GARDNER" -> "IN_VENT" [label="VENT", color="purple"];
+    "IN_ELEVATOR" -> "FLOOR3_ELEVATOR_EXIT" [label="ELEVATOR", color="blue"];
+    "FLOOR1_HALLWAY_RIGHT" -> "FLOOR1_ENTRANCE" [label="NORMAL", color="black"];
+    "FLOOR1_HALLWAY_RIGHT" -> "FLOOR1_ELEVATOR" [label="ELEVATOR", color="blue"];
+    "FLOOR1_HALLWAY_RIGHT" -> "FLOOR1_STAIR_RIGHT" [label="RIGHT_STAIRS", color="red"];
+    "FLOOR1_HALLWAY_RIGHT" -> "FLOOR1_LOUNGE" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_RIGHT" -> "FLOOR2_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_RIGHT" -> "FLOOR3_STAIR_RIGHT" [label="RIGHT_STAIRS", color="red"];
+    "FLOOR1_LOUNGE" -> "FLOOR1_ENTRANCE" [label="NORMAL", color="black"];
+    "FLOOR1_LOUNGE" -> "FLOOR1_STAIR_MID" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR1_LOUNGE" -> "FLOOR1_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_LEFT" -> "FLOOR3_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR3_HALLWAY_LEFT" -> "FLOOR3_TESTING_LAB" [label="NORMAL", color="black"];
+    "FLOOR3_TESTING_LAB" -> "FLOOR3_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "IN_OFFICE" -> "IN_OFFICE" [label="NORMAL", color="black"];
+    "FLOOR1_STAIR_MID" -> "FLOOR1_ENTRANCE" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR1_STAIR_MID" -> "FLOOR1_LOUNGE" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR1_STAIR_MID" -> "FLOOR2_STAIR_MID" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR1_ELEVATOR" -> "IN_ELEVATOR" [label="ELEVATOR", color="blue"];
+    "FLOOR3_COMPUTER_LAB" -> "FLOOR3_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR2_HALLWAY_LEFT" -> "FLOOR2_COMPUTER_LAB" [label="NORMAL", color="black"];
+    "FLOOR2_HALLWAY_LEFT" -> "FLOOR2_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR1_STAIR_RIGHT" -> "FLOOR2_STAIR_RIGHT" [label="RIGHT_STAIRS", color="red"];
+    "FLOOR2_HALLWAY_CENTER" -> "FLOOR2_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR2_HALLWAY_CENTER" -> "FLOOR2_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR2_HALLWAY_CENTER" -> "FLOOR2_STAIR_MID" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR2_HALLWAY_CENTER" -> "FLOOR2_CLASSROOM" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_MID" -> "FLOOR2_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR2_STAIR_MID" -> "FLOOR2_HALLWAY_CENTER" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR2_STAIR_MID" -> "FLOOR3_STAIR_MID" [label="MIDDLE_STAIRS", color="orange"];
+    "FLOOR3_ELEVATOR_EXIT" -> "FLOOR3_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR2_HALLWAY_RIGHT" -> "FLOOR2_HALLWAY_CENTER" [label="NORMAL", color="black"];
+    "FLOOR1_ENTRANCE" -> "FLOOR1_HALLWAY_LEFT" [label="NORMAL", color="black"];
+    "FLOOR1_ENTRANCE" -> "FLOOR1_HALLWAY_RIGHT" [label="NORMAL", color="black"];
+    "FLOOR1_ENTRANCE" -> "FLOOR1_LOUNGE" [label="NORMAL", color="black"];
+    "FLOOR1_ENTRANCE" -> "FLOOR1_STAIR_MID" [label="MIDDLE_STAIRS", color="orange"];
+}

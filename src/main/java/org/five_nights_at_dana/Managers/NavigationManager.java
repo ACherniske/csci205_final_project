@@ -235,4 +235,61 @@ public class NavigationManager {
         }
         sb.append("    }\n");
     }
+
+    public static String toDotWithHeat(Map<Location, Integer> heatmap) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph G {\n");
+        sb.append("    rankdir=TB;\n");
+        sb.append("    node [shape=box, style=filled];\n\n");
+
+        int max = heatmap.values().stream().max(Integer::compareTo).orElse(1);
+
+        // Nodes with color
+        for (Location loc : Location.values()) {
+            int value = heatmap.getOrDefault(loc, 0);
+
+            double intensity = (double) value / max;
+
+            // red heat scale
+            int red = 255;
+            int green = (int)(255 * (1 - intensity));
+            int blue = (int)(255 * (1 - intensity));
+
+            String color = String.format("#%02x%02x%02x", red, green, blue);
+
+            sb.append("    \"")
+                    .append(loc)
+                    .append("\" [fillcolor=\"")
+                    .append(color)
+                    .append("\"];\n");
+        }
+
+        sb.append("\n");
+
+        // Edges (reuse your existing logic)
+        for (Location from : graph.keySet()) {
+            for (Edge e : graph.get(from)) {
+
+                String color = switch (e.type) {
+                    case ELEVATOR -> "blue";
+                    case LEFT_STAIRS -> "green";
+                    case RIGHT_STAIRS -> "red";
+                    case MIDDLE_STAIRS -> "orange";
+                    case VENT -> "purple";
+                    default -> "black";
+                };
+
+                sb.append("    \"")
+                        .append(from)
+                        .append("\" -> \"")
+                        .append(e.to)
+                        .append("\" [color=\"")
+                        .append(color)
+                        .append("\"];\n");
+            }
+        }
+
+        sb.append("}\n");
+        return sb.toString();
+    }
 }
