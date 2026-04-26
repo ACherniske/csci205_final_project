@@ -133,6 +133,17 @@ public class NavigationManagerTest {
         assertTrue(reachedFloor3, "Student never reached Floor 3");
     }
 
+    @Test
+    void testStairsAreOneWayUp() {
+        // Example: FLOOR2_STAIR_LEFT should NOT go back to FLOOR1
+        List<Location> neighbors = NavigationManager.getNeighbors(Location.FLOOR2_STAIR_LEFT);
+
+        for (Location loc : neighbors) {
+            assertFalse(loc.name().startsWith("FLOOR1"),
+                    "Stairs should not go downward: " + loc);
+        }
+    }
+
     // ==================== PERSONALITY TESTS ====================
 
     @Test
@@ -187,6 +198,27 @@ public class NavigationManagerTest {
         assertTrue(usedElevator, "EAGER did not use elevator");
     }
 
+    @Test
+    void testEagerPrefersElevatorStatistically() {
+        TestStudent s = new TestStudent(Location.FLOOR1_HALLWAY_RIGHT, Personality.EAGER);
+
+        int elevatorCount = 0;
+
+        for (int i = 0; i < 100; i++) {
+            // force position every iteration
+            s.setLocation(Location.FLOOR1_HALLWAY_RIGHT);
+
+            Location next = NavigationManager.getNextLocation(s);
+
+            if (next == Location.FLOOR1_ELEVATOR || next == Location.IN_ELEVATOR) {
+                elevatorCount++;
+            }
+        }
+
+        assertTrue(elevatorCount > 80,
+                "EAGER not strongly preferring elevator");
+    }
+
     // ==================== SYSTEM TESTS ====================
 
     @Test
@@ -205,6 +237,59 @@ public class NavigationManagerTest {
         }
 
         assertTrue(enteredVent, "Vent system not reachable");
+    }
+
+    @Test
+    void testVentLeadsToExit() {
+        TestStudent s = new TestStudent(Location.IN_VENT, Personality.SHY);
+
+        boolean exitedVent = false;
+
+        for (int i = 0; i < 20; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+            s.setLocation(next);
+
+            if (next != Location.IN_VENT) {
+                exitedVent = true;
+                break;
+            }
+        }
+
+        assertTrue(exitedVent, "Vent did not lead to an exit");
+    }
+
+    @Test
+    void testElevatorGoesToFloor3() {
+        TestStudent s = new TestStudent(Location.FLOOR1_ELEVATOR, Personality.EAGER);
+
+        boolean reachedFloor3 = false;
+
+        for (int i = 0; i < 20; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+            s.setLocation(next);
+
+            if (next == Location.FLOOR3_ELEVATOR_EXIT) {
+                reachedFloor3 = true;
+                break;
+            }
+        }
+
+        assertTrue(reachedFloor3, "Elevator did not reach Floor 3");
+    }
+
+    @Test
+    void testNoSoftlockInSpecialStates() {
+        Location[] special = {
+                Location.IN_VENT,
+                Location.IN_ELEVATOR
+        };
+
+        for (Location loc : special) {
+            List<Location> neighbors = NavigationManager.getNeighbors(loc);
+
+            assertFalse(neighbors.isEmpty(),
+                    "Softlock in special state: " + loc);
+        }
     }
 
     @Test
@@ -239,6 +324,50 @@ public class NavigationManagerTest {
 
             s.setLocation(next);
         }
+    }
+
+    @Test
+    void testDeterministicSingleAgent() {
+        NavigationManager.setRandom(new Random(42));
+        Student.setRandom(new Random(42));
+
+        TestStudent s = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
+
+        List<Location> path1 = new ArrayList<>();
+
+        for (int i = 0; i < 50; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+            path1.add(next);
+            s.setLocation(next);
+        }
+
+        // reset everything
+        NavigationManager.setRandom(new Random(42));
+        Student.setRandom(new Random(42));
+
+        s = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
+
+        for (int i = 0; i < 50; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+            assertEquals(path1.get(i), next, "Path diverged at step " + i);
+            s.setLocation(next);
+        }
+    }
+
+    @Test
+    void testNoInfiniteLoopTrap() {
+        TestStudent s = new TestStudent(Location.FLOOR1_LOUNGE, Personality.CONFUSED);
+
+        Set<Location> visited = new HashSet<>();
+
+        for (int i = 0; i < 200; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+            visited.add(next);
+            s.setLocation(next);
+        }
+
+        assertTrue(visited.size() > 5,
+                "Student stuck in small loop");
     }
 
     // ==================== RUNNER TESTS ====================
