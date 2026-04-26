@@ -133,22 +133,7 @@ public class Student {
      * Assigns the {@link PathType} preference based on the student's personality.
      */
     private void selectPreferredPath() {
-        switch (personality) {
-            case EAGER:
-                preferredPath = PathType.ELEVATOR;
-                break;
-            case SHY:
-                preferredPath = PathType.VENT;
-                break;
-            case CONFUSED:
-                preferredPath = PathType.MIDDLE_STAIRS;
-                break;
-            case PERSISTENT:
-                preferredPath = PathType.LEFT_STAIRS;
-                break;
-            default:
-                preferredPath = PathType.RIGHT_STAIRS;
-        }
+        preferredPath = personality.getPreferredPath();
     }
 
     /**

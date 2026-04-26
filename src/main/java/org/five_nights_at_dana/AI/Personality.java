@@ -56,5 +56,16 @@ public enum Personality {
      * at which point they perform a high-speed sprint.
      * Speed: 500% during sprint events.
      */
-    RUNNER
+    RUNNER;
+
+    public PathType getPreferredPath() {
+        return switch (this) {
+            case EAGER -> PathType.ELEVATOR;
+            case SHY -> PathType.VENT;
+            case CONFUSED -> PathType.MIDDLE_STAIRS;
+            case PERSISTENT -> PathType.LEFT_STAIRS;
+            case RUNNER -> PathType.RIGHT_STAIRS;
+            default -> PathType.RIGHT_STAIRS;
+        };
+    }
 }
