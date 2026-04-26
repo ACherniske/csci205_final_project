@@ -154,7 +154,11 @@ public class Student {
             default -> baseTimer;
         };
 
-        movementTimer = Math.max(30, baseTimer);
+        if (personality == Personality.RUNNER && sprinting) {
+            movementTimer = baseTimer; // allow fast movement (e.g., 10)
+        } else {
+            movementTimer = Math.max(30, baseTimer);
+        }
     }
 
     /**

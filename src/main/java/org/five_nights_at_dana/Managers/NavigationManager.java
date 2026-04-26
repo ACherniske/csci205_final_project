@@ -162,6 +162,10 @@ public class NavigationManager {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
 
+        if (student.getPersonality() == Personality.RUNNER) {
+            return getRunnerPath(edges);
+        }
+
         if (p == Personality.CONFUSED) {
             return edges.get(rand.nextInt(edges.size()));
         }
@@ -203,6 +207,25 @@ public class NavigationManager {
         return edges.get(rand.nextInt(edges.size()));
     }
 
+    private static Edge getRunnerPath(List<Edge> edges) {
+        // If at hallway right → go straight to door
+        for (Edge e : edges) {
+            if (e.to == Location.FLOOR3_AT_DOOR) {
+                return e;
+            }
+        }
+
+        // Otherwise: move toward hallway right if possible
+        for (Edge e : edges) {
+            if (e.to == Location.FLOOR3_HALLWAY_RIGHT) {
+                return e;
+            }
+        }
+
+        // fallback (should rarely happen)
+        return edges.get(rand.nextInt(edges.size()));
+    }
+
     // ===== TEST HELPERS =====
 
     public static List<Location> getNeighbors(Location loc) {
@@ -231,8 +254,8 @@ public class NavigationManager {
 
     /**
      * Generates a GraphViz DOT string representation of the navigation graph.
-     * Copy the output and render it at https://dreampuf.github.io/GraphvizOnline/
-     * * @return A DOT-formatted string representing the navigation graph.
+     * Copy the output and render it at <a href="https://dreampuf.github.io/GraphvizOnline/">...</a>
+     * @return A DOT-formatted string representing the navigation graph.
      */
     public static String toDot() {
         StringBuilder sb = new StringBuilder();

@@ -234,4 +234,70 @@ public class NavigationManagerTest {
             s.setLocation(next);
         }
     }
+
+    @Test
+    void testRunnerDoesNotMoveBeforeSprint() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        Location start = s.getCurrentLocation();
+
+        for (int i = 0; i < 50; i++) {
+            s.update();
+        }
+
+        assertEquals(start, s.getCurrentLocation(),
+                "Runner moved before sprinting");
+    }
+
+    @Test
+    void testRunnerMovesAfterSprint() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+
+        boolean moved = false;
+
+        for (int i = 0; i < 50; i++) {
+            Location before = s.getCurrentLocation();
+            s.update();
+            Location after = s.getCurrentLocation();
+
+            if (before != after) {
+                moved = true;
+                break;
+            }
+        }
+
+        assertTrue(moved, "Runner did not move after sprint");
+    }
+
+    @Test
+    void testRunnerReachesOfficeQuickly() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+
+        boolean reachedOffice = false;
+
+        for (int i = 0; i < 100; i++) {
+            s.update();
+
+            if (s.getCurrentLocation() == Location.IN_OFFICE) {
+                reachedOffice = true;
+                break;
+            }
+        }
+
+        assertTrue(reachedOffice, "Runner did not reach office quickly");
+    }
+
+    @Test
+    void testRunnerMovementTimerFast() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+
+        assertTrue(s.getMovementTimer() <= 10,
+                "Runner movement timer not fast enough");
+    }
 }
