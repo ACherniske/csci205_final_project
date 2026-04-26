@@ -20,15 +20,15 @@
 package org.five_nights_at_dana.AI;
 
 import org.five_nights_at_dana.Managers.NavigationManager;
-
+import org.five_nights_at_dana.Systems.Vent.VentSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Represents an individual student AI.
- * Each student uses a personality-based state machine to navigate
- * the building via different {@link PathType} options.
+ * Handles personality-driven behavior, movement timing, and state.
+ * Navigation decisions are delegated to NavigationManager.
  */
 public class Student {
 
@@ -37,6 +37,7 @@ public class Student {
     private Personality personality;
     private Location currentLocation;
     private PathType preferredPath;
+
     private int movementTimer;
     private int difficulty;
     private double awarenessLevel;
@@ -53,14 +54,16 @@ public class Student {
         this.name = name;
         this.question = question;
         this.personality = personality;
+
         this.difficulty = 0;
         this.awarenessLevel = 0.5;
         this.sprinting = false;
 
+        // Starting location
         if (personality == Personality.RUNNER) {
-            this.currentLocation = Location.FLOOR3_COMPUTER_LAB;
+            this.currentLocation = Location.FLOOR3_COMPUTER_LAB; // Like Foxy's Cove
         } else {
-            this.currentLocation = Location.FLOOR1_ENTRANCE;
+            this.currentLocation = Location.FLOOR1_ENTRANCE; // Like FNAF Stage
         }
 
         selectPreferredPath();
@@ -68,32 +71,11 @@ public class Student {
     }
 
     /**
-     * Assigns the {@link PathType} preference based on the student's personality.
-     */
-    private void selectPreferredPath() {
-        switch (personality) {
-            case EAGER:
-                preferredPath = PathType.ELEVATOR;
-                break;
-            case SHY:
-                preferredPath = PathType.VENT;
-                break;
-            case CONFUSED:
-                preferredPath = PathType.MIDDLE_STAIRS;
-                break;
-            case PERSISTENT:
-                preferredPath = PathType.LEFT_STAIRS;
-                break;
-            default:
-                preferredPath = PathType.RIGHT_STAIRS;
-        }
-    }
-
-    /**
      * Updates student behavior per frame. Decrements the movement timer
      * and triggers pathfinding attempts when the timer expires.
      */
     public void update() {
+        // RUNNER only moves when sprinting
         if (personality == Personality.RUNNER && !sprinting) {
             return;
         }
@@ -113,7 +95,8 @@ public class Student {
         double moveChance = calculateMoveChance();
 
         if (Math.random() < moveChance) {
-            Location nextLocation = calculateNextLocation();
+            Location nextLocation = NavigationManager.getNextLocation(this);
+
             if (nextLocation != null) {
                 currentLocation = nextLocation;
                 System.out.println(name + "moved to" + currentLocation);
@@ -145,72 +128,53 @@ public class Student {
     }
 
     /**
-     * The core pathfinding state machine. Determines the next valid {@link Location}
-     * based on the student's current node and preferred pathing.
-     * * @return The next Location node, or null if movement is blocked.
+     * Assigns the {@link PathType} preference based on the student's personality.
      */
-    private Location calculateNextLocation() {
-        List<Location> neighbors = NavigationManager.getNeighbors(this.currentLocation);
-
-        if (neighbors.isEmpty()) return null;
-
-        // 1. Filter for valid moves
-        List<Location> validMoves = new ArrayList<>();
-        for (Location loc : neighbors) {
-            // Add custom constraints (e.g., is vent sealed?)
-            validMoves.add(loc);
+    private void selectPreferredPath() {
+        switch (personality) {
+            case EAGER:
+                preferredPath = PathType.ELEVATOR;
+                break;
+            case SHY:
+                preferredPath = PathType.VENT;
+                break;
+            case CONFUSED:
+                preferredPath = PathType.MIDDLE_STAIRS;
+                break;
+            case PERSISTENT:
+                preferredPath = PathType.LEFT_STAIRS;
+                break;
+            default:
+                preferredPath = PathType.RIGHT_STAIRS;
         }
-
-        // 2. Logic: Prioritize preferredPath, otherwise pick random
-        for (Location loc : validMoves) {
-            if (isLocMatchingPreferredPath(loc)) {
-                return loc;
-            }
-        }
-
-        // 3. Fallback to random valid move
-        return validMoves.get(new Random().nextInt(validMoves.size()));
     }
-
-    /**
-     * Evaluates whether a target location aligns with the student's {@link PathType} preference.
-     * <p>
-     * If the target location is not specifically tied to a path (e.g., a neutral hallway),
-     * the method returns {@code true} to allow for continuous movement.
-     * </p>
-     * @param loc The candidate {@link Location} the student is considering moving to.
-     * @return {@code true} if the location matches the preferred path or is a neutral zone;
-     * {@code false} otherwise.
-     */
-    private boolean isLocMatchingPreferredPath(Location loc) {
-        // If the location has a path type, check if it matches the student's preference
-        PathType locPath = loc.getPathType();
-
-        // If locPath is null, it's likely a hallway or office;
-        // we allow these as they are necessary for navigation.
-        if (locPath == null) return true;
-
-        return locPath == this.preferredPath;
-    }
-
-    /**
-     * Determines initial pathing choice from the entrance.
-     */
-    private Location chooseFloor1Path() {
-        // TODO logic
-        return Location.FLOOR1_HALLWAY_LEFT;
-    }
-
-    // TODO logic
-    private Location transitionToFloor2Stairs() { /* ... */ return null; }
-    private Location transitionToFloor3Stairs() { /* ... */ return null; }
 
     /**
      * Resets the movement cooldown timer. Higher difficulty reduces the wait time,
      * making students move more frequently.
      */
     private void resetMovementTimer() {
-        // TODO logic
+        int baseTimer = 180; // frames -> 3s
+
+        // Difficulty speeds up movement
+        baseTimer -= (difficulty * 20);
+
+        switch (personality) {
+            case EAGER:
+                baseTimer = (int) (baseTimer * 0.7);
+                break;
+            case SHY:
+                baseTimer = (int) (baseTimer * 1.3);
+                break;
+            case PERSISTENT:
+                baseTimer = (int) (baseTimer * 0.9);
+                break;
+            case RUNNER:
+                baseTimer = sprinting ? 10 : Integer.MAX_VALUE;
+                break;
+        }
+
+        movementTimer = Math.max(30, baseTimer);
     }
 
     /**
@@ -218,7 +182,7 @@ public class Student {
      */
     public void increaseDifficulty() {
         difficulty = Math.min(6, difficulty + 1);
-        System.out.println(name + " difficulty → " + difficulty);
+        System.out.println(name + " difficulty: " + difficulty);
     }
 
     /**
