@@ -84,7 +84,7 @@ public enum Location {
     FLOOR2_STAIR_RIGHT,
 
     /** Elevator access on Floor 2; currently non-functional. */
-    FLOOR2_ELEVATOR,
+    // FLOOR2_ELEVATOR,
 
     // ==================== FLOOR 3 ====================
 
