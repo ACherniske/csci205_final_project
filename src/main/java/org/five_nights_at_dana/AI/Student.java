@@ -33,6 +33,7 @@ public class Student {
     private final String question;
     private final Personality personality;
     private Location currentLocation;
+    private Location previousLocation;
     private PathType preferredPath;
 
     private int movementTimer;
@@ -136,6 +137,7 @@ public class Student {
             Location nextLocation = NavigationManager.getNextLocation(this);
 
             if (nextLocation != null) {
+                previousLocation = currentLocation;
                 currentLocation = nextLocation;
                 System.out.println(name + " moved to " + currentLocation);
             }
@@ -219,6 +221,7 @@ public class Student {
      * @param location The new {@link Location} for the student.
      */
     public void setLocation(Location location) {
+        this.previousLocation = this.currentLocation;
         this.currentLocation = location;
     }
 
@@ -230,6 +233,7 @@ public class Student {
     public String getQuestion() { return question; }
     public Personality getPersonality() { return personality; }
     public Location getCurrentLocation() { return currentLocation; }
+    public Location getPreviousLocation() { return previousLocation; }
     public PathType getPreferredPath() { return preferredPath; }
     public int getDifficulty() { return difficulty; }
     public double getAwarenessLevel() { return awarenessLevel; }

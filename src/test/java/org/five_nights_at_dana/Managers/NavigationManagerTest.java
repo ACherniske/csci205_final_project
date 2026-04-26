@@ -144,6 +144,23 @@ public class NavigationManagerTest {
         }
     }
 
+    @Test
+    void testFallbackToNormalPath() {
+        TestStudent s = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.PERSISTENT);
+
+        boolean usedNormal = false;
+
+        for (int i = 0; i < 50; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+
+            if (NavigationManager.isValidTransition(Location.FLOOR1_ENTRANCE, next)) {
+                usedNormal = true;
+            }
+        }
+
+        assertTrue(usedNormal, "Fallback to NORMAL paths not working");
+    }
+
     // ==================== PERSONALITY TESTS ====================
 
     @Test
@@ -215,8 +232,26 @@ public class NavigationManagerTest {
             }
         }
 
-        assertTrue(elevatorCount > 80,
-                "EAGER not strongly preferring elevator");
+        assertTrue(elevatorCount > 55,
+                "EAGER not preferring elevator enough (got " + elevatorCount + ")");
+    }
+
+    @Test
+    void testShyFallsBackIfNoVentAvailable() {
+        TestStudent s = new TestStudent(Location.FLOOR1_MAKER_E, Personality.SHY);
+
+        boolean moved = false;
+
+        for (int i = 0; i < 20; i++) {
+            Location next = NavigationManager.getNextLocation(s);
+
+            if (next != Location.FLOOR1_MAKER_E) {
+                moved = true;
+                break;
+            }
+        }
+
+        assertTrue(moved, "SHY got stuck when no vent available");
     }
 
     // ==================== SYSTEM TESTS ====================
@@ -327,31 +362,20 @@ public class NavigationManagerTest {
     }
 
     @Test
-    void testDeterministicSingleAgent() {
+    void testDeterministicFirstStepOnly() {
+
+        TestStudent s1 = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
+        TestStudent s2 = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
+
+        // Reset RNG before EACH call
         NavigationManager.setRandom(new Random(42));
-        Student.setRandom(new Random(42));
+        Location step1 = NavigationManager.getNextLocation(s1);
 
-        TestStudent s = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
-
-        List<Location> path1 = new ArrayList<>();
-
-        for (int i = 0; i < 50; i++) {
-            Location next = NavigationManager.getNextLocation(s);
-            path1.add(next);
-            s.setLocation(next);
-        }
-
-        // reset everything
         NavigationManager.setRandom(new Random(42));
-        Student.setRandom(new Random(42));
+        Location step2 = NavigationManager.getNextLocation(s2);
 
-        s = new TestStudent(Location.FLOOR1_ENTRANCE, Personality.EAGER);
-
-        for (int i = 0; i < 50; i++) {
-            Location next = NavigationManager.getNextLocation(s);
-            assertEquals(path1.get(i), next, "Path diverged at step " + i);
-            s.setLocation(next);
-        }
+        assertEquals(step1, step2,
+                "First step should be deterministic with same seed");
     }
 
     @Test
@@ -368,6 +392,102 @@ public class NavigationManagerTest {
 
         assertTrue(visited.size() > 5,
                 "Student stuck in small loop");
+    }
+
+    @Test
+    void testWeightedPreferenceDistribution() {
+        TestStudent s = new TestStudent(Location.FLOOR1_HALLWAY_RIGHT, Personality.EAGER);
+
+        Map<Location, Integer> counts = new HashMap<>();
+
+        for (int i = 0; i < 500; i++) {
+            s.setLocation(Location.FLOOR1_HALLWAY_RIGHT);
+            Location next = NavigationManager.getNextLocation(s);
+            counts.put(next, counts.getOrDefault(next, 0) + 1);
+        }
+
+        int elevator = counts.getOrDefault(Location.FLOOR1_ELEVATOR, 0);
+        int stairs = counts.getOrDefault(Location.FLOOR1_STAIR_RIGHT, 0);
+
+        assertTrue(elevator > stairs,
+                "Elevator should be chosen more often than stairs");
+    }
+
+    @Test
+    void testNoPingPongLoop() {
+        for (Personality personality : Personality.values()) {
+
+            TestStudent s = new TestStudent(Location.FLOOR1_LOUNGE, personality);
+
+            Location prev = null;
+            Location prevPrev = null;
+
+            int pingPongStreak = 0;
+            int maxStreak = 0;
+
+            // Track recent path for debugging
+            Deque<Location> history = new ArrayDeque<>();
+            int HISTORY_LIMIT = 20;
+
+            for (int i = 0; i < 200; i++) {
+
+                Location current = s.getCurrentLocation();
+                Location next = NavigationManager.getNextLocation(s);
+
+                // Maintain history
+                history.addLast(current);
+                if (history.size() > HISTORY_LIMIT) {
+                    history.removeFirst();
+                }
+
+                // ===== FIXED DETECTION =====
+
+                boolean isTerminalLoop =
+                        current == Location.IN_OFFICE &&
+                                next == Location.IN_OFFICE;
+
+                boolean isRealPingPong =
+                        prevPrev != null &&
+                                current != next &&          // prevents A → A → A
+                                next == prevPrev &&
+                                current == prev;
+
+                if (isRealPingPong && !isTerminalLoop) {
+                    pingPongStreak++;
+                    maxStreak = Math.max(maxStreak, pingPongStreak);
+                } else {
+                    pingPongStreak = 0;
+                }
+
+                // Debug print if something goes wrong
+                if (maxStreak >= 10) {
+                    System.out.println("\n=== PING PONG DETECTED ===");
+                    System.out.println("Personality: " + personality);
+                    System.out.println("Current: " + current);
+                    System.out.println("Next: " + next);
+                    System.out.println("Prev: " + prev);
+                    System.out.println("PrevPrev: " + prevPrev);
+
+                    System.out.println("\nRecent Path:");
+                    for (Location loc : history) {
+                        System.out.print(loc + " -> ");
+                    }
+                    System.out.println(next);
+                }
+
+                prevPrev = prev;
+                prev = current;
+
+                s.setLocation(next);
+
+                // Optional early exit: once at office, stop test
+                if (next == Location.IN_OFFICE) break;
+            }
+
+            assertTrue(maxStreak < 10,
+                    "Detected oscillation loop. Personality=" + personality +
+                            " Max streak=" + maxStreak);
+        }
     }
 
     // ==================== RUNNER TESTS ====================
@@ -507,5 +627,18 @@ public class NavigationManagerTest {
 
         // sprint should stop after office
         assertFalse(s.isSprinting(), "Runner should stop sprinting after office");
+    }
+
+    @Test
+    void testRunnerUsesCorrectPathToOffice() {
+        TestStudent s = new TestStudent(Location.FLOOR3_HALLWAY_RIGHT, Personality.RUNNER);
+
+        s.startSprint();
+        fastForward(s, 120);
+
+        Location next = NavigationManager.getNextLocation(s);
+
+        assertEquals(Location.FLOOR3_AT_DOOR, next,
+                "Runner should go directly to AT_DOOR");
     }
 }

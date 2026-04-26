@@ -143,68 +143,116 @@ public class NavigationManager {
         }
 
         Location current = student.getCurrentLocation();
+        Location prev = student.getPreviousLocation();
+
         List<Edge> edges = graph.get(current);
 
         if (edges == null || edges.isEmpty()) {
             throw new IllegalStateException("No valid transitions from " + current);
         }
 
-        Edge chosen = selectEdge(student, edges);
-
-        if (chosen == null || chosen.to == null) {
-            throw new IllegalStateException("Navigation failed from " + current);
-        }
+        Edge chosen = selectEdge(student, current, prev, edges);
 
         return chosen.to;
     }
 
-    private static Edge selectEdge(Student student, List<Edge> edges) {
+    private static Edge selectEdge(Student student, Location current, Location prev, List<Edge> edges) {
+        Personality p = student.getPersonality();
+
+        // ===== 1. HARD FILTER =====
+        List<Edge> candidates = new ArrayList<>();
+
+        if (prev != null) {
+            for (Edge e : edges) {
+                if (e.to != prev) {
+                    candidates.add(e);
+                }
+            }
+        }
+
+        // If filtering removed everything (dead-end), allow all
+        if (candidates.isEmpty()) {
+            candidates = edges;
+        }
+
+        // ===== 2. SPECIAL CASES =====
+
+        // RUNNER = deterministic aggressive path
+        if (p == Personality.RUNNER && student.isSprinting()) {
+            return getRunnerPath(candidates);
+        }
+
+        // CONFUSED = pure random (no weighting)
+        if (p == Personality.CONFUSED) {
+            return candidates.get(rand.nextInt(candidates.size()));
+        }
+
+        // ===== 3. WEIGHTED CHOICE =====
+        return weightedChoice(student, candidates);
+    }
+
+    private static Edge weightedChoice(Student student, List<Edge> edges) {
+        double total = 0;
+        double[] weights = new double[edges.size()];
+
+        for (int i = 0; i < edges.size(); i++) {
+            double w = Math.max(getWeight(student, edges.get(i)), 0.0001);
+            weights[i] = w;
+            total += w;
+        }
+
+        double roll = rand.nextDouble() * total;
+
+        double cumulative = 0;
+        for (int i = 0; i < edges.size(); i++) {
+            cumulative += weights[i];
+            if (roll <= cumulative) {
+                return edges.get(i);
+            }
+        }
+
+        return edges.getLast();
+    }
+
+    private static double getWeight(Student student, Edge e) {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
 
-        if (student.getPersonality() == Personality.RUNNER) {
-            return getRunnerPath(edges);
+        double weight = 1.0;
+
+        // ===== Personality Bias =====
+
+        // Preferred path boost
+        if (e.type == preferred) {
+            weight *= 3.0;
         }
 
-        if (p == Personality.CONFUSED) {
-            return edges.get(rand.nextInt(edges.size()));
+        // SHY prefers vent-access rooms
+        if (p == Personality.SHY && e.to.hasVentAccess()) {
+            weight *= 2.5;
         }
 
-        if (p == Personality.SHY) {
-            List<Edge> ventEdges = new ArrayList<>();
-            for (Edge e : edges) {
-                if (e.to.hasVentAccess()) {
-                    ventEdges.add(e);
-                }
-            }
-            if (!ventEdges.isEmpty()) {
-                return ventEdges.get(rand.nextInt(ventEdges.size()));
-            }
+        // EAGER strongly prefers elevator
+        if (p == Personality.EAGER && e.type == PathType.ELEVATOR) {
+            weight *= 3.5;
         }
 
-        List<Edge> preferredEdges = new ArrayList<>();
-        for (Edge e : edges) {
-            if (e.type == preferred) {
-                preferredEdges.add(e);
-            }
+        // PERSISTENT prefers left stairs
+        if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) {
+            weight *= 2.5;
         }
 
-        if (!preferredEdges.isEmpty()) {
-            return preferredEdges.get(rand.nextInt(preferredEdges.size()));
+        // RUNNER slight directional bias (only used if fallback happens)
+        if (p == Personality.RUNNER && e.type == PathType.RIGHT_STAIRS) {
+            weight *= 2.0;
         }
 
-        List<Edge> normalEdges = new ArrayList<>();
-        for (Edge e : edges) {
-            if (e.type == PathType.NORMAL) {
-                normalEdges.add(e);
-            }
+        // Slight penalty for NORMAL paths
+        if (e.type == PathType.NORMAL) {
+            weight *= 0.8;
         }
 
-        if (!normalEdges.isEmpty()) {
-            return normalEdges.get(rand.nextInt(normalEdges.size()));
-        }
-
-        return edges.get(rand.nextInt(edges.size()));
+        return weight;
     }
 
     private static Edge getRunnerPath(List<Edge> edges) {
