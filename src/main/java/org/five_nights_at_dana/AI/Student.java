@@ -20,9 +20,6 @@
 package org.five_nights_at_dana.AI;
 
 import org.five_nights_at_dana.Managers.NavigationManager;
-import org.five_nights_at_dana.Systems.Vent.VentSystem;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -32,9 +29,9 @@ import java.util.Random;
  */
 public class Student {
 
-    private String name;
-    private String question;
-    private Personality personality;
+    private final String name;
+    private final String question;
+    private final Personality personality;
     private Location currentLocation;
     private PathType preferredPath;
 
@@ -42,6 +39,17 @@ public class Student {
     private int difficulty;
     private double awarenessLevel;
     private boolean sprinting;
+
+    // Controlled randomness for deterministic testing
+    private static Random rand = new Random();
+
+    /**
+     * Allows tests to inject a deterministic Random instance.
+     * @param r Random instance (use new Random(seed) in tests)
+     */
+    public static void setRandom(Random r) {
+        rand = r;
+    }
 
     /**
      * Constructs a new Student and determines their starting location and
@@ -94,12 +102,12 @@ public class Student {
     public void attemptMove() {
         double moveChance = calculateMoveChance();
 
-        if (Math.random() < moveChance) {
+        if (rand.nextDouble() < moveChance) {
             Location nextLocation = NavigationManager.getNextLocation(this);
 
             if (nextLocation != null) {
                 currentLocation = nextLocation;
-                System.out.println(name + "moved to" + currentLocation);
+                System.out.println(name + " moved to " + currentLocation);
             }
         }
     }
@@ -112,19 +120,13 @@ public class Student {
     private double calculateMoveChance() {
         double baseChance = 0.15 + (difficulty * 0.1);
 
-        switch (personality) {
-            case EAGER:
-                return baseChance * 1.5;
-            case SHY:
-                return baseChance * 0.7;
-            case CONFUSED:
-                return baseChance * (Math.random() * 2);
-            case PERSISTENT:
-                return baseChance * 1.2;
-            case RUNNER:
-                return sprinting ? 1.0 : 0.0;
-        }
-        return baseChance;
+        return switch (personality) {
+            case EAGER -> baseChance * 1.5;
+            case SHY -> baseChance * 0.7;
+            case CONFUSED -> baseChance * (rand.nextDouble() * 2);
+            case PERSISTENT -> baseChance * 1.2;
+            case RUNNER -> sprinting ? 1.0 : 0.0;
+        };
     }
 
     /**
@@ -159,20 +161,13 @@ public class Student {
         // Difficulty speeds up movement
         baseTimer -= (difficulty * 20);
 
-        switch (personality) {
-            case EAGER:
-                baseTimer = (int) (baseTimer * 0.7);
-                break;
-            case SHY:
-                baseTimer = (int) (baseTimer * 1.3);
-                break;
-            case PERSISTENT:
-                baseTimer = (int) (baseTimer * 0.9);
-                break;
-            case RUNNER:
-                baseTimer = sprinting ? 10 : Integer.MAX_VALUE;
-                break;
-        }
+        baseTimer = switch (personality) {
+            case EAGER -> (int) (baseTimer * 0.7);
+            case SHY -> (int) (baseTimer * 1.3);
+            case PERSISTENT -> (int) (baseTimer * 0.9);
+            case RUNNER -> sprinting ? 10 : Integer.MAX_VALUE;
+            default -> baseTimer;
+        };
 
         movementTimer = Math.max(30, baseTimer);
     }
@@ -204,6 +199,10 @@ public class Student {
         this.currentLocation = location;
     }
 
+    void setMovementTimer(int t) {
+        this.movementTimer = t;
+    }
+
     public String getName() { return name; }
     public String getQuestion() { return question; }
     public Personality getPersonality() { return personality; }
@@ -212,4 +211,13 @@ public class Student {
     public int getDifficulty() { return difficulty; }
     public double getAwarenessLevel() { return awarenessLevel; }
     public boolean isSprinting() { return sprinting; }
+    public int getMovementTimer() { return movementTimer; }
+
+    /**
+     * Debug-friendly string output for simulation/testing.
+     */
+    @Override
+    public String toString() {
+        return name + " (" + personality + ") @ " + currentLocation;
+    }
 }
