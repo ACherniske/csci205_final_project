@@ -10,10 +10,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.five_nights_at_dana.Core.GameSession;
 
 /**
  * Controller for MainMenu.fxml.
- *
  * Hook point: implement onStartGame() to launch the gameplay scene.
  */
 public class MainMenuController {
@@ -36,6 +36,7 @@ public class MainMenuController {
     @FXML
     private void onStartGame(ActionEvent event) {
         try {
+            GameSession.getInstance().startNight();
             Stage stage = (Stage) startButton.getScene().getWindow();
             Parent root = FXMLLoader.load(
                     getClass().getResource("/org/five_nights_at_dana/GameView.fxml"));

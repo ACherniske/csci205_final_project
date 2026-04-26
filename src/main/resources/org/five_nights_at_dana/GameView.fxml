@@ -81,25 +81,9 @@
     <!-- ── LEFT DOOR BUTTON (left wall) ─────────────────────────────── -->
     <Button
         fx:id="leftDoorButton"
-        text="CLOSE&#10;LEFT DOOR"
+        text="CLOSE&#10;DOOR"
         onAction="#onToggleLeftDoor"
         layoutX="30" layoutY="330"
-        prefWidth="110" prefHeight="60"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 13px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #ffffff;
-               -fx-background-color: #2d2d2d;
-               -fx-border-color: #888888;
-               -fx-border-width: 2px;
-               -fx-cursor: hand;"/>
-
-    <!-- ── RIGHT DOOR BUTTON (right wall) ───────────────────────────── -->
-    <Button
-        fx:id="rightDoorButton"
-        text="CLOSE&#10;RIGHT DOOR"
-        onAction="#onToggleRightDoor"
-        layoutX="1140" layoutY="330"
         prefWidth="110" prefHeight="60"
         style="-fx-font-family: 'Courier New';
                -fx-font-size: 13px;
