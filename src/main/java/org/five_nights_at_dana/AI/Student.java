@@ -19,6 +19,12 @@
 
 package org.five_nights_at_dana.AI;
 
+import org.five_nights_at_dana.Managers.NavigationManager;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * Represents an individual student AI.
  * Each student uses a personality-based state machine to navigate
@@ -144,9 +150,47 @@ public class Student {
      * * @return The next Location node, or null if movement is blocked.
      */
     private Location calculateNextLocation() {
-        // TODO [Logic Implementation]
-        // ... switch cases for transitions ...
-        return null;
+        List<Location> neighbors = NavigationManager.getNeighbors(this.currentLocation);
+
+        if (neighbors.isEmpty()) return null;
+
+        // 1. Filter for valid moves
+        List<Location> validMoves = new ArrayList<>();
+        for (Location loc : neighbors) {
+            // Add custom constraints (e.g., is vent sealed?)
+            validMoves.add(loc);
+        }
+
+        // 2. Logic: Prioritize preferredPath, otherwise pick random
+        for (Location loc : validMoves) {
+            if (isLocMatchingPreferredPath(loc)) {
+                return loc;
+            }
+        }
+
+        // 3. Fallback to random valid move
+        return validMoves.get(new Random().nextInt(validMoves.size()));
+    }
+
+    /**
+     * Evaluates whether a target location aligns with the student's {@link PathType} preference.
+     * <p>
+     * If the target location is not specifically tied to a path (e.g., a neutral hallway),
+     * the method returns {@code true} to allow for continuous movement.
+     * </p>
+     * @param loc The candidate {@link Location} the student is considering moving to.
+     * @return {@code true} if the location matches the preferred path or is a neutral zone;
+     * {@code false} otherwise.
+     */
+    private boolean isLocMatchingPreferredPath(Location loc) {
+        // If the location has a path type, check if it matches the student's preference
+        PathType locPath = loc.getPathType();
+
+        // If locPath is null, it's likely a hallway or office;
+        // we allow these as they are necessary for navigation.
+        if (locPath == null) return true;
+
+        return locPath == this.preferredPath;
     }
 
     /**
@@ -170,7 +214,7 @@ public class Student {
     }
 
     /**
-     * Increments the global difficulty level, speeding up AI behavior.
+     * Increments the global difficulty level, speeding up AI behavior (called each hour).
      */
     public void increaseDifficulty() {
         difficulty = Math.min(6, difficulty + 1);

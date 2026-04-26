@@ -127,5 +127,21 @@ public enum Location {
     IN_VENT,
 
     /** Active state when a student is transitioning between floors via elevator. */
-    IN_ELEVATOR
+    IN_ELEVATOR;
+
+    /**
+     * Determines the {@link PathType} associated with this location.
+     * Used by AI to prioritize movement based on their personality preferences.
+     * * @return The {@link PathType} assigned to this location, or null if it
+     * is a neutral zone (like a hallway or office).
+     */
+    public PathType getPathType() {
+        String name = this.name();
+        if (name.contains("STAIR_LEFT")) return PathType.LEFT_STAIRS;
+        if (name.contains("STAIR_MID")) return PathType.MIDDLE_STAIRS;
+        if (name.contains("STAIR_RIGHT")) return PathType.RIGHT_STAIRS;
+        if (name.contains("ELEVATOR")) return PathType.ELEVATOR;
+        if (name.contains("VENT")) return PathType.VENT;
+        return null; // For general hallways or special locations
+    }
 }
