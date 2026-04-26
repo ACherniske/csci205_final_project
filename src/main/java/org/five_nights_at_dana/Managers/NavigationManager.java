@@ -226,4 +226,66 @@ public class NavigationManager {
         }
         return false;
     }
+
+    // ==================== GRAPH EXPORT ====================
+
+    /**
+     * Generates a GraphViz DOT string representation of the navigation graph.
+     * Copy the output and render it at https://dreampuf.github.io/GraphvizOnline/
+     * * @return A DOT-formatted string representing the navigation graph.
+     */
+    public static String toDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph G {\n");
+        sb.append("    rankdir=TB;\n");
+        sb.append("    node [shape=box, style=filled, fillcolor=white];\n\n");
+
+        // ---- Floor Clusters ----
+        addCluster(sb, "Floor 1", "FLOOR1");
+        addCluster(sb, "Floor 2", "FLOOR2");
+        addCluster(sb, "Floor 3", "FLOOR3");
+
+        // ---- Special Nodes ----
+        sb.append("    subgraph cluster_special {\n");
+        sb.append("        label=\"Special Nodes\";\n");
+        sb.append("        \"IN_VENT\"; \"IN_ELEVATOR\"; \"IN_OFFICE\";\n");
+        sb.append("    }\n\n");
+
+        // ---- Edges ----
+        for (Location from : graph.keySet()) {
+            for (Edge e : graph.get(from)) {
+                String color = switch (e.type) {
+                    case ELEVATOR -> "blue";
+                    case LEFT_STAIRS -> "green";
+                    case RIGHT_STAIRS -> "red";
+                    case MIDDLE_STAIRS -> "orange";
+                    case VENT -> "purple";
+                    default -> "black";
+                };
+
+                sb.append("    \"")
+                        .append(from)
+                        .append("\" -> \"")
+                        .append(e.to)
+                        .append("\" [label=\"")
+                        .append(e.type)
+                        .append("\", color=\"")
+                        .append(color)
+                        .append("\"];\n");
+            }
+        }
+        sb.append("}\n");
+        return sb.toString();
+    }
+
+    private static void addCluster(StringBuilder sb, String label, String prefix) {
+        sb.append("    subgraph cluster_").append(prefix).append(" {\n");
+        sb.append("        label=\"").append(label).append("\";\n");
+        for (Location l : Location.values()) {
+            if (l.name().startsWith(prefix)) {
+                sb.append("        \"").append(l).append("\";\n");
+            }
+        }
+        sb.append("    }\n");
+    }
 }
