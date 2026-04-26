@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/22/2026
+ * Time: 9:30 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: CameraViewController
+ *
+ * Description:
+ * Controller for CameraView.fxml scene which displays camera UI.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.event.ActionEvent;
@@ -13,7 +29,6 @@ import javafx.stage.Stage;
 
 /**
  * Controller for CameraView.fxml — the security camera tablet.
- *
  * Floor selection swaps the background map image.
  * Camera buttons swap the feed image and update the active camera label.
  * "Lower Cameras" returns to GameView.
@@ -135,7 +150,7 @@ public class CameraViewController {
 
     // ── LOWER CAMERAS ─────────────────────────────────────────────────────
 
-    /** Hook: lower the camera tablet and return to the office. */
+    /** lower the camera tablet and return to the office. */
     @FXML
     private void onLowerCameras(ActionEvent event) {
         try {

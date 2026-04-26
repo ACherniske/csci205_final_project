@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/26/2026
+ * Time: 9:22 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: JumpscareController
+ *
+ * Description:
+ * Controller for JumpscareView.fxml scene which plays the jumpscare animation sequence.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.animation.FadeTransition;

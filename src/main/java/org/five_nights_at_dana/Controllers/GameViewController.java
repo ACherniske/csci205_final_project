@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/22/2026
+ * Time: 10:34 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: GameViewController
+ *
+ * Description:
+ * Controller for GameView.fxml scene which displays the main office gameplay screen.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.animation.AnimationTimer;

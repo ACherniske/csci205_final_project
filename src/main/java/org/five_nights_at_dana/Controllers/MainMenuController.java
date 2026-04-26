@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/24/2026
+ * Time: 8:46 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: MainMenuController
+ *
+ * Description:
+ * Controller for MainMenu.fxml scene which displays the main menu screen.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.event.ActionEvent;
