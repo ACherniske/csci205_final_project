@@ -38,10 +38,15 @@ public class Student {
     private int movementTimer;
     private int difficulty;
     private double awarenessLevel;
+    private boolean charging;
+    private int chargeTimer;
     private boolean sprinting;
 
     // Controlled randomness for deterministic testing
     private static Random rand = new Random();
+
+    // tuning constants
+    private static final int CHARGE_DURATION = 120; // frames -> 2s
 
     /**
      * Allows tests to inject a deterministic Random instance.
@@ -65,6 +70,8 @@ public class Student {
 
         this.difficulty = 0;
         this.awarenessLevel = 0.5;
+        this.charging = false;
+        this.chargeTimer = 0;
         this.sprinting = false;
 
         // Starting location
@@ -83,9 +90,16 @@ public class Student {
      * and triggers pathfinding attempts when the timer expires.
      */
     public void update() {
-        // RUNNER only moves when sprinting
-        if (personality == Personality.RUNNER && !sprinting) {
-            return;
+        // RUNNER special state machine
+        if (personality == Personality.RUNNER) {
+
+            // Charging phase
+            if (isRunnerDoneCharging()) return; // do not move while charging
+
+            // Idle phase
+            if (!sprinting) {
+                return;
+            }
         }
 
         movementTimer--;
@@ -93,6 +107,22 @@ public class Student {
             attemptMove();
             resetMovementTimer();
         }
+    }
+
+    private boolean isRunnerDoneCharging() {
+        if (charging) {
+            chargeTimer--;
+
+            if (chargeTimer <= 0) {
+                charging = false;
+                sprinting = true;
+                resetMovementTimer();
+                System.out.println(name + " SPRINTING!");
+            }
+
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -109,6 +139,10 @@ public class Student {
                 currentLocation = nextLocation;
                 System.out.println(name + " moved to " + currentLocation);
             }
+        }
+
+        if (currentLocation == Location.IN_OFFICE) {
+            sprinting = false; // for resetting runner
         }
     }
 
@@ -173,10 +207,10 @@ public class Student {
      * Triggers the sprint event for the RUNNER personality type.
      */
     public void startSprint() {
-        if (personality == Personality.RUNNER) {
-            sprinting = true;
-            resetMovementTimer();
-            System.out.println(name + " SPRINTING!");
+        if (personality == Personality.RUNNER && !sprinting && !charging) {
+            charging = true;
+            chargeTimer = CHARGE_DURATION;
+            System.out.println(name + " is CHARGING!");
         }
     }
 
@@ -201,6 +235,8 @@ public class Student {
     public double getAwarenessLevel() { return awarenessLevel; }
     public boolean isSprinting() { return sprinting; }
     public int getMovementTimer() { return movementTimer; }
+    public boolean isCharging() { return charging; }
+    public int getChargeTimer() { return chargeTimer; }
 
     /**
      * Debug-friendly string output for simulation/testing.

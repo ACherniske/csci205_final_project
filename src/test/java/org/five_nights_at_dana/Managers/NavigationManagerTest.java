@@ -49,6 +49,12 @@ public class NavigationManagerTest {
         Student.setRandom(new Random(42));
     }
 
+    private void fastForward(Student s, int ticks) {
+        for (int i = 0; i < ticks; i++) {
+            s.update();
+        }
+    }
+
     // ==================== GRAPH TESTS ====================
 
     @Test
@@ -235,6 +241,8 @@ public class NavigationManagerTest {
         }
     }
 
+    // ==================== RUNNER TESTS ====================
+
     @Test
     void testRunnerDoesNotMoveBeforeSprint() {
         TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
@@ -254,6 +262,7 @@ public class NavigationManagerTest {
         TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
 
         s.startSprint();
+        fastForward(s, 120);
 
         boolean moved = false;
 
@@ -276,6 +285,7 @@ public class NavigationManagerTest {
         TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
 
         s.startSprint();
+        fastForward(s, 120);
 
         boolean reachedOffice = false;
 
@@ -296,8 +306,77 @@ public class NavigationManagerTest {
         TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
 
         s.startSprint();
+        fastForward(s, 120);
 
         assertTrue(s.getMovementTimer() <= 10,
                 "Runner movement timer not fast enough");
+    }
+
+    @Test
+    void testRunnerStartsCharging() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+
+        assertTrue(s.isCharging());
+        assertFalse(s.isSprinting());
+    }
+
+    @Test
+    void testChargingLeadsToSprint() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+        fastForward(s,120);
+
+        assertTrue(s.isSprinting());
+    }
+
+    @Test
+    void testNoMovementWhileCharging() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        s.startSprint();
+
+        Location start = s.getCurrentLocation();
+
+        for (int i = 0; i < 50; i++) {
+            s.update();
+        }
+
+        assertEquals(start, s.getCurrentLocation());
+    }
+
+    @Test
+    void testRunnerFullLifecycle() {
+        TestStudent s = new TestStudent(Location.FLOOR3_COMPUTER_LAB, Personality.RUNNER);
+
+        // idle
+        assertFalse(s.isCharging());
+        assertFalse(s.isSprinting());
+
+        // start
+        s.startSprint();
+        assertTrue(s.isCharging());
+
+        // reach sprint
+        fastForward(s, 120);
+        assertTrue(s.isSprinting());
+
+        // reach office
+        boolean reachedOffice = false;
+
+        for (int i = 0; i < 100; i++) {
+            s.update();
+            if (s.getCurrentLocation() == Location.IN_OFFICE) {
+                reachedOffice = true;
+                break;
+            }
+        }
+
+        assertTrue(reachedOffice);
+
+        // sprint should stop after office
+        assertFalse(s.isSprinting(), "Runner should stop sprinting after office");
     }
 }
