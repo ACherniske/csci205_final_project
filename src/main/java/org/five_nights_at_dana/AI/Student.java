@@ -2,9 +2,6 @@
  * CSCI 205 - Software Engineering and Design
  * Spring 2026
  *
- * Date: 4/17/2026
- * Time: 3:44 AM
- *
  * Project: csci205_final_project
  * Package: org.five_nights_at_dana.AI
  * Class: Student
@@ -20,12 +17,12 @@
 package org.five_nights_at_dana.AI;
 
 import org.five_nights_at_dana.Managers.NavigationManager;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Represents an individual student AI.
- * Handles personality-driven behavior, movement timing, and state.
- * Navigation decisions are delegated to NavigationManager.
+ * Handles personality-driven behavior, movement timing, state transitions,
+ * and tracks historical location memory to assist in pathing decisions.
  */
 public class Student {
 
@@ -43,10 +40,14 @@ public class Student {
     private int chargeTimer;
     private boolean sprinting;
 
+    // Memory system for tracking recent path history
+    private static final int MEMORY_SIZE = 5;
+    private final Deque<Location> recentLocations = new ArrayDeque<>();
+
     // Controlled randomness for deterministic testing
     private static Random rand = new Random();
 
-    // tuning constants
+    // Tuning constants
     private static final int CHARGE_DURATION = 120; // frames -> 2s
 
     /**
@@ -77,14 +78,43 @@ public class Student {
 
         // Starting location
         if (personality == Personality.RUNNER) {
-            this.currentLocation = Location.FLOOR3_COMPUTER_LAB; // Like Foxy's Cove
+            this.currentLocation = Location.FLOOR3_COMPUTER_LAB;
         } else {
-            this.currentLocation = Location.FLOOR1_ENTRANCE; // Like FNAF Stage
+            this.currentLocation = Location.FLOOR1_ENTRANCE;
         }
 
+        rememberLocation(this.currentLocation);
         selectPreferredPath();
         resetMovementTimer();
     }
+
+    // ========== MEMORY LOGIC ==========
+
+    /**
+     * Adds a location to the student's memory, evicting the oldest if capacity is reached.
+     * @param loc The location to remember.
+     */
+    public void rememberLocation(Location loc) {
+        // Only remember if it's different from the last remembered location
+        if (!recentLocations.isEmpty() && recentLocations.peekLast() == loc) {
+            return;
+        }
+
+        if (recentLocations.size() >= MEMORY_SIZE) {
+            recentLocations.removeFirst();
+        }
+        recentLocations.addLast(loc);
+    }
+
+    /**
+     * Returns a set of the most recently visited locations.
+     * @return A set of locations currently in memory.
+     */
+    public Set<Location> getRecentLocations() {
+        return new HashSet<>(recentLocations);
+    }
+
+    // ========== MOVEMENT LOGIC ==========
 
     /**
      * Updates student behavior per frame. Decrements the movement timer
@@ -93,14 +123,8 @@ public class Student {
     public void update() {
         // RUNNER special state machine
         if (personality == Personality.RUNNER) {
-
-            // Charging phase
-            if (isRunnerDoneCharging()) return; // do not move while charging
-
-            // Idle phase
-            if (!sprinting) {
-                return;
-            }
+            if (isRunnerDoneCharging()) return;
+            if (!sprinting) return;
         }
 
         movementTimer--;
@@ -113,14 +137,12 @@ public class Student {
     private boolean isRunnerDoneCharging() {
         if (charging) {
             chargeTimer--;
-
             if (chargeTimer <= 0) {
                 charging = false;
                 sprinting = true;
                 resetMovementTimer();
                 System.out.println(name + " SPRINTING!");
             }
-
             return true;
         }
         return false;
@@ -137,25 +159,20 @@ public class Student {
             Location nextLocation = NavigationManager.getNextLocation(this);
 
             if (nextLocation != null) {
-                previousLocation = currentLocation;
-                currentLocation = nextLocation;
+                this.previousLocation = this.currentLocation;
+                this.currentLocation = nextLocation;
+                rememberLocation(this.currentLocation);
                 System.out.println(name + " moved to " + currentLocation);
             }
         }
 
         if (currentLocation == Location.IN_OFFICE) {
-            sprinting = false; // for resetting runner
+            sprinting = false;
         }
     }
 
-    /**
-     * Calculates the probability of moving this frame based on personality,
-     * difficulty, and active states.
-     * * @return A double between 0.0 and 1.0 representing movement chance.
-     */
     private double calculateMoveChance() {
         double baseChance = 0.15 + (difficulty * 0.1);
-
         return switch (personality) {
             case EAGER -> baseChance * 1.5;
             case SHY -> baseChance * 0.7;
@@ -165,49 +182,31 @@ public class Student {
         };
     }
 
-    /**
-     * Assigns the {@link PathType} preference based on the student's personality.
-     */
     private void selectPreferredPath() {
         preferredPath = personality.getPreferredPath();
     }
 
     /**
-     * Resets the movement cooldown timer. Higher difficulty reduces the wait time,
-     * making students move more frequently.
+     * Resets the movement cooldown timer. Higher difficulty reduces the wait time.
      */
     private void resetMovementTimer() {
-        int baseTimer = 180; // frames -> 3s
-
-        // Difficulty speeds up movement
-        baseTimer -= (difficulty * 20);
-
-        baseTimer = switch (personality) {
+        int baseTimer = Math.max(30, 180 - (difficulty * 20));
+        movementTimer = switch (personality) {
             case EAGER -> (int) (baseTimer * 0.7);
             case SHY -> (int) (baseTimer * 1.3);
             case PERSISTENT -> (int) (baseTimer * 0.9);
             case RUNNER -> sprinting ? 10 : Integer.MAX_VALUE;
             default -> baseTimer;
         };
-
-        if (personality == Personality.RUNNER && sprinting) {
-            movementTimer = baseTimer; // allow fast movement (e.g., 10)
-        } else {
-            movementTimer = Math.max(30, baseTimer);
-        }
     }
 
-    /**
-     * Increments the global difficulty level, speeding up AI behavior (called each hour).
-     */
+    // ========== ACTIONS ==========
+
     public void increaseDifficulty() {
         difficulty = Math.min(6, difficulty + 1);
         System.out.println(name + " difficulty: " + difficulty);
     }
 
-    /**
-     * Triggers the sprint event for the RUNNER personality type.
-     */
     public void startSprint() {
         if (personality == Personality.RUNNER && !sprinting && !charging) {
             charging = true;
@@ -216,18 +215,15 @@ public class Student {
         }
     }
 
-    /**
-     * Updates the student's location. Used by external system mechanics.
-     * @param location The new {@link Location} for the student.
-     */
     public void setLocation(Location location) {
         this.previousLocation = this.currentLocation;
         this.currentLocation = location;
+        rememberLocation(location);
     }
 
-    void setMovementTimer(int t) {
-        this.movementTimer = t;
-    }
+    void setMovementTimer(int t) { this.movementTimer = t; }
+
+    // ========== GETTERS ==========
 
     public String getName() { return name; }
     public String getQuestion() { return question; }
@@ -242,9 +238,14 @@ public class Student {
     public boolean isCharging() { return charging; }
     public int getChargeTimer() { return chargeTimer; }
 
-    /**
-     * Debug-friendly string output for simulation/testing.
-     */
+    public int getRecentVisitCount(Location loc) {
+        int count = 0;
+        for (Location l : recentLocations) {
+            if (l == loc) count++;
+        }
+        return count;
+    }
+
     @Override
     public String toString() {
         return name + " (" + personality + ") @ " + currentLocation;

@@ -87,7 +87,7 @@ public class NavigationManager {
         addBidirectionalEdge(Location.FLOOR3_HALLWAY_LEFT, Location.FLOOR3_HALLWAY_CENTER, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR3_HALLWAY_LEFT, Location.FLOOR3_TESTING_LAB, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR3_HALLWAY_CENTER, Location.FLOOR3_HALLWAY_RIGHT, PathType.NORMAL);
-        addBidirectionalEdge(Location.FLOOR3_HALLWAY_RIGHT, Location.FLOOR3_COMPUTER_LAB, PathType.NORMAL);
+        addEdge(Location.FLOOR3_COMPUTER_LAB, Location.FLOOR3_HALLWAY_RIGHT, PathType.NORMAL);
         addEdge(Location.FLOOR3_HALLWAY_RIGHT, Location.FLOOR3_AT_DOOR, PathType.NORMAL);
 
         // Vents, Elevator, Office
@@ -169,14 +169,9 @@ public class NavigationManager {
     private static double getWeight(Student student, Edge e) {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
-
         double weight = 1.0;
 
-        // ========================
-        // Personality + Preference
-        // ========================
         if (e.type == preferred) weight *= 3.0;
-
         if (p == Personality.SHY && e.to.hasVentAccess()) weight *= 6.0;
         if (p == Personality.EAGER && e.type == PathType.ELEVATOR) weight *= 8.0;
         if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) weight *= 6.0;
@@ -184,52 +179,40 @@ public class NavigationManager {
 
         if (e.type == PathType.NORMAL) weight *= 0.8;
 
-        // ========================
-        // Locality Bias
-        // Encourage staying on same floor
-        // ========================
-        int currentFloor = student.getCurrentLocation().getFloor();
-        int nextFloor = e.to.getFloor();
+        // ===== FLOOR PROGRESSION =====
+        int targetFloor = e.to.getFloor();
+        if (targetFloor == 2) weight *= 1.2;
+        if (targetFloor == 3) weight *= 1.3;
 
-        if (currentFloor == nextFloor) {
-            weight *= 1.25;
-        }
-
-        // ========================
-        // Soft Directional Bias
-        // Slight encouragement upward, but not dominant
-        // ========================
-        int floorDelta = nextFloor - currentFloor;
-
-        if (floorDelta > 0) weight *= 1.05;   // going up
-        if (floorDelta < 0) weight *= 0.95;   // going down
-
-        // ========================
-        // Penalize vertical transitions
-        // Prevent instant floor hopping
-        // ========================
-        if (e.type == PathType.LEFT_STAIRS ||
-                e.type == PathType.RIGHT_STAIRS ||
-                e.type == PathType.MIDDLE_STAIRS) {
-
-            weight *= 0.85;
-        }
-
-        // ========================
-        // Softer hallway penalty
-        // ========================
+        // ===== HALLWAY DAMPENING =====
         if (e.to.name().contains("HALLWAY")) {
-            weight *= 0.95;
+            weight *= 0.65;
         }
 
-        // ========================
-        // Entropy
-        // ========================
+        // ===== LEAF BOOST =====
+        if (getNeighbors(e.to).size() <= 2) {
+            weight *= 1.3;
+        }
+
+        // ===== SHORT-TERM MEMORY PENALTY =====
+        Set<Location> recent = student.getRecentLocations();
+        if (recent.contains(e.to)) {
+            weight *= 0.4; // strong discouragement
+        }
+
+        // stronger penalty for immediate backtracking (extra safety)
+        if (e.to == student.getPreviousLocation()) {
+            weight *= 0.3;
+        }
+
+        // recent visit decay
+        int visits = student.getRecentVisitCount(e.to); // last N steps
+        weight *= (1.0 / (1 + 0.5 * visits));
+
+        // ===== ENTROPY =====
         weight *= (0.9 + rand.nextDouble() * 0.2);
 
-        // ========================
-        // Degree normalization
-        // ========================
+        // ===== DEGREE NORMALIZATION =====
         int degree = NavigationManager.getNeighbors(e.to).size();
         weight /= Math.max(degree, 1);
 
