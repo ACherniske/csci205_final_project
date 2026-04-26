@@ -32,7 +32,6 @@ public class NavigationManager {
     }
 
     private static final Map<Location, List<Edge>> graph = new HashMap<>();
-
     private static Random rand = new Random();
 
     public static void setRandom(Random r) {
@@ -44,38 +43,90 @@ public class NavigationManager {
             graph.put(loc, new ArrayList<>());
         }
 
-        // ===== FLOOR 1 =====
+        // ==================== FLOOR 1 ====================
 
-        // Entrance (free roaming)
         addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_HALLWAY_LEFT, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_HALLWAY_RIGHT, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_LOUNGE, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_STAIR_MID, PathType.MIDDLE_STAIRS);
 
-        // Hall Left
         addBidirectionalEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_GARDNER, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_MAKER_E, PathType.NORMAL);
 
-        // Progression (one-way)
         addEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_STAIR_LEFT, PathType.LEFT_STAIRS);
 
-        // Progression (one-way)
         addEdge(Location.FLOOR1_HALLWAY_RIGHT, Location.FLOOR1_ELEVATOR, PathType.ELEVATOR);
         addEdge(Location.FLOOR1_HALLWAY_RIGHT, Location.FLOOR1_STAIR_RIGHT, PathType.RIGHT_STAIRS);
 
-        // Lounge (random loop)
-        addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_ENTRANCE, PathType.NORMAL);
         addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_STAIR_MID, PathType.MIDDLE_STAIRS);
         addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_HALLWAY_RIGHT, PathType.NORMAL);
+
+        // ==================== FLOOR 2 ====================
+
+        addEdge(Location.FLOOR1_STAIR_LEFT, Location.FLOOR2_STAIR_LEFT, PathType.LEFT_STAIRS);
+        addEdge(Location.FLOOR1_STAIR_MID, Location.FLOOR2_STAIR_MID, PathType.MIDDLE_STAIRS);
+        addEdge(Location.FLOOR1_STAIR_RIGHT, Location.FLOOR2_STAIR_RIGHT, PathType.RIGHT_STAIRS);
+
+        addEdge(Location.FLOOR2_STAIR_LEFT, Location.FLOOR2_HALLWAY_LEFT, PathType.NORMAL);
+        addEdge(Location.FLOOR2_STAIR_MID, Location.FLOOR2_HALLWAY_CENTER, PathType.NORMAL);
+        addEdge(Location.FLOOR2_STAIR_RIGHT, Location.FLOOR2_HALLWAY_RIGHT, PathType.NORMAL);
+
+        addBidirectionalEdge(Location.FLOOR2_HALLWAY_LEFT, Location.FLOOR2_COMPUTER_LAB, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR2_HALLWAY_LEFT, Location.FLOOR2_HALLWAY_CENTER, PathType.NORMAL);
+
+        addBidirectionalEdge(Location.FLOOR2_HALLWAY_RIGHT, Location.FLOOR2_HALLWAY_CENTER, PathType.NORMAL);
+
+        addBidirectionalEdge(Location.FLOOR2_HALLWAY_CENTER, Location.FLOOR2_STAIR_MID, PathType.MIDDLE_STAIRS);
+
+        addBidirectionalEdge(Location.FLOOR2_HALLWAY_CENTER, Location.FLOOR2_CLASSROOM, PathType.NORMAL);
+
+        // ==================== FLOOR 3 ====================
+
+        addEdge(Location.FLOOR2_STAIR_LEFT, Location.FLOOR3_STAIR_LEFT, PathType.LEFT_STAIRS);
+        addEdge(Location.FLOOR2_STAIR_MID, Location.FLOOR3_STAIR_MID, PathType.MIDDLE_STAIRS);
+        addEdge(Location.FLOOR2_STAIR_RIGHT, Location.FLOOR3_STAIR_RIGHT, PathType.RIGHT_STAIRS);
+
+        addEdge(Location.FLOOR3_STAIR_LEFT, Location.FLOOR3_HALLWAY_LEFT, PathType.NORMAL);
+        addEdge(Location.FLOOR3_STAIR_MID, Location.FLOOR3_HALLWAY_CENTER, PathType.NORMAL);
+        addEdge(Location.FLOOR3_STAIR_RIGHT, Location.FLOOR3_HALLWAY_RIGHT, PathType.NORMAL);
+
+        addBidirectionalEdge(Location.FLOOR3_HALLWAY_LEFT, Location.FLOOR3_HALLWAY_CENTER, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR3_HALLWAY_LEFT, Location.FLOOR3_TESTING_LAB, PathType.NORMAL);
+
+        addBidirectionalEdge(Location.FLOOR3_HALLWAY_CENTER, Location.FLOOR3_HALLWAY_RIGHT, PathType.NORMAL);
+
+        addEdge(Location.FLOOR3_HALLWAY_RIGHT, Location.FLOOR3_COMPUTER_LAB, PathType.NORMAL);
+        addEdge(Location.FLOOR3_HALLWAY_RIGHT, Location.FLOOR3_AT_DOOR, PathType.NORMAL);
+
+        // ==================== VENTS ====================
+
+        addEdge(Location.FLOOR1_GARDNER, Location.IN_VENT, PathType.VENT);
+        addEdge(Location.FLOOR2_CLASSROOM, Location.IN_VENT, PathType.VENT);
+
+        addEdge(Location.IN_VENT, Location.FLOOR1_GARDNER, PathType.VENT);
+        addEdge(Location.IN_VENT, Location.FLOOR2_CLASSROOM, PathType.VENT);
+        addEdge(Location.IN_VENT, Location.FLOOR3_HALLWAY_RIGHT, PathType.VENT);
+
+        // ==================== ELEVATOR ====================
+
+        addEdge(Location.FLOOR1_ELEVATOR, Location.IN_ELEVATOR, PathType.ELEVATOR);
+        addEdge(Location.IN_ELEVATOR, Location.FLOOR3_ELEVATOR_EXIT, PathType.ELEVATOR);
+
+        addEdge(Location.FLOOR3_ELEVATOR_EXIT, Location.FLOOR3_HALLWAY_RIGHT, PathType.NORMAL);
+
+        // ==================== FINAL ====================
+
+        addEdge(Location.FLOOR3_AT_DOOR, Location.IN_OFFICE, PathType.NORMAL);
+
+        // prevent test crashes (terminal states)
+        addEdge(Location.IN_OFFICE, Location.IN_OFFICE, PathType.NORMAL);
     }
 
     private static void addEdge(Location from, Location to, PathType type) {
         List<Edge> edges = graph.get(from);
 
         for (Edge e : edges) {
-            if (e.to == to && e.type == type) {
-                return; // prevent duplicate
-            }
+            if (e.to == to && e.type == type) return;
         }
 
         edges.add(new Edge(to, type));
@@ -87,15 +138,15 @@ public class NavigationManager {
     }
 
     public static Location getNextLocation(Student student) {
+        if (student == null) {
+            throw new IllegalArgumentException("Student cannot be null");
+        }
+
         Location current = student.getCurrentLocation();
         List<Edge> edges = graph.get(current);
 
         if (edges == null || edges.isEmpty()) {
             throw new IllegalStateException("No valid transitions from " + current);
-        }
-
-        if (student == null) {
-            throw new IllegalArgumentException("Student cannot be null");
         }
 
         Edge chosen = selectEdge(student, edges);
@@ -111,27 +162,22 @@ public class NavigationManager {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
 
-        // CONFUSED = random
         if (p == Personality.CONFUSED) {
             return edges.get(rand.nextInt(edges.size()));
         }
 
-        // SHY = prioritize vent-access rooms (Gardner)
         if (p == Personality.SHY) {
             List<Edge> ventEdges = new ArrayList<>();
-
             for (Edge e : edges) {
                 if (e.to.hasVentAccess()) {
                     ventEdges.add(e);
                 }
             }
-
             if (!ventEdges.isEmpty()) {
                 return ventEdges.get(rand.nextInt(ventEdges.size()));
             }
         }
 
-        // Preferred path bias
         List<Edge> preferredEdges = new ArrayList<>();
         for (Edge e : edges) {
             if (e.type == preferred) {
@@ -144,7 +190,6 @@ public class NavigationManager {
         }
 
         List<Edge> normalEdges = new ArrayList<>();
-
         for (Edge e : edges) {
             if (e.type == PathType.NORMAL) {
                 normalEdges.add(e);
@@ -155,7 +200,6 @@ public class NavigationManager {
             return normalEdges.get(rand.nextInt(normalEdges.size()));
         }
 
-        // final fallback
         return edges.get(rand.nextInt(edges.size()));
     }
 
@@ -181,26 +225,5 @@ public class NavigationManager {
             if (e.to == to) return true;
         }
         return false;
-    }
-
-    public static void validateGraph() {
-        for (Location loc : Location.values()) {
-            List<Edge> edges = graph.get(loc);
-
-            if (edges == null || edges.isEmpty()) {
-                System.err.println("WARNING: Dead end at " + loc);
-            }
-        }
-    }
-
-    public static void printGraph() {
-        for (Location loc : graph.keySet()) {
-            System.out.print(loc + " -> ");
-            List<String> out = new ArrayList<>();
-            for (Edge e : graph.get(loc)) {
-                out.add(e.to + "(" + e.type + ")");
-            }
-            System.out.println(out);
-        }
     }
 }
