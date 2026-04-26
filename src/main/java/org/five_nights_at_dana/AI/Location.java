@@ -152,4 +152,19 @@ public enum Location {
             default -> false;
         };
     }
+
+    public int getFloor() {
+        String name = this.name();
+
+        if (name.startsWith("FLOOR1")) return 1;
+        if (name.startsWith("FLOOR2")) return 2;
+        if (name.startsWith("FLOOR3")) return 3;
+
+        // Special nodes
+        if (this == IN_OFFICE) return 4;       // treat as goal layer
+        if (this == IN_ELEVATOR) return -1;    // transitional
+        if (this == IN_VENT) return -1;        // transitional
+
+        return 0; // fallback / unknown
+    }
 }

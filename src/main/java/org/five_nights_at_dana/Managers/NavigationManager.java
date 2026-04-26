@@ -169,29 +169,67 @@ public class NavigationManager {
     private static double getWeight(Student student, Edge e) {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
+
         double weight = 1.0;
+
+        // ========================
+        // Personality + Preference
+        // ========================
         if (e.type == preferred) weight *= 3.0;
+
         if (p == Personality.SHY && e.to.hasVentAccess()) weight *= 6.0;
         if (p == Personality.EAGER && e.type == PathType.ELEVATOR) weight *= 8.0;
         if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) weight *= 6.0;
         if (p == Personality.RUNNER && e.type == PathType.RIGHT_STAIRS) weight *= 4.0;
+
         if (e.type == PathType.NORMAL) weight *= 0.8;
 
-        // Encourage upward movement (progress toward goal)
-        if (e.to.name().startsWith("FLOOR2")) {
-            weight *= 1.2;
-        }
-        if (e.to.name().startsWith("FLOOR3")) {
-            weight *= 1.5;
+        // ========================
+        // Locality Bias
+        // Encourage staying on same floor
+        // ========================
+        int currentFloor = student.getCurrentLocation().getFloor();
+        int nextFloor = e.to.getFloor();
+
+        if (currentFloor == nextFloor) {
+            weight *= 1.25;
         }
 
-        if (e.to.name().contains("HALLWAY")) {
+        // ========================
+        // Soft Directional Bias
+        // Slight encouragement upward, but not dominant
+        // ========================
+        int floorDelta = nextFloor - currentFloor;
+
+        if (floorDelta > 0) weight *= 1.05;   // going up
+        if (floorDelta < 0) weight *= 0.95;   // going down
+
+        // ========================
+        // Penalize vertical transitions
+        // Prevent instant floor hopping
+        // ========================
+        if (e.type == PathType.LEFT_STAIRS ||
+                e.type == PathType.RIGHT_STAIRS ||
+                e.type == PathType.MIDDLE_STAIRS) {
+
             weight *= 0.85;
         }
 
-        // entropy boost
+        // ========================
+        // Softer hallway penalty
+        // ========================
+        if (e.to.name().contains("HALLWAY")) {
+            weight *= 0.95;
+        }
+
+        // ========================
+        // Entropy
+        // ========================
         weight *= (0.9 + rand.nextDouble() * 0.2);
 
+        // ========================
+        // Degree normalization
+        // ========================
         int degree = NavigationManager.getNeighbors(e.to).size();
         weight /= Math.max(degree, 1);
 
