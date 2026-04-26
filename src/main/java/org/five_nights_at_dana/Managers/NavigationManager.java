@@ -171,11 +171,30 @@ public class NavigationManager {
         PathType preferred = student.getPreferredPath();
         double weight = 1.0;
         if (e.type == preferred) weight *= 3.0;
-        if (p == Personality.SHY && e.to.hasVentAccess()) weight *= 2.5;
-        if (p == Personality.EAGER && e.type == PathType.ELEVATOR) weight *= 3.5;
-        if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) weight *= 2.5;
-        if (p == Personality.RUNNER && e.type == PathType.RIGHT_STAIRS) weight *= 2.0;
+        if (p == Personality.SHY && e.to.hasVentAccess()) weight *= 6.0;
+        if (p == Personality.EAGER && e.type == PathType.ELEVATOR) weight *= 8.0;
+        if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) weight *= 6.0;
+        if (p == Personality.RUNNER && e.type == PathType.RIGHT_STAIRS) weight *= 4.0;
         if (e.type == PathType.NORMAL) weight *= 0.8;
+
+        // Encourage upward movement (progress toward goal)
+        if (e.to.name().startsWith("FLOOR2")) {
+            weight *= 1.2;
+        }
+        if (e.to.name().startsWith("FLOOR3")) {
+            weight *= 1.5;
+        }
+
+        if (e.to.name().contains("HALLWAY")) {
+            weight *= 0.85;
+        }
+
+        // entropy boost
+        weight *= (0.9 + rand.nextDouble() * 0.2);
+
+        int degree = NavigationManager.getNeighbors(e.to).size();
+        weight /= Math.max(degree, 1);
+
         return weight;
     }
 
