@@ -2,132 +2,205 @@
  * CSCI 205 - Software Engineering and Design
  * Spring 2026
  *
- * Date: 4/25/2026
- * Time: 8:22 PM
- *
  * Project: csci205_final_project
  * Package: org.five_nights_at_dana.Managers
  * Class: NavigationManager
  *
  * Description:
- * Manages the graph connectivity of the building layout.
- * Provides neighbors for AI pathfinding and manages specific path transitions.
+ * Graph-based navigation system for Student AI.
+ * Uses hybrid (bidirectional + directed) edges to model movement.
  *
  * ****************************************
  */
 
 package org.five_nights_at_dana.Managers;
 
-import org.five_nights_at_dana.AI.Location;
-import org.five_nights_at_dana.AI.PathType;
-import org.five_nights_at_dana.AI.Personality;
-import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.AI.*;
 
 import java.util.*;
 
-/**
- * Acts as the central hub for AI movement. Maps the building layout
- * as a graph where {@link Location} nodes are connected via valid paths.
- */
 public class NavigationManager {
 
-    private static final Random rand = new Random();
+    private static class Edge {
+        final Location to;
+        final PathType type;
 
-    public static Location getNextLocation(Student student) {
-        Location current = student.getCurrentLocation();
-        Personality personality = student.getPersonality();
-        PathType preferred = student.getPreferredPath();
-
-        switch (current) {
-
-            // ===== FLOOR 1 =====
-            case FLOOR1_ENTRANCE:
-                return chooseFloor1Path(preferred);
-
-            case FLOOR1_HALLWAY_LEFT:
-                return (preferred == PathType.LEFT_STAIRS)
-                        ? Location.FLOOR1_STAIR_LEFT
-                        : Location.FLOOR1_STAIR_MID;
-
-            case FLOOR1_HALLWAY_RIGHT:
-                return (preferred == PathType.ELEVATOR)
-                        ? Location.FLOOR1_ELEVATOR
-                        : Location.FLOOR1_STAIR_RIGHT;
-
-            case FLOOR1_GARDNER:
-                if (personality == Personality.SHY && rand.nextDouble() < 0.3) {
-                    return Location.IN_VENT;
-                }
-                return Location.FLOOR1_HALLWAY_LEFT;
-
-            // ===== ELEVATOR =====
-            case FLOOR1_ELEVATOR:
-                return Location.IN_ELEVATOR;
-
-            case IN_ELEVATOR:
-                return Location.FLOOR3_ELEVATOR_EXIT;
-
-            case FLOOR3_ELEVATOR_EXIT:
-                return Location.FLOOR3_HALLWAY_RIGHT;
-
-            // ===== STAIRS =====
-            case FLOOR1_STAIR_LEFT:
-                return Location.FLOOR2_STAIR_LEFT;
-            case FLOOR1_STAIR_MID:
-                return Location.FLOOR2_STAIR_MID;
-            case FLOOR1_STAIR_RIGHT:
-                return Location.FLOOR2_STAIR_RIGHT;
-
-            case FLOOR2_STAIR_LEFT:
-                return Location.FLOOR3_STAIR_LEFT;
-            case FLOOR2_STAIR_MID:
-                return Location.FLOOR3_STAIR_MID;
-            case FLOOR2_STAIR_RIGHT:
-                return Location.FLOOR3_STAIR_RIGHT;
-
-            case FLOOR3_STAIR_LEFT:
-            case FLOOR3_STAIR_MID:
-            case FLOOR3_STAIR_RIGHT:
-                return Location.FLOOR3_HALLWAY_RIGHT;
-
-            // ===== FLOOR 2 =====
-            case FLOOR2_CLASSROOM:
-                if (personality == Personality.SHY && rand.nextDouble() < 0.4) {
-                    return Location.IN_VENT;
-                }
-                return Location.FLOOR2_HALLWAY_CENTER;
-
-            // ===== VENTS =====
-            case IN_VENT:
-                return Location.FLOOR3_HALLWAY_RIGHT;
-
-            // ===== FLOOR 3 =====
-            case FLOOR3_HALLWAY_LEFT:
-            case FLOOR3_HALLWAY_CENTER:
-            case FLOOR3_HALLWAY_RIGHT:
-                return Location.FLOOR3_AT_DOOR;
-
-            case FLOOR3_AT_DOOR:
-                return Location.IN_OFFICE;
-
-            default:
-                return null;
+        Edge(Location to, PathType type) {
+            this.to = to;
+            this.type = type;
         }
     }
 
-    private static Location chooseFloor1Path(PathType preferred) {
-        switch (preferred) {
-            case ELEVATOR:
-                return Location.FLOOR1_HALLWAY_RIGHT;
-            case VENT:
-                return Location.FLOOR1_GARDNER;
-            case LEFT_STAIRS:
-            case MIDDLE_STAIRS:
-                return Location.FLOOR1_HALLWAY_LEFT;
-            case RIGHT_STAIRS:
-                return Location.FLOOR1_HALLWAY_RIGHT;
-            default:
-                return Location.FLOOR1_HALLWAY_LEFT;
+    private static final Map<Location, List<Edge>> graph = new HashMap<>();
+
+    private static Random rand = new Random();
+
+    public static void setRandom(Random r) {
+        rand = r;
+    }
+
+    static {
+        for (Location loc : Location.values()) {
+            graph.put(loc, new ArrayList<>());
+        }
+
+        // ===== FLOOR 1 =====
+
+        // Entrance (free roaming)
+        addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_HALLWAY_LEFT, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_HALLWAY_RIGHT, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_LOUNGE, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR1_ENTRANCE, Location.FLOOR1_STAIR_MID, PathType.MIDDLE_STAIRS);
+
+        // Hall Left
+        addBidirectionalEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_GARDNER, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_MAKER_E, PathType.NORMAL);
+
+        // Progression (one-way)
+        addEdge(Location.FLOOR1_HALLWAY_LEFT, Location.FLOOR1_STAIR_LEFT, PathType.LEFT_STAIRS);
+
+        // Progression (one-way)
+        addEdge(Location.FLOOR1_HALLWAY_RIGHT, Location.FLOOR1_ELEVATOR, PathType.ELEVATOR);
+        addEdge(Location.FLOOR1_HALLWAY_RIGHT, Location.FLOOR1_STAIR_RIGHT, PathType.RIGHT_STAIRS);
+
+        // Lounge (random loop)
+        addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_ENTRANCE, PathType.NORMAL);
+        addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_STAIR_MID, PathType.MIDDLE_STAIRS);
+        addBidirectionalEdge(Location.FLOOR1_LOUNGE, Location.FLOOR1_HALLWAY_RIGHT, PathType.NORMAL);
+    }
+
+    private static void addEdge(Location from, Location to, PathType type) {
+        List<Edge> edges = graph.get(from);
+
+        for (Edge e : edges) {
+            if (e.to == to && e.type == type) {
+                return; // prevent duplicate
+            }
+        }
+
+        edges.add(new Edge(to, type));
+    }
+
+    private static void addBidirectionalEdge(Location a, Location b, PathType type) {
+        addEdge(a, b, type);
+        addEdge(b, a, type);
+    }
+
+    public static Location getNextLocation(Student student) {
+        Location current = student.getCurrentLocation();
+        List<Edge> edges = graph.get(current);
+
+        if (edges == null || edges.isEmpty()) {
+            throw new IllegalStateException("No valid transitions from " + current);
+        }
+
+        if (student == null) {
+            throw new IllegalArgumentException("Student cannot be null");
+        }
+
+        Edge chosen = selectEdge(student, edges);
+
+        if (chosen == null || chosen.to == null) {
+            throw new IllegalStateException("Navigation failed from " + current);
+        }
+
+        return chosen.to;
+    }
+
+    private static Edge selectEdge(Student student, List<Edge> edges) {
+        Personality p = student.getPersonality();
+        PathType preferred = student.getPreferredPath();
+
+        // CONFUSED = random
+        if (p == Personality.CONFUSED) {
+            return edges.get(rand.nextInt(edges.size()));
+        }
+
+        // SHY = prioritize vent-access rooms (Gardner)
+        if (p == Personality.SHY) {
+            List<Edge> ventEdges = new ArrayList<>();
+
+            for (Edge e : edges) {
+                if (e.to.hasVentAccess()) {
+                    ventEdges.add(e);
+                }
+            }
+
+            if (!ventEdges.isEmpty()) {
+                return ventEdges.get(rand.nextInt(ventEdges.size()));
+            }
+        }
+
+        // Preferred path bias
+        List<Edge> preferredEdges = new ArrayList<>();
+        for (Edge e : edges) {
+            if (e.type == preferred) {
+                preferredEdges.add(e);
+            }
+        }
+
+        if (!preferredEdges.isEmpty()) {
+            return preferredEdges.get(rand.nextInt(preferredEdges.size()));
+        }
+
+        List<Edge> normalEdges = new ArrayList<>();
+
+        for (Edge e : edges) {
+            if (e.type == PathType.NORMAL) {
+                normalEdges.add(e);
+            }
+        }
+
+        if (!normalEdges.isEmpty()) {
+            return normalEdges.get(rand.nextInt(normalEdges.size()));
+        }
+
+        // final fallback
+        return edges.get(rand.nextInt(edges.size()));
+    }
+
+    // ===== TEST HELPERS =====
+
+    public static List<Location> getNeighbors(Location loc) {
+        List<Location> result = new ArrayList<>();
+        List<Edge> edges = graph.get(loc);
+
+        if (edges == null) return result;
+
+        for (Edge e : edges) {
+            result.add(e.to);
+        }
+        return result;
+    }
+
+    public static boolean isValidTransition(Location from, Location to) {
+        List<Edge> edges = graph.get(from);
+        if (edges == null) return false;
+
+        for (Edge e : edges) {
+            if (e.to == to) return true;
+        }
+        return false;
+    }
+
+    public static void validateGraph() {
+        for (Location loc : Location.values()) {
+            List<Edge> edges = graph.get(loc);
+
+            if (edges == null || edges.isEmpty()) {
+                System.err.println("WARNING: Dead end at " + loc);
+            }
+        }
+    }
+
+    public static void printGraph() {
+        for (Location loc : graph.keySet()) {
+            System.out.print(loc + " -> ");
+            List<String> out = new ArrayList<>();
+            for (Edge e : graph.get(loc)) {
+                out.add(e.to + "(" + e.type + ")");
+            }
+            System.out.println(out);
         }
     }
 }

@@ -27,6 +27,12 @@ package org.five_nights_at_dana.AI;
 public enum PathType {
 
     /**
+     * Normal path types that describe hallways and rooms seperate
+     * from special transit methods.
+     */
+    NORMAL,
+
+    /**
      * Utilizes the elevator system.
      * Characteristics: Fast transit but can be stopped by the player.
      * Preference: Optimal for EAGER students.

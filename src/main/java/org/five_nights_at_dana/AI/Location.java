@@ -144,4 +144,12 @@ public enum Location {
         if (name.contains("VENT")) return PathType.VENT;
         return null; // For general hallways or special locations
     }
+
+    public boolean hasVentAccess() {
+        return switch (this) {
+            case FLOOR1_GARDNER,
+                 FLOOR2_CLASSROOM -> true;
+            default -> false;
+        };
+    }
 }
