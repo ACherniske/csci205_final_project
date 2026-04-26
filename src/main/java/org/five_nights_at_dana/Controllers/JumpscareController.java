@@ -10,7 +10,7 @@
  * Class: JumpscareController
  *
  * Description:
- * Controller for JumpscareView.fxml scene which plays the jumpscare animation sequence.
+ * Controller for JumpscareView.fxml scene which plays the jumpscare animation
  * ****************************************
  */
 
@@ -31,7 +31,6 @@ import javafx.util.Duration;
 
 /**
  * Controller for JumpscareView.fxml.
- *
  * Call startJumpscare(studentName) from GameViewController when a student
  * reaches the office. The sequence runs automatically then returns to the
  * main menu (or a dedicated Game Over screen when one is added).
