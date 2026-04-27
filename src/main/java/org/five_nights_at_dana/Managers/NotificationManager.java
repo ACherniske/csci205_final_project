@@ -69,6 +69,26 @@ public class NotificationManager {
         return new ArrayList<>(notifications);
     }
 
+    public static void stair(String message) {
+        push(message, Notification.Type.STAIR_SENSOR);
+    }
+
+    public static void runnerCharging(String message) {
+        push(message, Notification.Type.RUNNER_CHARGING);
+    }
+
+    public static void runnerSprinting(String message) {
+        push(message, Notification.Type.RUNNER_SPRINTING);
+    }
+
+    public static void warning(String message) {
+        push(message, Notification.Type.WARNING);
+    }
+
+    public static void system(String message) {
+        push(message, Notification.Type.SYSTEM);
+    }
+
     /**
      * Clears all existing notifications from the queue.
      */

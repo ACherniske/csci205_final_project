@@ -19,11 +19,13 @@ package org.five_nights_at_dana.Managers;
 public class Notification {
 
     public enum Type {
+        INFO,
+        WARNING,
+        DANGER,
         STAIR_SENSOR,
         RUNNER_CHARGING,
         RUNNER_SPRINTING,
-        SYSTEM,
-        WARNING
+        SYSTEM
     }
 
     private final String message;
@@ -39,4 +41,27 @@ public class Notification {
     public String getMessage() { return message; }
     public Type getType() { return type; }
     public int getTimestamp() { return timestamp; }
+
+    @Override
+    public String toString() {
+        return "[" + timestamp + "] " + type + ": " + message;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Notification that)) return false;
+
+        return timestamp == that.timestamp &&
+                message.equals(that.message) &&
+                type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = message.hashCode();
+        result = 31 * result + type.hashCode();
+        result = 31 * result + timestamp;
+        return result;
+    }
 }

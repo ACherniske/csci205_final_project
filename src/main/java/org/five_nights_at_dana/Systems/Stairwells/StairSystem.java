@@ -20,6 +20,8 @@
 package org.five_nights_at_dana.Systems.Stairwells;
 
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.Notification;
+import org.five_nights_at_dana.Systems.SensorHelper;
 
 import java.util.*;
 
@@ -190,6 +192,13 @@ public class StairSystem {
         List<Student> list = studentsInStairs.get(stairwell);
         if (!list.contains(student)) {
             list.add(student);
+
+            SensorHelper.trigger(
+                    "stair_" + stairwell,
+                    student.getName() + " detected in " + stairwell + " stairwell",
+                    Notification.Type.STAIR_SENSOR,
+                    currentFrame
+            );
         }
     }
 

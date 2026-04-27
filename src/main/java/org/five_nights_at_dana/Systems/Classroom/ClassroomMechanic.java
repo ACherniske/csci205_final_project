@@ -18,6 +18,8 @@
 package org.five_nights_at_dana.Systems.Classroom;
 
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.Notification;
+import org.five_nights_at_dana.Systems.SensorHelper;
 // TODO import org.five_nights_at_dana.Managers.AudioManager;
 
 /**
@@ -38,6 +40,7 @@ public class ClassroomMechanic {
     private double activityLevel;
     private boolean eventTriggered;
     private int framesSinceCheck;
+    private int currentFrame;
     private Student runner;
 
     /**
@@ -62,6 +65,8 @@ public class ClassroomMechanic {
      * handles the threshold triggers for warnings and charging.
      */
     public void update() {
+        currentFrame++;
+
         if (eventTriggered) return;
 
         framesSinceCheck++;
@@ -76,7 +81,12 @@ public class ClassroomMechanic {
         }
 
         if (activityLevel >= 75 && activityLevel < 75.1) {
-            // TODO AudioManager.play("runner_warning");
+            SensorHelper.trigger(
+                    "runner_warning",
+                    "Runner is getting restless...",
+                    Notification.Type.RUNNER_CHARGING,
+                    currentFrame
+            );
         }
     }
 
@@ -88,7 +98,14 @@ public class ClassroomMechanic {
 
         eventTriggered = true;
         runner.startSprint();
-        // TODO AudioManager.play("runner_sprint");
+
+        SensorHelper.trigger(
+                "runner_charge",
+                "Runner is charging in the Computer Lab",
+                Notification.Type.RUNNER_CHARGING,
+                currentFrame
+        );
+
         System.out.println("ClassroomMechanic: Runner CHARGING");
     }
 
