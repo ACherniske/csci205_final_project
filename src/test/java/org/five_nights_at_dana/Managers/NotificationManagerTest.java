@@ -1,5 +1,11 @@
 package org.five_nights_at_dana.Managers;
 
+import org.five_nights_at_dana.AI.Personality;
+import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Systems.Classroom.ClassroomMechanic;
+import org.five_nights_at_dana.Systems.SensorHelper;
+import org.five_nights_at_dana.Systems.Stairwells.StairSystem;
+import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -160,5 +166,115 @@ class NotificationManagerTest {
         });
 
         assertTrue(NotificationManager.getNotifications().size() <= 50);
+    }
+
+    // =========================
+// INTEGRATION TESTS
+// =========================
+
+    @Test
+    void testSensorHelperIntegration() {
+        SensorHelper.reset();
+        NotificationManager.clear();
+
+        SensorHelper.trigger(
+                "test_key",
+                "Sensor triggered",
+                Notification.Type.SYSTEM,
+                0
+        );
+
+        List<Notification> notifications = NotificationManager.getNotifications();
+
+        assertEquals(1, notifications.size());
+        assertEquals("Sensor triggered", notifications.getFirst().getMessage());
+    }
+
+    @Test
+    void testSensorHelperCooldownIntegration() {
+        SensorHelper.reset();
+        NotificationManager.clear();
+
+        for (int i = 0; i < 5; i++) {
+            SensorHelper.trigger(
+                    "cooldown_test",
+                    "Spam",
+                    Notification.Type.SYSTEM,
+                    i
+            );
+        }
+
+        List<Notification> notifications = NotificationManager.getNotifications();
+
+        // Should only trigger once due to cooldown
+        assertTrue(notifications.size() <= 2);
+    }
+
+    @Test
+    void testStairSystemIntegration() {
+        SensorHelper.reset();
+        NotificationManager.clear();
+
+        StairSystem stairs = new StairSystem();
+        Student s = new Student("Tester", "Q", Personality.EAGER);
+
+        stairs.studentEnterStairwell(s, Stairwell.LEFT);
+
+        List<Notification> notifications = NotificationManager.getNotifications();
+
+        assertTrue(
+                notifications.stream().anyMatch(n ->
+                        n.getType() == Notification.Type.STAIR_SENSOR &&
+                                n.getMessage().contains("Tester")
+                ),
+                "Expected stair sensor notification from StairSystem"
+        );
+    }
+
+    @Test
+    void testStairSystemMultipleEntriesRespectCooldown() {
+        SensorHelper.reset();
+        NotificationManager.clear();
+
+        StairSystem stairs = new StairSystem();
+        Student s = new Student("Tester", "Q", Personality.EAGER);
+
+        for (int i = 0; i < 10; i++) {
+            stairs.studentEnterStairwell(s, Stairwell.LEFT);
+        }
+
+        List<Notification> notifications = NotificationManager.getNotifications();
+
+        long count = notifications.stream()
+                .filter(n -> n.getType() == Notification.Type.STAIR_SENSOR)
+                .count();
+
+        assertTrue(count <= 2, "Stair sensor should be rate-limited");
+    }
+
+    @Test
+    void testClassroomMechanicIntegration() {
+        SensorHelper.reset();
+        NotificationManager.clear();
+
+        ClassroomMechanic mech = new ClassroomMechanic();
+        Student runner = new Student("Runner", "Q", Personality.RUNNER);
+
+        mech.setRunner(runner);
+
+        // Run long enough to trigger warning
+        for (int i = 0; i < 2000; i++) {
+            mech.update();
+        }
+
+        List<Notification> notifications = NotificationManager.getNotifications();
+
+        assertTrue(
+                notifications.stream().anyMatch(n ->
+                        n.getMessage().contains("restless") ||
+                                n.getMessage().contains("charging")
+                ),
+                "Expected classroom notifications from mechanic"
+        );
     }
 }
