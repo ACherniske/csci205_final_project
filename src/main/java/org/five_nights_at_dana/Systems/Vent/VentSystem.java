@@ -32,7 +32,7 @@ public class VentSystem {
     private static final int V1_TRAVEL_TIME = 900; // frames -> 15s
     private static final int V2_TRAVEL_TIME = 600; // frames -> 10s
 
-    private boolean ventSealed;
+    private boolean isSealed;
     private Student studentInVent;
     private Location ventEntryPoint;
     private int travelTimer;
@@ -47,7 +47,7 @@ public class VentSystem {
      * Updates vent state.
      */
     public void update() {
-        if (ventSealed) {
+        if (isSealed) {
             sealTimer--;
             if (sealTimer <= 0) {
                 unsealVent();
@@ -58,7 +58,7 @@ public class VentSystem {
             sealCooldown--;
         }
 
-        if (studentInVent != null && !ventSealed) {
+        if (studentInVent != null && !isSealed) {
             travelTimer--;
 
             if (travelTimer == 180) {
@@ -81,7 +81,7 @@ public class VentSystem {
      * already occupied, or the entry point is invalid.
      */
     public boolean studentEnterVent(Student student, Location entryPoint) {
-        if (ventSealed || studentInVent != null) {
+        if (isSealed || studentInVent != null) {
             return false;
         }
 
@@ -131,11 +131,11 @@ public class VentSystem {
      * sealed or the system is on cooldown.
      */
     public boolean sealVent() {
-        if (sealCooldown > 0 || ventSealed) {
+        if (sealCooldown > 0 || isSealed) {
             return false;
         }
 
-        ventSealed = true;
+        isSealed = true;
         sealTimer = SEAL_DURATION;
         sealCooldown = SEAL_COOLDOWN;
 
@@ -169,7 +169,7 @@ public class VentSystem {
      * Resets the vent state to unsealed and clears all active timers and student data.
      */
     private void unsealVent() {
-        ventSealed = false;
+        isSealed = false;
         sealTimer = 0;
         // TODO AudioManager.play("vent_unseal");
     }
@@ -180,7 +180,7 @@ public class VentSystem {
      * @return true if sealed, false otherwise.
      */
     public boolean isSealed() {
-        return ventSealed;
+        return isSealed();
     }
 
     /**
@@ -216,7 +216,7 @@ public class VentSystem {
      * @return The power drain value if sealed, 0.0 otherwise.
      */
     public double getPowerDrain() {
-        return ventSealed ? SEAL_POWER_DRAIN : 0.0;
+        return isSealed() ? SEAL_POWER_DRAIN : 0.0;
     }
 
     /**
@@ -225,7 +225,7 @@ public class VentSystem {
      * @return true if sealing is permitted.
      */
     public boolean canSeal() {
-        return sealCooldown == 0 && !ventSealed;
+        return sealCooldown == 0 && !isSealed;
     }
 
     /**
@@ -241,7 +241,7 @@ public class VentSystem {
      * Resets the system to its initial state, useful for level transitions or game overs.
      */
     public void reset() {
-        ventSealed = false;
+        isSealed = false;
         studentInVent = null;
         ventEntryPoint = null;
         travelTimer = 0;
