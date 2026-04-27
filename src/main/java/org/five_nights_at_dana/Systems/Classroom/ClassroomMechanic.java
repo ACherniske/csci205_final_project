@@ -22,11 +22,11 @@ import org.five_nights_at_dana.AI.Student;
 
 /**
  * Manages the "Runner" mechanic in the Computer Lab.
- * Tracks activity levels and triggers a sprint event if the student is not monitored.
+ * Tracks activity levels and triggers a charge/sprint event if the student is not monitored.
  */
 public class ClassroomMechanic {
 
-    /** Maximum activity threshold before the runner sprints. */
+    /** Maximum activity threshold before the runner charges. */
     private static final int MAX_ACTIVITY = 100;
 
     /** Rate at which activity increases per frame when not watched. */
@@ -36,7 +36,7 @@ public class ClassroomMechanic {
     private static final int RESET_COOLDOWN = 180; // frames -> 3s
 
     private double activityLevel;
-    private boolean sprinting;
+    private boolean eventTriggered;
     private int framesSinceCheck;
     private Student runner;
 
@@ -59,10 +59,10 @@ public class ClassroomMechanic {
 
     /**
      * Updates the classroom behavior logic. Increments activity levels and
-     * handles the threshold triggers for warnings and sprinting.
+     * handles the threshold triggers for warnings and charging.
      */
     public void update() {
-        if (sprinting) return;
+        if (eventTriggered) return;
 
         framesSinceCheck++;
 
@@ -71,7 +71,7 @@ public class ClassroomMechanic {
 
             if (activityLevel >= MAX_ACTIVITY) {
                 activityLevel = MAX_ACTIVITY;
-                triggerSprint();
+                triggerCharge();
             }
         }
 
@@ -81,23 +81,23 @@ public class ClassroomMechanic {
     }
 
     /**
-     * Initiates the sprint event for the runner if conditions are met.
+     * Initiates the charging phase for the runner.
      */
-    private void triggerSprint() {
-        if (sprinting || runner == null) return;
+    private void triggerCharge() {
+        if (eventTriggered || runner == null) return;
 
-        sprinting = true;
+        eventTriggered = true;
         runner.startSprint();
         // TODO AudioManager.play("runner_sprint");
-        System.out.println("ClassroomMechanic: Runner SPRINTING");
+        System.out.println("ClassroomMechanic: Runner CHARGING");
     }
 
     /**
      * Resets the activity level to 0. Must be called when the player monitors
-     * the camera (CAM 3D). If the runner is already sprinting, this will fail.
+     * the camera (CAM 3D). If the event has already triggered, this will fail.
      */
     public void resetActivity() {
-        if (sprinting) {
+        if (eventTriggered) {
             System.out.println("ClassroomMechanic: Too Late!");
             return;
         }
@@ -108,12 +108,12 @@ public class ClassroomMechanic {
     }
 
     /**
-     * Checks if the runner is currently sprinting.
+     * Checks if the runner event has been triggered.
      *
-     * @return true if sprinting, false otherwise.
+     * @return true if triggered, false otherwise.
      */
-    public boolean isSprinting() {
-        return sprinting;
+    public boolean isEventTriggered() {
+        return eventTriggered;
     }
 
     /**
@@ -140,7 +140,7 @@ public class ClassroomMechanic {
      */
     public void reset() {
         activityLevel = 0;
-        sprinting = false;
+        eventTriggered = false;
         framesSinceCheck = 0;
         runner = null;
     }
