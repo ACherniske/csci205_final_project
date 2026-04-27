@@ -6,65 +6,69 @@
  * Time: 4:02 AM
  *
  * Project: csci205_final_project
- * Package: org.five_nights_at_dana.AI
+ * Package: org.five_nights_at_dana.Managers
  * Class: StudentManager
  *
  * Description:
- *      Manages all student AI entities in the game.
+ * Central controller for all student AI entities.
+ * Responsible for creating, updating, and querying students
  *
  * ****************************************
  */
 
 package org.five_nights_at_dana.Managers;
 
-import org.five_nights_at_dana.AI.Pathing.PathPoint;
-import org.five_nights_at_dana.AI.Personalities.*;
-import org.five_nights_at_dana.AI.Player;
+import org.five_nights_at_dana.AI.Location;
+import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.AI.Pathing.Location;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class StudentManager {
 
+    /** List containing all active student AI entities. */
     private List<Student> students;
-    private Player player;
+
     /**
-     * Constructs the StudentManager and initializes students.
+     * Constructs a new {@code StudentManager} and initializes all student AI.
      */
-    public StudentManager(Player player) {
+    public StudentManager() {
         students = new ArrayList<>();
-        this.player = player;
         createStudents();
+        System.out.println("StudentManager: Created " + students.size() + " students");
     }
 
     /**
-     * Updates all students for the current frame.
-     *
-     * <p>Responsibilities:
-     * - Calls update() on each student
-     * - Ensures AI behavior progresses each frame
+     * Instantiates all student AI with predefined personalities and dialogue.
+     */
+    private void createStudents() {
+        // TODO RENAME STUDENTS
+        students.add(new Student("Student1", "JumpscareEager", Personality.EAGER));
+        students.add(new Student("Student2", "JumpscarePersistent", Personality.PERSISTENT));
+        students.add(new Student("Student3", "JumpscareConfused", Personality.CONFUSED));
+        students.add(new Student("Student4", "JumpscareShy", Personality.SHY));
+        students.add(new Student("Student5", "JumpscareEager?", Personality.EAGER));
+        students.add(new Student("Student6", "JumpscareRunner", Personality.RUNNER));
+    }
+
+    /**
+     * Updates all student AI each frame.
      */
     public void update() {
         for (Student student : students) {
-            boolean isLookingAtStudent = player.getCurrentCameraRoom() == student.getCurrentLocation()
-                    && player.isLookingAtCam();
-
-            student.update(1, player.isDoorClosed(), isLookingAtStudent);
-
-            Student jumping = jumpscaringStudent();
-            if (jumping != null) {
-                player.isKilled(true);
-                System.out.println("Jumpscared by: " + jumping.getName());
-                break;
-            }
+            student.update();
         }
     }
 
-    public Student jumpscaringStudent() {
+    /**
+     * Retrieves the RUNNER personality student.
+     *
+     * @return the runner student, or null if not found
+     */
+    public Student getRunnerStudent() {
         for (Student student : students) {
-            if (student.isJumpScared()) {
+            if (student.getPersonality() == Personality.RUNNER) {
                 return student;
             }
         }
@@ -72,104 +76,71 @@ public class StudentManager {
     }
 
     /**
-     * Gets a student currently at the office door.
+     * Returns a student currently at the office door.
      *
-     * @return Student at door, or null if none present
-     *
-     * @implNote Assumes only one student can occupy the door at a time
+     * @return student at door, or null if none
      */
-    public List<Student> getStudentsAtDoor() {
-        List<Student> studentAtDoor = new ArrayList<>();
+    public Student getStudentAtDoor() {
         for (Student student : students) {
-            PathPoint nextMove = student.getPersonality().chooseNextPoint(student.getCurrentLocation());
-            if (nextMove.getLocation() == Location.IN_OFFICE) {
-                studentAtDoor.add(student);
+            if (student.getCurrentLocation() == Location.FLOOR3_AT_DOOR) {
+                return student;
             }
         }
-        return studentAtDoor;
+        return null;
     }
 
     /**
-     * Checks if any student is currently at the office door.
+     * Checks if any student is at the office door.
      *
-     * @return true if at least one student is at the door
+     * @return true if a student is at the door
      */
     public boolean isStudentAtDoor() {
-        return getStudentsAtDoor() != null;
+        return getStudentAtDoor() != null;
     }
 
     /**
-     * Retrieves all students at a given location.
+     * Retrieves all students currently at a given location.
      *
-     * @param locationName String representation of Location enum
-     * @return List of students at the specified location
+     * <p>This method is used by external systems (e.g., CameraSystem)
+     * to determine visibility without exposing internal data structures.
      *
-     * @implNote Uses String comparison for flexibility, but could be optimized
-     * to use Location enum directly.
+     * @param location the location to query
+     * @return list of students at that location (empty if none)
      */
-    public List<Student> getStudentsAt(PathPoint locationName) {
-        return students.stream()
-                .filter(s -> s.getCurrentLocation() != null &&
-                        s.getCurrentLocation().equals(locationName))
-                .collect(Collectors.toList());
+    public List<Student> getStudentsAt(Location location) {
+        List<Student> result = new ArrayList<>();
+
+        for (Student student : students) {
+            if (student.getCurrentLocation() == location) {
+                result.add(student);
+            }
+        }
+
+        return result;
     }
 
     /**
-     * Retrieves all students managed by the system.
-     *
-     * @return list of all students
+     * Returns a copy of all students.
      */
     public List<Student> getAllStudents() {
-        return students;
+        return new ArrayList<>(students);
     }
 
     /**
      * Increases difficulty for all students.
-     *
-     * <p>Effects:
-     * - Faster movement
-     * - More aggressive behavior
-     * - Higher chance of sprinting (for RUNNER)
      */
     public void increaseDifficulty() {
         for (Student student : students) {
             student.increaseDifficulty();
         }
+        System.out.println("StudentManager: Difficulty increased!");
     }
 
     /**
-     * Resets all students to initial state.
-     *
-     * <p>Used when:
-     * - Restarting the game
-     * - Resetting difficulty
+     * Resets all students to their initial state.
      */
     public void reset() {
         students.clear();
         createStudents();
-    }
-
-    /**
-     * Initializes all student instances.
-     *
-     * @implNote Currently hardcoded.
-     * Future improvement:
-     * - Load from config
-     * - Randomized personalities
-     */
-    private void createStudents() {
-        // TODO expand with full roster and variety
-        // Guy is gender neurtal im not just making them all males btw if that was a think u were thinking
-        Student shyGuy = new Student("Bob" ,new Shy(), 15);
-        students.add(shyGuy);
-
-        Student eagerGuy = new Student("Jeremy" ,new Eager(), 15);
-        students.add(eagerGuy);
-
-        Student lazyGuy = new Student("Chloe" ,new Lazy(), 15);
-        students.add(lazyGuy);
-
-        Student persistentGuy = new Student("Charlie" ,new Persistent(), 15);
-        students.add(persistentGuy);
     }
 }

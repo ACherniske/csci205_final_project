@@ -10,85 +10,138 @@
  * Class: ClassroomMechanic
  *
  * Description:
- *
+ * Runner mechanic for Computer Lab (CAM 3D).
+ * Student sits here and must be watched.
  * ****************************************
  */
 
 package org.five_nights_at_dana.Systems.Classroom;
 
 import org.five_nights_at_dana.AI.Student;
+// TODO import org.five_nights_at_dana.Managers.AudioManager;
 
+/**
+ * Manages the "Runner" mechanic in the Computer Lab.
+ * Tracks activity levels and triggers a charge/sprint event if the student is not monitored.
+ */
 public class ClassroomMechanic {
 
+    /** Maximum activity threshold before the runner charges. */
+    private static final int MAX_ACTIVITY = 100;
+
+    /** Rate at which activity increases per frame when not watched. */
+    private static final double ACTIVITY_INCREASE_RATE = 0.05;
+
+    /** Frames to wait before activity begins increasing (3s). */
+    private static final int RESET_COOLDOWN = 180; // frames -> 3s
+
     private double activityLevel;
-    private boolean sprinting;
+    private boolean eventTriggered;
     private int framesSinceCheck;
     private Student runner;
 
-    private static final int MAX_ACTIVITY = 100;
-    private static final double ACTIVITY_INCREASE_RATE = 20;
-    private static final int RESET_COOLDOWN = 60;
-
+    /**
+     * Constructs a new ClassroomMechanic and initializes default state.
+     */
     public ClassroomMechanic() {
         reset();
     }
 
     /**
-     * Updates classroom behavior.
+     * Assigns the runner student to this mechanic.
+     *
+     * @param runner The Student object representing the runner.
+     */
+    public void setRunner(Student runner) {
+        this.runner = runner;
+        System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
+    }
+
+    /**
+     * Updates the classroom behavior logic. Increments activity levels and
+     * handles the threshold triggers for warnings and charging.
      */
     public void update() {
-        // TODO increase activity and trigger sprint
-        activityLevel += ACTIVITY_INCREASE_RATE;
-        if (activityLevel >= MAX_ACTIVITY) {
-            triggerSprint();
+        if (eventTriggered) return;
+
+        framesSinceCheck++;
+
+        if (framesSinceCheck > RESET_COOLDOWN) {
+            activityLevel += ACTIVITY_INCREASE_RATE;
+
+            if (activityLevel >= MAX_ACTIVITY) {
+                activityLevel = MAX_ACTIVITY;
+                triggerCharge();
+            }
+        }
+
+        if (activityLevel >= 75 && activityLevel < 75.1) {
+            // TODO AudioManager.play("runner_warning");
         }
     }
 
+    /**
+     * Initiates the charging phase for the runner.
+     */
+    private void triggerCharge() {
+        if (eventTriggered || runner == null) return;
+
+        eventTriggered = true;
+        runner.startSprint();
+        // TODO AudioManager.play("runner_sprint");
+        System.out.println("ClassroomMechanic: Runner CHARGING");
+    }
 
     /**
-     * Resets activity (called when camera is checked).
+     * Resets the activity level to 0. Must be called when the player monitors
+     * the camera (CAM 3D). If the event has already triggered, this will fail.
      */
     public void resetActivity() {
+        if (eventTriggered) {
+            System.out.println("ClassroomMechanic: Too Late!");
+            return;
+        }
+
         activityLevel = 0;
         framesSinceCheck = 0;
+        System.out.println("ClassroomMechanic: Activity reset (CAM 3D checked)");
     }
 
     /**
-     * @return true if sprinting
+     * Checks if the runner event has been triggered.
+     *
+     * @return true if triggered, false otherwise.
      */
-    public boolean isSprinting() {
-        return sprinting;
+    public boolean isEventTriggered() {
+        return eventTriggered;
     }
 
     /**
-     * @return raw activity value
+     * Gets the raw accumulated activity value.
+     *
+     * @return The current activity level.
      */
     public double getActivityLevel() {
         return activityLevel;
     }
 
     /**
-     * @return activity percentage
+     * Calculates the activity level as a percentage (0.0 to 1.0).
+     *
+     * @return Activity level percentage.
      */
     public double getActivityPercentage() {
         return activityLevel / MAX_ACTIVITY;
     }
 
     /**
-     * Resets system.
+     * Resets the entire system to its initial state, clearing activity,
+     * resetting the timer, and removing the reference to the runner.
      */
     public void reset() {
         activityLevel = 0;
-        sprinting = false;
+        eventTriggered = false;
         framesSinceCheck = 0;
         runner = null;
-    }
-
-    /**
-     * Triggers sprint event.
-     */
-    private void triggerSprint() {
-        // TODO set sprinting state and notify systems
-        sprinting = true;
     }
 }

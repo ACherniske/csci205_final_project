@@ -123,3 +123,15 @@ build
 # Ignore AI files
 .ai
 .claude
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_ALL_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_BASE.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_CONFUSED_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_CONFUSED_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_EAGER_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_EAGER_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_PERSISTENT_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_PERSISTENT_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_RUNNER_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_RUNNER_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_SHY_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_SHY_STATS.txt
