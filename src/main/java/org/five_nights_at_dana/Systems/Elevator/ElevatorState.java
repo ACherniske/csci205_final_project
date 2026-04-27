@@ -34,7 +34,7 @@ public enum ElevatorState {
     public boolean canTransitionTo(ElevatorState next) {
         switch (this) {
             case FIRST_FLOOR:
-                return next == MOVING_UP || next == DOORS_OPENING;
+                return next == MOVING_UP || next == DOORS_OPENING || next == STOPPED_EMERGENCY;
 
 
             case MOVING_UP:
@@ -50,7 +50,7 @@ public enum ElevatorState {
 
 
             case THIRD_FLOOR:
-                return next == DOORS_OPENING || next == MOVING_DOWN;
+                return next == DOORS_OPENING || next == MOVING_DOWN || next == STOPPED_EMERGENCY;
 
 
             case DOORS_OPENING:

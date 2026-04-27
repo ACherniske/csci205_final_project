@@ -27,6 +27,7 @@ import java.util.List;
 public class ElevatorSystem {
 
     private ElevatorState currentElevatorState = ElevatorState.FIRST_FLOOR;
+    private ElevatorState previousElevatorState = ElevatorState.FIRST_FLOOR;
     List<Student> elevatorList = new ArrayList<>();
 
 
@@ -35,9 +36,28 @@ public class ElevatorSystem {
      * Updates elevator logic.
      */
     public void update() {
-        // TODO move elevator + handle states
-        if (!elevatorList.isEmpty() && currentElevatorState == ElevatorState.FIRST_FLOOR) {
-            currentElevatorState = ElevatorState.MOVING_UP;
+        //if the elevator is empty and on the first or third floor open the doors
+        if (currentElevatorState == ElevatorState.FIRST_FLOOR ||
+                currentElevatorState == ElevatorState.THIRD_FLOOR) {
+            currentElevatorState = ElevatorState.DOORS_OPENING;
+            //if the elevator it has a student in it and it is opening the door then
+            //it will start moving up or down depending on where it was
+        } else if (!elevatorList.isEmpty() && currentElevatorState == ElevatorState.DOORS_OPENING) {
+            if (previousElevatorState == ElevatorState.FIRST_FLOOR) {
+                currentElevatorState = ElevatorState.MOVING_UP;
+            } else {
+                currentElevatorState = ElevatorState.MOVING_DOWN;
+            }
+            //if the elevator is moving up then it will stop at third floor
+        } else if (currentElevatorState == ElevatorState.MOVING_UP) {
+            currentElevatorState = ElevatorState.THIRD_FLOOR;
+            previousElevatorState = ElevatorState.MOVING_UP;
+            //if elevator is moving down it will stop on the first floor
+        } else if (currentElevatorState == ElevatorState.MOVING_DOWN) {
+            currentElevatorState = ElevatorState.FIRST_FLOOR;
+            previousElevatorState = ElevatorState.MOVING_DOWN;
+        } else if (currentElevatorState == ElevatorState.STOPPED_EMERGENCY) {
+            reset();
         }
     }
 
@@ -67,7 +87,8 @@ public class ElevatorSystem {
 
     /** Resets system. */
     public void reset() {
-        // TODO reset state
+        currentElevatorState = ElevatorState.DOORS_OPENING;
+        previousElevatorState = ElevatorState.FIRST_FLOOR;
     }
 
     /**
@@ -76,7 +97,19 @@ public class ElevatorSystem {
      *
      */
     public void addStudent(Student student) {
-        elevatorList.add(student);
+        if (canStudentEnter()) {
+            elevatorList.add(student);
+        }
+
+    }
+
+    /**
+     * This method will return true or false depending on if the
+     * elevator list is empty or not
+     * @return a boolean representing if a student is in the elevator or not
+     */
+    public boolean isStudentInElevator() {
+        return !elevatorList.isEmpty();
     }
 
     /**
@@ -85,5 +118,52 @@ public class ElevatorSystem {
      */
     public ElevatorState getCurrentElevatorState() {
         return currentElevatorState;
+
     }
+
+    /**
+     * This method will get the previous elevator state
+     * @return a elevator state representing the previous elevator state
+     */
+    public ElevatorState getPreviousElevatorState() {
+        return previousElevatorState;
+
+    }
+
+    /**
+     * This method will remove the current student in the elevatorList
+     */
+    public void removeStudent() {
+        if (canStudentLeave()) {
+            elevatorList.clear();
+        }
+
+    }
+
+    /**
+     * This method will tell if a student can enter the elevator
+     * @return a boolean representing if a student can enter the elevator
+     */
+    public boolean canStudentEnter() {
+        if (currentElevatorState == ElevatorState.DOORS_OPENING && elevatorList.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     * This method will tell if a student can leave the elevator
+     * @return a boolean representing if a student can leave or not
+     */
+    public boolean canStudentLeave() {
+        if (currentElevatorState == ElevatorState.DOORS_OPENING && !elevatorList.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 }
