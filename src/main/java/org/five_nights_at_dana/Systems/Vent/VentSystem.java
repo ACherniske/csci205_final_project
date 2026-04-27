@@ -85,9 +85,6 @@ public class VentSystem {
             return false;
         }
 
-        studentInVent = student;
-        ventEntryPoint = entryPoint;
-
         switch (entryPoint) {
             case FLOOR1_GARDNER:  // V1
                 travelTimer = V1_TRAVEL_TIME;
@@ -101,6 +98,9 @@ public class VentSystem {
                 System.out.println("VentSystem: Invalid entry attempt from " + entryPoint);
                 return false;
         }
+
+        studentInVent = student;
+        ventEntryPoint = entryPoint;
 
         // TODO AudioManager.play("vent_enter");
         return true;
