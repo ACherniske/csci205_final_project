@@ -21,25 +21,25 @@
         layoutX="0" layoutY="0"/>
 
 
-    <!-- Game Title -->
-    <Label
-        fx:id="titleLabel"
-        text="Five Nights at Dana"
-        layoutX="340" layoutY="130"
-        prefWidth="600"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 52px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #cc2200;
-               -fx-alignment: center;
-               -fx-effect: dropshadow(gaussian, #ff4400, 20, 0.6, 0, 0);"/>
+<!--    &lt;!&ndash; Game Title &ndash;&gt;-->
+<!--    <Label-->
+<!--        fx:id="titleLabel"-->
+<!--        text="Five Nights at Dana"-->
+<!--        layoutX="340" layoutY="130"-->
+<!--        prefWidth="600"-->
+<!--        style="-fx-font-family: 'Courier New';-->
+<!--               -fx-font-size: 52px;-->
+<!--               -fx-font-weight: bold;-->
+<!--               -fx-text-fill: #cc2200;-->
+<!--               -fx-alignment: center;-->
+<!--               -fx-effect: dropshadow(gaussian, #ff4400, 20, 0.6, 0, 0);"/>-->
 
     <!-- Start Button -->
     <Button
         fx:id="startButton"
         text="START GAME"
         onAction="#onStartGame"
-        layoutX="515" layoutY="400"
+        layoutX="215" layoutY="350"
         prefWidth="250" prefHeight="60"
         style="-fx-font-family: 'Courier New';
                -fx-font-size: 22px;

@@ -25,7 +25,7 @@ public class MainMenuController {
     @FXML
     public void initialize() {
         backgroundImage.setImage(new Image(
-                getClass().getResourceAsStream("/assets/images/MainMenu.png")));
+                getClass().getResourceAsStream("/assets/images/MainMenuBackground.png")));
         // Add intro animations or sound here.
     }
 
