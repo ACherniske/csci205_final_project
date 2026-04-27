@@ -25,9 +25,7 @@ import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
 import org.five_nights_at_dana.Rendering.Office.OfficeViewManager;
 import org.five_nights_at_dana.Systems.Classroom.ClassroomMechanic;
 import org.five_nights_at_dana.Systems.Elevator.ElevatorSystem;
-import org.five_nights_at_dana.Systems.Stairwells.LeftStairwell;
-import org.five_nights_at_dana.Systems.Stairwells.MiddleStairwell;
-import org.five_nights_at_dana.Systems.Stairwells.RightStairwell;
+import org.five_nights_at_dana.Systems.Stairwells.StairSystem;
 import org.five_nights_at_dana.Systems.Vent.VentSystem;
 
 public class GamePane extends Pane {
@@ -45,9 +43,7 @@ public class GamePane extends Pane {
     private StudentManager studentManager;
     private CameraSystem cameraSystem;
     private ElevatorSystem elevator;
-    private LeftStairwell leftStairs;
-    private MiddleStairwell middleStairs;
-    private RightStairwell rightStairs;
+    private StairSystem stairSystem;
     private VentSystem vents;
     private ClassroomMechanic classroom;
 
@@ -70,9 +66,7 @@ public class GamePane extends Pane {
         cameraSystem.update();
 
         elevator.update();
-        leftStairs.update();
-        middleStairs.update();
-        rightStairs.update();
+        stairSystem.update();
         vents.update();
         classroom.update();
 
@@ -138,9 +132,7 @@ public class GamePane extends Pane {
         cameraSystem = new CameraSystem(this);
 
         elevator = new ElevatorSystem();
-        leftStairs = new LeftStairwell();
-        middleStairs = new MiddleStairwell();
-        rightStairs = new RightStairwell();
+        stairSystem = new StairSystem();
         vents = new VentSystem();
         classroom = new ClassroomMechanic();
 
