@@ -114,6 +114,57 @@ public class Student {
         return new HashSet<>(recentLocations);
     }
 
+    /**
+     * Pushes the student back a specified number of steps in their recent path history.
+     * If steps exceed available history, safely falls back as far as possible.
+     *
+     * @param steps Number of locations to move back.
+     */
+    public void pushBack(int steps) {
+        if (steps <= 0 || recentLocations.isEmpty()) return;
+
+        List<Location> history = new ArrayList<>(recentLocations);
+
+        int targetIndex = Math.max(0, history.size() - 1 - steps);
+        Location fallback = history.get(targetIndex);
+
+        if (fallback != null && fallback != currentLocation) {
+            this.previousLocation = this.currentLocation;
+            this.currentLocation = fallback;
+
+            rememberLocation(fallback); // keep memory consistent
+
+            System.out.println(name + " pushed back " + steps +
+                    " step(s) to " + currentLocation);
+
+            resetMovementTimer(); // movement penalty
+        }
+    }
+
+    // Overload providing default of 1 step
+    public void pushBack() {
+        pushBack(1);
+    }
+
+    /**
+     * Pushes the student back a random number of steps.
+     *
+     * @param min Minimum steps (inclusive)
+     * @param max Maximum steps (inclusive)
+     */
+    public void pushBackRandom(int min, int max) {
+        if (min < 1) min = 1;
+
+        if (min > max) {
+            int temp = min;
+            min = max;
+            max = temp;
+        }
+
+        int steps = rand.nextInt(max - min + 1) + min;
+        pushBack(steps);
+    }
+
     // ========== MOVEMENT LOGIC ==========
 
     /**

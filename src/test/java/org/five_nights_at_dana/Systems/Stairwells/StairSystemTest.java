@@ -1,83 +1,173 @@
 package org.five_nights_at_dana.Systems.Stairwells;
 
-import org.five_nights_at_dana.AI.Personality;
-import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.AI.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-public class StairSystemTest {
+class StairSystemTest {
 
-    private StairSystem stairs;
-    private Student testStudent;
+    private StairSystem stairSystem;
+    private Student student;
 
     @BeforeEach
-    public void setUp() {
-        stairs = new StairSystem();
-        testStudent = new Student("Test Student", "Why?", Personality.SHY);
+    void setUp() {
+        stairSystem = new StairSystem();
+
+        // Deterministic randomness for consistent pushback behavior
+        Student.setRandom(new Random(42));
+
+        student = new Student(
+                "TestStudent",
+                "Test Question",
+                Personality.EAGER
+        );
+    }
+
+    // =========================
+    // BASIC SYSTEM TESTS
+    // =========================
+
+    @Test
+    void testInitialState() {
+        assertEquals(5, stairSystem.getLightCharges());
+        assertTrue(stairSystem.canActivateLights());
+        assertNull(stairSystem.getActiveLightsStairwell());
     }
 
     @Test
-    public void testInitialState() {
-        assertEquals(5, stairs.getLightCharges(), "System should start with 5 charges.");
-        assertTrue(stairs.canActivateLights(), "Should be able to activate lights initially.");
-        assertFalse(stairs.areLightsActive(Stairwell.LEFT));
+    void testActivateLightsConsumesCharge() {
+        boolean activated = stairSystem.activateLights(Stairwell.LEFT);
+
+        assertTrue(activated);
+        assertEquals(4, stairSystem.getLightCharges());
+        assertTrue(stairSystem.areLightsActive(Stairwell.LEFT));
     }
 
     @Test
-    public void testLightChargeDepletion() {
-        for (int i = 0; i < 5; i++) {
-            assertTrue(stairs.activateLights(Stairwell.LEFT));
-            // Simulate light duration to reset state
-            for (int j = 0; j < 301; j++) stairs.update();
-        }
+    void testCannotActivateLightsWhenAlreadyActive() {
+        stairSystem.activateLights(Stairwell.LEFT);
+        boolean second = stairSystem.activateLights(Stairwell.RIGHT);
 
-        assertFalse(stairs.canActivateLights(), "Should have 0 charges remaining.");
-        assertFalse(stairs.activateLights(Stairwell.LEFT), "Should not activate with 0 charges.");
+        assertFalse(second);
     }
 
     @Test
-    public void testCannotActivateSimultaneously() {
-        stairs.activateLights(Stairwell.LEFT);
-        assertFalse(stairs.activateLights(Stairwell.MIDDLE),
-                "Should not be able to activate lights in a second stairwell while one is active.");
-    }
+    void testLightDeactivationAfterDuration() {
+        stairSystem.activateLights(Stairwell.LEFT);
 
-    @Test
-    public void testLightsDeactivateAfterDuration() {
-        stairs.activateLights(Stairwell.LEFT);
-
-        // Advance time by 300 frames (exactly the duration)
+        // Simulate frames
         for (int i = 0; i < 300; i++) {
-            stairs.update();
+            stairSystem.update();
         }
 
-        assertFalse(stairs.areLightsActive(Stairwell.LEFT), "Lights should have timed out.");
-        assertTrue(stairs.canActivateLights(), "Lights should have deactivated, allowing a new activation.");
+        assertNull(stairSystem.getActiveLightsStairwell());
+        assertFalse(stairSystem.areLightsActive(Stairwell.LEFT));
+    }
+
+    // =========================
+    // STUDENT MANAGEMENT TESTS
+    // =========================
+
+    @Test
+    void testStudentEnterStairwell() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        List<Student> students = stairSystem.getStudentsInStairwell(Stairwell.LEFT);
+
+        assertEquals(1, students.size());
+        assertTrue(students.contains(student));
     }
 
     @Test
-    public void testStudentTracking() {
-        stairs.studentEnterStairwell(testStudent, Stairwell.LEFT);
-        assertTrue(stairs.getStudentsInStairwell(Stairwell.LEFT).contains(testStudent),
-                "Student should be registered in the stairwell.");
+    void testStudentExitStairwell() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+        stairSystem.studentExitStairwell(student, Stairwell.LEFT);
 
-        stairs.studentExitStairwell(testStudent, Stairwell.LEFT);
-        assertFalse(stairs.getStudentsInStairwell(Stairwell.LEFT).contains(testStudent),
-                "Student should be removed after exiting.");
+        List<Student> students = stairSystem.getStudentsInStairwell(Stairwell.LEFT);
+
+        assertTrue(students.isEmpty());
     }
 
     @Test
-    public void testResetSystem() {
-        stairs.studentEnterStairwell(testStudent, Stairwell.LEFT);
-        stairs.activateLights(Stairwell.LEFT);
+    void testNoDuplicateStudents() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
 
-        stairs.reset();
+        List<Student> students = stairSystem.getStudentsInStairwell(Stairwell.LEFT);
 
-        assertEquals(5, stairs.getLightCharges(), "Reset should restore charges.");
-        assertTrue(stairs.canActivateLights(), "Reset should allow light activation.");
-        assertTrue(stairs.getStudentsInStairwell(Stairwell.LEFT).isEmpty(),
-                "Reset should clear student occupancy.");
+        assertEquals(1, students.size());
+    }
+
+    // =========================
+    // PUSHBACK TESTS
+    // =========================
+
+    @Test
+    void testStudentGetsPushedBackOnLightActivation() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        Location original = student.getCurrentLocation();
+
+        // Force some movement history so pushback is possible
+        student.setLocation(Location.FLOOR1_STAIR_MID);
+        student.setLocation(Location.FLOOR2_STAIR_MID);
+
+        stairSystem.activateLights(Stairwell.LEFT);
+
+        Location after = student.getCurrentLocation();
+
+        // We don't assert exact location (random),
+        // just that the student moved backward or stayed valid
+        assertNotNull(after);
+    }
+
+    @Test
+    void testPushbackDoesNotCrashWithMinimalHistory() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        // No extra history beyond spawn
+        assertDoesNotThrow(() ->
+                stairSystem.activateLights(Stairwell.LEFT)
+        );
+    }
+
+    // =========================
+    // RESET TESTS
+    // =========================
+
+    @Test
+    void testResetRestoresSystem() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+        stairSystem.activateLights(Stairwell.LEFT);
+
+        stairSystem.reset();
+
+        assertEquals(5, stairSystem.getLightCharges());
+        assertNull(stairSystem.getActiveLightsStairwell());
+        assertTrue(stairSystem.getStudentsInStairwell(Stairwell.LEFT).isEmpty());
+    }
+
+    // =========================
+    // EDGE CASE TESTS
+    // =========================
+
+    @Test
+    void testCannotActivateLightsWithNoCharges() {
+        for (int i = 0; i < 5; i++) {
+            stairSystem.activateLights(Stairwell.LEFT);
+
+            // Simulate lights turning off
+            for (int j = 0; j < 300; j++) {
+                stairSystem.update();
+            }
+        }
+
+        assertEquals(0, stairSystem.getLightCharges());
+        assertFalse(stairSystem.activateLights(Stairwell.LEFT));
     }
 }

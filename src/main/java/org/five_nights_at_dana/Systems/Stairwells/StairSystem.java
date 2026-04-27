@@ -20,8 +20,6 @@
 package org.five_nights_at_dana.Systems.Stairwells;
 
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.AI.Location;
-// TODO import org.five_nights_at_dana.Managers.AudioManager;
 
 import java.util.*;
 
@@ -53,12 +51,12 @@ public class StairSystem {
      * Initializes the stair system with default values and empty occupancy lists.
      */
     public StairSystem() {
-        this.studentsInStairs = new EnumMap<>(Stairwell.class);
+        studentsInStairs = new EnumMap<>(Stairwell.class);
         for (Stairwell s : Stairwell.values()) {
             studentsInStairs.put(s, new ArrayList<>());
         }
 
-        this.sensorLastTrigger = new EnumMap<>(SensorLocation.class);
+        sensorLastTrigger = new EnumMap<>(SensorLocation.class);
         for (SensorLocation sl : SensorLocation.values()) {
             sensorLastTrigger.put(sl, -SENSOR_COOLDOWN);
         }
@@ -67,7 +65,7 @@ public class StairSystem {
     }
 
     /**
-     * Updates the stair system state, managing light times and frame counting.
+     * Updates the stair system state, managing light timing.
      */
     public void update() {
         currentFrame++;
@@ -82,10 +80,10 @@ public class StairSystem {
 
     /**
      * Activates emergency lights in the specified stairwell.
-     * Pushes all students back one floor.
+     * Pushes students backward using memory-based movement.
      *
      * @param stairwell The stairwell to illuminate.
-     * @return true if activation was successful, false if no charges remain or lights active.
+     * @return true if activation was successful.
      */
     public boolean activateLights(Stairwell stairwell) {
         if (!canActivateLights()) return false;
@@ -94,57 +92,70 @@ public class StairSystem {
         activeLightsStairwell = stairwell;
         lightTimer = LIGHT_DURATION;
 
-        // TODO AudioManager.play("emergency_lights_on");
-        System.out.println("StairSystem: Lights ON in " + stairwell + " (" + lightCharges + " left)");
+        System.out.println("StairSystem: Lights ON in " + stairwell +
+                " (" + lightCharges + " left)");
 
         deterStudentsInStairwell(stairwell);
         return true;
     }
 
     /**
-     * Internal logic to retreat all students in a stairwell.
-     * * @param stairwell The stairwell to target.
+     * Applies pushback to all students currently in the given stairwell.
      */
     private void deterStudentsInStairwell(Stairwell stairwell) {
         List<Student> students = studentsInStairs.get(stairwell);
+
         for (Student s : new ArrayList<>(students)) {
-            Location backLoc = getPushedBackLocation(s.getCurrentLocation());
-            if (backLoc != null) {
-                s.setLocation(backLoc);
-                // TODO AudioManager.play("student_retreat");
-                System.out.println("StairSystem: DETERRED " + s.getName() + " to " + backLoc);
-            }
+
+            int min = 1;
+            int max = getPushbackStrength(stairwell, s);
+
+            s.pushBackRandom(min, max);
+
+            System.out.println("StairSystem: DETERRED " + s.getName() +
+                    " in " + stairwell + " (-" + min + " to -" + max + " steps)");
         }
     }
 
     /**
-     * Deactivates emergency lights and resets the timer.
+     * Determines how strong the pushback should be based on stairwell and personality.
+     */
+    private int getPushbackStrength(Stairwell stairwell, Student s) {
+        int base = switch (stairwell) {
+            case LEFT -> 2;
+            case MIDDLE -> 2;
+            case RIGHT -> 3;
+        };
+
+        return switch (s.getPersonality()) {
+            case SHY -> base + 1;
+            case PERSISTENT -> Math.max(1, base - 1);
+            case CONFUSED -> base + new Random().nextInt(2);
+            case RUNNER -> base + 2;
+            default -> base;
+        };
+    }
+
+    /**
+     * Deactivates emergency lights.
      */
     private void deactivateLights() {
         activeLightsStairwell = null;
         lightTimer = 0;
-        // TODO AudioManager.play("emergency_lights_off");
+
         System.out.println("StairSystem: Lights OFF");
     }
 
     /**
-     * Determines the location one floor below the current one within the same stairwell.
-     * * @param current The current student location.
-     * @return The location one floor lower, or null if already at the bottom.
-     */
-    private Location getPushedBackLocation(Location current) {
-        // Implementation logic for floor regression...
-        return null;
-    }
-
-    /**
-     * Resets the entire system to its initial state.
+     * Resets the system to its initial state.
      */
     public void reset() {
         for (List<Student> list : studentsInStairs.values()) {
             list.clear();
         }
+
         sensorLastTrigger.replaceAll((s, v) -> -SENSOR_COOLDOWN);
+
         lightCharges = TOTAL_LIGHT_CHARGES;
         activeLightsStairwell = null;
         lightTimer = 0;
@@ -152,8 +163,7 @@ public class StairSystem {
     }
 
     /**
-     * Checks if light activation is currently possible.
-     * * @return true if charges exist and no other lights are active.
+     * Checks if lights can currently be activated.
      */
     public boolean canActivateLights() {
         return lightCharges > 0 && activeLightsStairwell == null;
@@ -161,48 +171,53 @@ public class StairSystem {
 
     /**
      * Gets remaining light charges.
-     * * @return Number of light activations remaining.
      */
     public int getLightCharges() {
         return lightCharges;
     }
 
     /**
-     * Checks if lights are currently active in a specific stairwell.
-     *
-     * @param stairwell The stairwell to check.
-     * @return true if lights are active, false otherwise.
+     * Checks if lights are active in a given stairwell.
      */
     public boolean areLightsActive(Stairwell stairwell) {
         return activeLightsStairwell == stairwell;
     }
 
     /**
-     * Registers a student into the specified stairwell.
-     * * @param student The student entering the stairwell.
-     * @param stairwell The stairwell they entered.
+     * Registers a student entering a stairwell.
      */
     public void studentEnterStairwell(Student student, Stairwell stairwell) {
-        if (!studentsInStairs.get(stairwell).contains(student)) {
-            studentsInStairs.get(stairwell).add(student);
+        List<Student> list = studentsInStairs.get(stairwell);
+        if (!list.contains(student)) {
+            list.add(student);
         }
     }
 
     /**
-     * Removes a student from the specified stairwell.
-     * * @param student The student leaving the stairwell.
-     * @param stairwell The stairwell they exited.
+     * Removes a student from a stairwell.
      */
     public void studentExitStairwell(Student student, Stairwell stairwell) {
         studentsInStairs.get(stairwell).remove(student);
     }
 
     /**
-     * Returns a copy of the list of students in the given stairwell.
-     * * @param stairwell The stairwell to check.
-     * @return A list of students currently in that stairwell.
+     * Returns a copy of students in a stairwell.
      */
     public List<Student> getStudentsInStairwell(Stairwell stairwell) {
         return new ArrayList<>(studentsInStairs.get(stairwell));
+    }
+
+    // ===== Optional Getters for Debug / UI =====
+
+    public Stairwell getActiveLightsStairwell() {
+        return activeLightsStairwell;
+    }
+
+    public int getLightTimer() {
+        return lightTimer;
+    }
+
+    public int getCurrentFrame() {
+        return currentFrame;
     }
 }
