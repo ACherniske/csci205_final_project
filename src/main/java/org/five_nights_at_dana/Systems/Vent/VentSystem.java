@@ -19,8 +19,8 @@
 package org.five_nights_at_dana.Systems.Vent;
 
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.AI.Pathing.Location;
-import org.five_nights_at_dana.Managers.AudioManager;
+import org.five_nights_at_dana.AI.Location;
+// TODO import org.five_nights_at_dana.Managers.AudioManager;
 
 public class VentSystem {
 
@@ -62,7 +62,7 @@ public class VentSystem {
             travelTimer--;
 
             if (travelTimer == 180) {
-                AudioManager.play("vent_close");
+                // TODO AudioManager.play("vent_close");
                 System.out.println("VentSystem: Student exiting in 3s");
             }
 
@@ -102,7 +102,7 @@ public class VentSystem {
                 return false;
         }
 
-        AudioManager.play("vent_enter");
+        // TODO AudioManager.play("vent_enter");
         return true;
     }
 
@@ -114,7 +114,7 @@ public class VentSystem {
         if (studentInVent == null) return;
 
         System.out.println("VentSystem: " + studentInVent.getName() + " exited at office!");
-        AudioManager.play("vent_exit");
+        // TODO AudioManager.play("vent_exit");
 
         // Student now at door
         // TODO: studentInVent.setLocation(Location.FLOOR3_AT_DOOR);
@@ -139,7 +139,7 @@ public class VentSystem {
         sealTimer = SEAL_DURATION;
         sealCooldown = SEAL_COOLDOWN;
 
-        AudioManager.play("vent_seal");
+        // TODO AudioManager.play("vent_seal");
         System.out.println("VentSystem: SEALED (8s)");
 
         if (studentInVent != null) {
@@ -156,7 +156,7 @@ public class VentSystem {
         if (studentInVent == null) return;
 
         System.out.println("VentSystem: EJECTED " + studentInVent.getName());
-        AudioManager.play("vent_eject");
+        // TODO AudioManager.play("vent_eject");
 
         // TODO: studentInVent.setLocation(ventEntryPoint);
 
@@ -171,7 +171,7 @@ public class VentSystem {
     private void unsealVent() {
         ventSealed = false;
         sealTimer = 0;
-        AudioManager.play("vent_unseal");
+        // TODO AudioManager.play("vent_unseal");
     }
 
     /**
