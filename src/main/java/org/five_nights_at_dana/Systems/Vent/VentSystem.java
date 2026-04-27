@@ -47,25 +47,28 @@ public class VentSystem {
      * Updates vent state.
      */
     public void update() {
+        // Handle seal/unseal timing
         if (isSealed) {
             sealTimer--;
             if (sealTimer <= 0) {
                 unsealVent();
             }
         }
-
+        // Handle cooldown timing
         if (sealCooldown > 0) {
             sealCooldown--;
         }
 
-        if (studentInVent != null && !isSealed) {
+        if (!isSealed && studentInVent != null) {
             travelTimer--;
 
+            // Threshold warning
             if (travelTimer == 180) {
-                // TODO AudioManager.play("vent_close");
                 System.out.println("VentSystem: Student exiting in 3s");
+                // TODO AudioManager.play("vent_close");
             }
 
+            // Transit complete
             if (travelTimer <= 0) {
                 studentExitVent();
             }
