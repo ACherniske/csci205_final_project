@@ -168,7 +168,7 @@ public class VentSystem {
     /**
      * Resets the vent state to unsealed and clears all active timers and student data.
      */
-    private void unsealVent() {
+    void unsealVent() {
         isSealed = false;
         sealTimer = 0;
         // TODO AudioManager.play("vent_unseal");
@@ -180,7 +180,7 @@ public class VentSystem {
      * @return true if sealed, false otherwise.
      */
     public boolean isSealed() {
-        return isSealed();
+        return isSealed;
     }
 
     /**
