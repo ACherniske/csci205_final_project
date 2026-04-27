@@ -2,130 +2,303 @@
  * CSCI 205 - Software Engineering and Design
  * Spring 2026
  *
- * Date: 4/17/2026
- * Time: 3:44 AM
- *
  * Project: csci205_final_project
  * Package: org.five_nights_at_dana.AI
  * Class: Student
  *
  * Description:
- *      Represents an AI-controlled student.
+ * Represents a student AI trying to reach Professor Lily's office.
+ * Manages pathfinding logic, movement timers based on difficulty/personality,
+ * and state transitions through the building's location nodes.
  *
  * ****************************************
  */
 
 package org.five_nights_at_dana.AI;
 
-import org.five_nights_at_dana.AI.Pathing.Location;
-import org.five_nights_at_dana.AI.Pathing.Path;
-import org.five_nights_at_dana.AI.Pathing.PathPoint;
-import org.five_nights_at_dana.AI.Personalities.Personality;
+import org.five_nights_at_dana.Managers.NavigationManager;
+import java.util.*;
 
 /**
- * Student class
+ * Represents an individual student AI.
+ * Handles personality-driven behavior, movement timing, state transitions,
+ * and tracks historical location memory to assist in pathing decisions.
  */
 public class Student {
-    private int difficulty;
-    private String name;
+
+    private final String name;
+    private final String question;
     private final Personality personality;
-    private PathPoint currentLocation;
-    private double movementTimer;
-    private boolean jumpScared;
+    private Location currentLocation;
+    private Location previousLocation;
+    private PathType preferredPath;
+
+    private int movementTimer;
+    private int difficulty;
+    private double awarenessLevel;
+    private boolean charging;
+    private int chargeTimer;
+    private boolean sprinting;
+
+    // Memory system for tracking recent path history
+    private static final int MEMORY_SIZE = 5;
+    private final Deque<Location> recentLocations = new ArrayDeque<>();
+
+    // Controlled randomness for deterministic testing
+    private static Random rand = new Random();
+
+    // Tuning constants
+    private static final int CHARGE_DURATION = 120; // frames -> 2s
 
     /**
-     * Constructs a student object with a set personality and difficulity
-     * @param name is name of student
-     * @param personality dictates the behavior of the student
-     * @param difficulty an int from 1-20 that sets the odds of a movement opportunity passing
+     * Allows tests to inject a deterministic Random instance.
+     * @param r Random instance (use new Random(seed) in tests)
      */
-    public Student(String name, Personality personality, int difficulty) {
-        this.name = name;
-        this.personality = personality;
-        this.difficulty = difficulty;
-        setLocation(Path.getRandomFirstFloor());
-        movementTimer = 0.0;
-        this.jumpScared = false;
+    public static void setRandom(Random r) {
+        rand = r;
     }
 
     /**
-     * Updates the student object to react to the changing state of the game
-     * @param deltaTime is to keep track of time, and lining up movement intervals
-     * @param isDoorClosed the state of the door, whether closed or open
-     * @param isSeenOnCam is the player on the cam where the student is
+     * Constructs a new Student and determines their starting location and
+     * preferred path based on their personality profile.
+     * @param name        The display name of the student.
+     * @param question    The dialogue triggered during a jumpscare.
+     * @param personality The {@link Personality} governing movement speed and pathing.
      */
-    public void update(double deltaTime, boolean isDoorClosed, boolean isSeenOnCam) {
-        movementTimer += deltaTime;
+    public Student(String name, String question, Personality personality) {
+        this.name = name;
+        this.question = question;
+        this.personality = personality;
 
-        if (isSeenOnCam)
-        {
-            personality.reactToCamera(this);
+        this.difficulty = 0;
+        this.awarenessLevel = 0.5;
+        this.charging = false;
+        this.chargeTimer = 0;
+        this.sprinting = false;
+
+        // Starting location
+        if (personality == Personality.RUNNER) {
+            this.currentLocation = Location.FLOOR3_COMPUTER_LAB;
+        } else {
+            this.currentLocation = Location.FLOOR1_ENTRANCE;
         }
 
-        if (personality.getMovementInterval() <= movementTimer) {
-            if (currentLocation.getLocation() == Location.IN_OFFICE) {
-                personality.jumpscare();
-                jumpScared = true;
-                return;
-            }
+        rememberLocation(this.currentLocation);
+        selectPreferredPath();
+        resetMovementTimer();
+    }
 
-            attemptMove(isDoorClosed);
+    // ========== MEMORY LOGIC ==========
+
+    /**
+     * Adds a location to the student's memory, evicting the oldest if capacity is reached.
+     * @param loc The location to remember.
+     */
+    public void rememberLocation(Location loc) {
+        // Only remember if it's different from the last remembered location
+        if (!recentLocations.isEmpty() && recentLocations.peekLast() == loc) {
+            return;
+        }
+
+        if (recentLocations.size() >= MEMORY_SIZE) {
+            recentLocations.removeFirst();
+        }
+        recentLocations.addLast(loc);
+    }
+
+    /**
+     * Returns a set of the most recently visited locations.
+     * @return A set of locations currently in memory.
+     */
+    public Set<Location> getRecentLocations() {
+        return new HashSet<>(recentLocations);
+    }
+
+    /**
+     * Pushes the student back a specified number of steps in their recent path history.
+     * If steps exceed available history, safely falls back as far as possible.
+     *
+     * @param steps Number of locations to move back.
+     */
+    public void pushBack(int steps) {
+        if (steps <= 0 || recentLocations.isEmpty()) return;
+
+        List<Location> history = new ArrayList<>(recentLocations);
+
+        int targetIndex = Math.max(0, history.size() - 1 - steps);
+        Location fallback = history.get(targetIndex);
+
+        if (fallback != null && fallback != currentLocation) {
+            this.previousLocation = this.currentLocation;
+            this.currentLocation = fallback;
+
+            rememberLocation(fallback); // keep memory consistent
+
+            System.out.println(name + " pushed back " + steps +
+                    " step(s) to " + currentLocation);
+
+            resetMovementTimer(); // movement penalty
+        }
+    }
+
+    // Overload providing default of 1 step
+    public void pushBack() {
+        pushBack(1);
+    }
+
+    /**
+     * Pushes the student back a random number of steps.
+     *
+     * @param min Minimum steps (inclusive)
+     * @param max Maximum steps (inclusive)
+     */
+    public void pushBackRandom(int min, int max) {
+        if (min < 1) min = 1;
+
+        if (min > max) {
+            int temp = min;
+            min = max;
+            max = temp;
+        }
+
+        int steps = rand.nextInt(max - min + 1) + min;
+        pushBack(steps);
+    }
+
+    // ========== MOVEMENT LOGIC ==========
+
+    /**
+     * Updates student behavior per frame. Decrements the movement timer
+     * and triggers pathfinding attempts when the timer expires.
+     */
+    public void update() {
+        // RUNNER special state machine
+        if (personality == Personality.RUNNER) {
+            if (isRunnerDoneCharging()) return;
+            if (!sprinting) return;
+        }
+
+        movementTimer--;
+        if (movementTimer <= 0) {
+            attemptMove();
             resetMovementTimer();
         }
+    }
 
+    private boolean isRunnerDoneCharging() {
+        if (charging) {
+            chargeTimer--;
+            if (chargeTimer <= 0) {
+                charging = false;
+                sprinting = true;
+                resetMovementTimer();
+                System.out.println(name + " SPRINTING!");
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Makes the student attempt of moving with the odds being if the random is less than the student's difficulty
-     * @param isDoorClosed if a movement opportunity succeceds and the next move is into the office but the door is closed
-     *                     the student is sent to a random place in the first floor.
+     * Logic to determine if the student moves this frame based on calculated
+     * probability and updates the current location node.
      */
-    public void attemptMove(boolean isDoorClosed) {
-        if (Math.random() * 20 <= difficulty) {
-            PathPoint nextMove = personality.chooseNextPoint(currentLocation);
+    public void attemptMove() {
+        double moveChance = calculateMoveChance();
 
-            if (nextMove.getLocation() == Location.IN_OFFICE && isDoorClosed) {
-                System.out.println("BANG");
-                personality.resetLocation(this);
+        if (rand.nextDouble() < moveChance) {
+            Location nextLocation = NavigationManager.getNextLocation(this);
+
+            if (nextLocation != null) {
+                this.previousLocation = this.currentLocation;
+                this.currentLocation = nextLocation;
+                rememberLocation(this.currentLocation);
+                System.out.println(name + " moved to " + currentLocation);
             }
-            else {
-                setLocation(nextMove);
-            }
+        }
+
+        if (currentLocation == Location.IN_OFFICE) {
+            sprinting = false;
         }
     }
 
-    public boolean isJumpScared() {
-        return jumpScared;
+    private double calculateMoveChance() {
+        double baseChance = 0.15 + (difficulty * 0.1);
+        return switch (personality) {
+            case EAGER -> baseChance * 1.5;
+            case SHY -> baseChance * 0.7;
+            case CONFUSED -> baseChance * (rand.nextDouble() * 2);
+            case PERSISTENT -> baseChance * 1.2;
+            case RUNNER -> sprinting ? 1.0 : 0.0;
+        };
     }
 
-    public PathPoint getCurrentLocation() {
-        return currentLocation;
+    private void selectPreferredPath() {
+        preferredPath = personality.getPreferredPath();
     }
 
-    public void setLocation(PathPoint location) {
-        this.currentLocation = location;
+    /**
+     * Resets the movement cooldown timer. Higher difficulty reduces the wait time.
+     */
+    private void resetMovementTimer() {
+        int baseTimer = Math.max(30, 180 - (difficulty * 20));
+        movementTimer = switch (personality) {
+            case EAGER -> (int) (baseTimer * 0.7);
+            case SHY -> (int) (baseTimer * 1.3);
+            case PERSISTENT -> (int) (baseTimer * 0.9);
+            case RUNNER -> sprinting ? 10 : Integer.MAX_VALUE;
+            default -> baseTimer;
+        };
     }
 
-    public void resetMovementTimer() {
-        movementTimer = 0;
-    }
+    // ========== ACTIONS ==========
 
     public void increaseDifficulty() {
-        this.difficulty++;
+        difficulty = Math.min(6, difficulty + 1);
+        System.out.println(name + " difficulty: " + difficulty);
     }
 
-    public Personality getPersonality() {
-        return this.personality;
+    public void startSprint() {
+        if (personality == Personality.RUNNER && !sprinting && !charging) {
+            charging = true;
+            chargeTimer = CHARGE_DURATION;
+            System.out.println(name + " is CHARGING!");
+        }
     }
 
-    public String getName() {
-        return name;
+    public void setLocation(Location location) {
+        this.previousLocation = this.currentLocation;
+        this.currentLocation = location;
+        rememberLocation(location);
     }
 
-    //    public Image getSilhouetteSprite() {
-//        // TODO: Return the silhouette sprite image
-//        return null;
-//    }
+    void setMovementTimer(int t) { this.movementTimer = t; }
 
+    // ========== GETTERS ==========
 
+    public String getName() { return name; }
+    public String getQuestion() { return question; }
+    public Personality getPersonality() { return personality; }
+    public Location getCurrentLocation() { return currentLocation; }
+    public Location getPreviousLocation() { return previousLocation; }
+    public PathType getPreferredPath() { return preferredPath; }
+    public int getDifficulty() { return difficulty; }
+    public double getAwarenessLevel() { return awarenessLevel; }
+    public boolean isSprinting() { return sprinting; }
+    public int getMovementTimer() { return movementTimer; }
+    public boolean isCharging() { return charging; }
+    public int getChargeTimer() { return chargeTimer; }
+
+    public int getRecentVisitCount(Location loc) {
+        int count = 0;
+        for (Location l : recentLocations) {
+            if (l == loc) count++;
+        }
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return name + " (" + personality + ") @ " + currentLocation;
+    }
 }
