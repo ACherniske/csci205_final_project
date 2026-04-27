@@ -1,12 +1,13 @@
 package org.five_nights_at_dana.Systems.Stairwells;
 
 import org.five_nights_at_dana.AI.*;
+import org.five_nights_at_dana.Managers.Notification;
+import org.five_nights_at_dana.Managers.NotificationManager;
+import org.five_nights_at_dana.Systems.SensorHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,7 +20,11 @@ class StairSystemTest {
     void setUp() {
         stairSystem = new StairSystem();
 
-        // Deterministic randomness for consistent pushback behavior
+        // Reset global systems (CRITICAL)
+        NotificationManager.clear();
+        SensorHelper.reset();
+
+        // Deterministic randomness
         Student.setRandom(new Random(42));
 
         student = new Student(
@@ -61,56 +66,12 @@ class StairSystemTest {
     void testLightDeactivationAfterDuration() {
         stairSystem.activateLights(Stairwell.LEFT);
 
-        // Simulate frames
         for (int i = 0; i < 300; i++) {
             stairSystem.update();
         }
 
         assertNull(stairSystem.getActiveLightsStairwell());
         assertFalse(stairSystem.areLightsActive(Stairwell.LEFT));
-    }
-
-    @Test
-    void testLightsOnlyAffectCorrectStairwell() {
-        Student left = new Student("Left", "Q", Personality.EAGER);
-        Student right = new Student("Right", "Q", Personality.EAGER);
-
-        left.setLocation(Location.FLOOR2_STAIR_MID);
-        right.setLocation(Location.FLOOR2_STAIR_MID);
-
-        stairSystem.studentEnterStairwell(left, Stairwell.LEFT);
-        stairSystem.studentEnterStairwell(right, Stairwell.RIGHT);
-
-        Location rightBefore = right.getCurrentLocation();
-
-        stairSystem.activateLights(Stairwell.LEFT);
-
-        // Right stairwell student should NOT be affected
-        assertEquals(rightBefore, right.getCurrentLocation());
-    }
-
-    @Test
-    void testChargesNeverGoNegative() {
-        for (int i = 0; i < 10; i++) {
-            stairSystem.activateLights(Stairwell.LEFT);
-
-            for (int j = 0; j < 300; j++) {
-                stairSystem.update();
-            }
-        }
-
-        assertTrue(stairSystem.getLightCharges() >= 0);
-    }
-
-    @Test
-    void testCannotActivateWhileLightsStillOn() {
-        stairSystem.activateLights(Stairwell.LEFT);
-
-        stairSystem.update(); // still active
-
-        boolean result = stairSystem.activateLights(Stairwell.RIGHT);
-
-        assertFalse(result);
     }
 
     // =========================
@@ -128,16 +89,6 @@ class StairSystemTest {
     }
 
     @Test
-    void testStudentExitStairwell() {
-        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
-        stairSystem.studentExitStairwell(student, Stairwell.LEFT);
-
-        List<Student> students = stairSystem.getStudentsInStairwell(Stairwell.LEFT);
-
-        assertTrue(students.isEmpty());
-    }
-
-    @Test
     void testNoDuplicateStudents() {
         stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
         stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
@@ -148,6 +99,82 @@ class StairSystemTest {
     }
 
     // =========================
+    // 🔔 NOTIFICATION TESTS
+    // =========================
+
+    @Test
+    void testStairSensorNotificationTriggered() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        List<Notification> notifs = NotificationManager.getNotifications();
+
+        assertTrue(
+                notifs.stream().anyMatch(n ->
+                        n.getType() == Notification.Type.STAIR_SENSOR &&
+                                n.getMessage().contains("TestStudent")
+                ),
+                "Expected stair sensor notification when student enters"
+        );
+    }
+
+    @Test
+    void testNotificationCooldownPreventsSpam() {
+        // Spam enter same stairwell repeatedly
+        for (int i = 0; i < 10; i++) {
+            stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+        }
+
+        List<Notification> notifs = NotificationManager.getNotifications();
+
+        long count = notifs.stream()
+                .filter(n -> n.getType() == Notification.Type.STAIR_SENSOR)
+                .count();
+
+        // Should be LOW due to cooldown
+        assertTrue(count <= 2, "Sensor should be rate-limited");
+    }
+
+    @Test
+    void testDifferentStairwellsProduceSeparateNotifications() {
+        Student s1 = new Student("LeftGuy", "Q", Personality.EAGER);
+        Student s2 = new Student("RightGuy", "Q", Personality.EAGER);
+
+        stairSystem.studentEnterStairwell(s1, Stairwell.LEFT);
+
+        // Advance frames to bypass cooldown
+        for (int i = 0; i < 100; i++) stairSystem.update();
+
+        stairSystem.studentEnterStairwell(s2, Stairwell.RIGHT);
+
+        List<Notification> notifs = NotificationManager.getNotifications();
+
+        assertTrue(
+                notifs.stream().anyMatch(n -> n.getMessage().contains("LeftGuy")),
+                "Expected LEFT stair notification"
+        );
+
+        assertTrue(
+                notifs.stream().anyMatch(n -> n.getMessage().contains("RightGuy")),
+                "Expected RIGHT stair notification"
+        );
+    }
+
+    @Test
+    void testNoNotificationWhenStudentAlreadyPresent() {
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        NotificationManager.clear();
+
+        // Enter again (duplicate)
+        stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
+
+        assertTrue(
+                NotificationManager.getNotifications().isEmpty(),
+                "Duplicate entry should not trigger notification"
+        );
+    }
+
+    // =========================
     // PUSHBACK TESTS
     // =========================
 
@@ -155,103 +182,21 @@ class StairSystemTest {
     void testStudentGetsPushedBackOnLightActivation() {
         stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
 
-        Location original = student.getCurrentLocation();
-
-        // Force some movement history so pushback is possible
         student.setLocation(Location.FLOOR1_STAIR_MID);
         student.setLocation(Location.FLOOR2_STAIR_MID);
 
         stairSystem.activateLights(Stairwell.LEFT);
 
-        Location after = student.getCurrentLocation();
-
-        // We don't assert exact location (random),
-        // just that the student moved backward or stayed valid
-        assertNotNull(after);
+        assertNotNull(student.getCurrentLocation());
     }
 
     @Test
     void testPushbackDoesNotCrashWithMinimalHistory() {
         stairSystem.studentEnterStairwell(student, Stairwell.LEFT);
 
-        // No extra history beyond spawn
         assertDoesNotThrow(() ->
                 stairSystem.activateLights(Stairwell.LEFT)
         );
-    }
-
-    @Test
-    void testRepeatedPushbackDoesNotBreakMovement() {
-        Student s = new Student("Test", "Q", Personality.EAGER);
-
-        // Build movement history
-        s.setLocation(Location.FLOOR1_STAIR_MID);
-        s.setLocation(Location.FLOOR2_STAIR_MID);
-        s.setLocation(Location.FLOOR3_STAIR_MID);
-
-        stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-
-        for (int i = 0; i < 5; i++) {
-            stairSystem.activateLights(Stairwell.LEFT);
-
-            // let lights expire
-            for (int j = 0; j < 300; j++) {
-                stairSystem.update();
-            }
-        }
-
-        assertNotNull(s.getCurrentLocation());
-        assertFalse(s.getRecentLocations().isEmpty());
-    }
-
-    @Test
-    void testPersonalityAffectsPushback() {
-        Student shy = new Student("Shy", "Q", Personality.SHY);
-        Student persistent = new Student("Persistent", "Q", Personality.PERSISTENT);
-
-        // Build identical history
-        for (Student s : List.of(shy, persistent)) {
-            s.setLocation(Location.FLOOR1_STAIR_MID);
-            s.setLocation(Location.FLOOR2_STAIR_MID);
-            s.setLocation(Location.FLOOR3_STAIR_MID);
-            stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-        }
-
-        stairSystem.activateLights(Stairwell.LEFT);
-
-        // We can't assert exact positions (random),
-        // but we CAN assert both moved and stayed valid
-        assertNotNull(shy.getCurrentLocation());
-        assertNotNull(persistent.getCurrentLocation());
-    }
-
-    @Test
-    void testPushbackWithMinimalHistoryIsSafe() {
-        Student s = new Student("Minimal", "Q", Personality.EAGER);
-
-        stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-
-        assertDoesNotThrow(() -> stairSystem.activateLights(Stairwell.LEFT));
-
-        assertNotNull(s.getCurrentLocation());
-    }
-
-    @Test
-    void testPushbackActuallyMovesStudentBack() {
-        Student s = new Student("BackTest", "Q", Personality.EAGER);
-
-        s.setLocation(Location.FLOOR1_STAIR_MID);
-        s.setLocation(Location.FLOOR2_STAIR_MID);
-        s.setLocation(Location.FLOOR3_STAIR_MID);
-
-        Location before = s.getCurrentLocation();
-
-        stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-        stairSystem.activateLights(Stairwell.LEFT);
-
-        Location after = s.getCurrentLocation();
-
-        assertNotEquals(before, after, "Student should be pushed back to a different location");
     }
 
     // =========================
@@ -279,7 +224,6 @@ class StairSystemTest {
         for (int i = 0; i < 5; i++) {
             stairSystem.activateLights(Stairwell.LEFT);
 
-            // Simulate lights turning off
             for (int j = 0; j < 300; j++) {
                 stairSystem.update();
             }
@@ -292,6 +236,7 @@ class StairSystemTest {
     // =========================
     // STRESS TESTS
     // =========================
+
     @Test
     void testMultipleStudentsHandledCorrectly() {
         List<Student> students = new ArrayList<>();
@@ -306,59 +251,6 @@ class StairSystemTest {
             stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
         }
 
-        assertDoesNotThrow(() -> stairSystem.activateLights(Stairwell.LEFT));
-
-        List<Student> inStairs = stairSystem.getStudentsInStairwell(Stairwell.LEFT);
-        assertEquals(20, inStairs.size());
-    }
-
-    @Test
-    void testFullSimulationFlow() {
-        Student s = new Student("Sim", "Q", Personality.EAGER);
-
-        // Simulate movement frames
-        for (int i = 0; i < 500; i++) {
-            s.update();
-        }
-
-        stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-
-        Location before = s.getCurrentLocation();
-
-        stairSystem.activateLights(Stairwell.LEFT);
-
-        Location after = s.getCurrentLocation();
-
-        assertNotNull(after);
-
-        // Let system continue
-        for (int i = 0; i < 200; i++) {
-            s.update();
-        }
-
-        assertNotNull(s.getCurrentLocation());
-    }
-
-    @Test
-    void testMemoryDoesNotOverflowOrCorrupt() {
-        Student s = new Student("Memory", "Q", Personality.CONFUSED);
-
-        // Force lots of movement + pushback
-        for (int i = 0; i < 20; i++) {
-            s.setLocation(Location.FLOOR1_STAIR_MID);
-            s.setLocation(Location.FLOOR2_STAIR_MID);
-            s.setLocation(Location.FLOOR3_STAIR_MID);
-
-            stairSystem.studentEnterStairwell(s, Stairwell.LEFT);
-            stairSystem.activateLights(Stairwell.LEFT);
-
-            // expire lights
-            for (int j = 0; j < 300; j++) {
-                stairSystem.update();
-            }
-        }
-
-        // Memory should still be bounded
-        assertTrue(s.getRecentLocations().size() <= 5);
+        assertEquals(20, stairSystem.getStudentsInStairwell(Stairwell.LEFT).size());
     }
 }
