@@ -39,8 +39,10 @@ public class ClassroomMechanic {
 
     private double activityLevel;
     private boolean eventTriggered;
+    private boolean warningTriggered;
     private int framesSinceCheck;
     private int currentFrame;
+
     private Student runner;
 
     /**
@@ -65,6 +67,7 @@ public class ClassroomMechanic {
      * handles the threshold triggers for warnings and charging.
      */
     public void update() {
+        // Always increment frame for consistent timestamps
         currentFrame++;
 
         if (eventTriggered) return;
@@ -80,11 +83,14 @@ public class ClassroomMechanic {
             }
         }
 
-        if (activityLevel >= 75 && activityLevel < 75.1) {
+        // Trigger warning once when crossing threshold
+        if (!warningTriggered && activityLevel >= 75) {
+            warningTriggered = true;
+
             SensorHelper.trigger(
                     "runner_warning",
                     "Runner is getting restless...",
-                    Notification.Type.RUNNER_CHARGING,
+                    Notification.Type.WARNING,
                     currentFrame
             );
         }
@@ -121,6 +127,8 @@ public class ClassroomMechanic {
 
         activityLevel = 0;
         framesSinceCheck = 0;
+        warningTriggered = false;
+
         System.out.println("ClassroomMechanic: Activity reset (CAM 3D checked)");
     }
 
@@ -158,7 +166,9 @@ public class ClassroomMechanic {
     public void reset() {
         activityLevel = 0;
         eventTriggered = false;
+        warningTriggered = false;
         framesSinceCheck = 0;
+        currentFrame = 0;
         runner = null;
     }
 }
