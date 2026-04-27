@@ -93,4 +93,38 @@ public class ClassroomMechanicTest {
 
         assertTrue(mechanic.isEventTriggered(), "Reset should have failed because event was already triggered.");
     }
+
+    @Test
+    public void testActivityPercentage() {
+        assertEquals(0.0, mechanic.getActivityPercentage());
+
+        // Manually set activity (or run enough frames to reach 50)
+        // For 50 activity, we need (50 / 0.05) + 180 = 1180 frames
+        for (int i = 0; i < 1180; i++) mechanic.update();
+
+        assertEquals(0.5, mechanic.getActivityPercentage(), 0.001);
+    }
+
+    @Test
+    public void testMultipleResets() {
+        for (int i = 0; i < 300; i++) mechanic.update();
+        mechanic.resetActivity();
+        mechanic.resetActivity(); // Second reset
+
+        assertEquals(0.0, mechanic.getActivityLevel());
+        assertEquals(0, mechanic.getActivityPercentage());
+    }
+
+    @Test
+    public void testFullSystemReset() {
+        // Run into a triggered state
+        for (int i = 0; i < 2300; i++) mechanic.update();
+
+        mechanic.reset();
+
+        assertFalse(mechanic.isEventTriggered());
+        assertEquals(0.0, mechanic.getActivityLevel());
+        // Since runner is private, you could check if resetActivity works
+        // to infer that the runner is null (if it throws or fails)
+    }
 }
