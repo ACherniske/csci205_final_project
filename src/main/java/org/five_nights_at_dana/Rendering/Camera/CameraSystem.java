@@ -17,15 +17,10 @@
 
 package org.five_nights_at_dana.Rendering.Camera;
 
+import org.five_nights_at_dana.Managers.AssetManager; // ADDED
 import org.five_nights_at_dana.Managers.StudentManager;
-import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
-import org.five_nights_at_dana.Rendering.Camera.CameraConfig.CameraEntry;
-import java.util.HashMap;
-import java.util.Map;
+import javafx.scene.image.Image; // ADDED
 
-/**
- * Manages camera states, student visibility lookups, and feed switching.
- */
 public class CameraSystem {
 
     private String currentCameraId = "1A";
@@ -38,18 +33,23 @@ public class CameraSystem {
     public void setActiveCamera(String cameraId) {
         if (CameraConfig.isValidCamera(cameraId)) {
             this.currentCameraId = cameraId;
-            // TODO: Add audio trigger here: AudioManager.play("cam_switch");
+            // You can now easily trigger the sound here using your AssetManager
+            // AssetManager.getSound("camera_switch").play();
         }
     }
 
-    public CameraEntry getActiveCamera() {
+    /**
+     * New method: Returns the visual feed directly.
+     * The UI Controller just calls system.getFeedImage() to update the screen.
+     */
+    public Image getFeedImage() {
+        return AssetManager.getImage(currentCameraId);
+    }
+
+    public CameraConfig.CameraEntry getActiveCamera() {
         return CameraConfig.getCamera(currentCameraId);
     }
 
-    /**
-     * Checks if any students are currently in the location
-     * monitored by the active camera.
-     */
     public boolean isStudentVisible() {
         return !studentManager.getStudentsAt(CameraConfig.getLocation(currentCameraId)).isEmpty();
     }
