@@ -83,7 +83,7 @@ public class CameraViewController {
     @FXML
     private void onSelectFloor1(ActionEvent event) {
         floorMapImage.setImage(new Image(getClass().getResourceAsStream(
-                "/assets/images/FirstFloorCameraSelectionView.png")));
+                "/assets/images/Map_Floor1.png")));
         setFloorButtonStyles(1);
         setFloorCamerasVisible(1);
     }
@@ -91,7 +91,7 @@ public class CameraViewController {
     @FXML
     private void onSelectFloor2(ActionEvent event) {
         floorMapImage.setImage(new Image(getClass().getResourceAsStream(
-                "/assets/images/SecondFloorCameraSelectionView.png")));
+                "/assets/images/Map_Floor2.png")));
         setFloorButtonStyles(2);
         setFloorCamerasVisible(2);
     }
@@ -99,7 +99,7 @@ public class CameraViewController {
     @FXML
     private void onSelectFloor3(ActionEvent event) {
         floorMapImage.setImage(new Image(getClass().getResourceAsStream(
-                "/assets/images/ThirdFloorCameraSelectionView.png")));
+                "/assets/images/Map_Floor3.png")));
         setFloorButtonStyles(3);
         setFloorCamerasVisible(3);
     }

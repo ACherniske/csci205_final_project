@@ -1,265 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Rectangle?>
 
 <!--
     CameraView.fxml — Security camera system screen.
 
     Layout:
-      • floorMapImage fills the screen and swaps between floor map images
-        when a floor tab is clicked.
-      • cameraFeedImage is an overlay panel (top-right) showing the selected feed.
-      • Camera buttons (camXBtn) are overlaid on the map — move them in
-        SceneBuilder to sit on the correct room icons once final art is in.
-      • lowerCamerasButton returns to the office (GameView).
+      • cameraFeedImage fills the left ~75% of the screen (main focus).
+      • floorMapImage sits in the bottom-right corner (~1/4 screen).
+      • Camera buttons (camXButton) are overlaid directly on the map image —
+        drag each one in SceneBuilder to sit on its room icon in the PNG.
+      • Floor tabs sit just above the map panel.
+      • lowerCamerasButton is anchored at the bottom-left under the feed.
 -->
-<AnchorPane
-    xmlns="http://javafx.com/javafx/21"
-    xmlns:fx="http://javafx.com/fxml/1"
-    fx:controller="org.five_nights_at_dana.Controllers.CameraViewController"
-    prefWidth="1280" prefHeight="720"
-    style="-fx-background-color: #000000;">
 
-    <!-- ── FLOOR MAP BACKGROUND ──────────────────────────────────────── -->
-    <!-- Controller swaps this image when floor tabs are clicked -->
-    <ImageView
-        fx:id="floorMapImage"
-        fitWidth="1280" fitHeight="720"
-        preserveRatio="false"
-        pickOnBounds="true"
-        layoutX="0" layoutY="0"/>
+<AnchorPane prefHeight="720" prefWidth="1280" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.five_nights_at_dana.Controllers.CameraViewController">
 
+    <!-- ══════════════════════════════════════════════════════════════════
+         LEFT — LARGE CAMERA FEED
+    ══════════════════════════════════════════════════════════════════ -->
 
-    <!-- ── CAMERA FEED OVERLAY (top-right panel) ─────────────────────── -->
-    <!-- Dark backing panel -->
-    <Rectangle
-        layoutX="820" layoutY="30"
-        width="440" height="310"
-        fill="#000000"
-        stroke="#444444"
-        strokeWidth="2"/>
+    <!-- Backing panel -->
+    <Rectangle fill="#050505" height="648" layoutX="0" layoutY="0" stroke="#2a2a2a" strokeWidth="2" width="946" />
 
-    <!-- Active camera feed image — controller updates this ImageView -->
-    <ImageView
-        fx:id="cameraFeedImage"
-        fitWidth="436" fitHeight="306"
-        preserveRatio="false"
-        layoutX="822" layoutY="32"/>
+    <!-- Camera feed image -->
+    <ImageView fx:id="cameraFeedImage" fitHeight="604" fitWidth="942" layoutX="2.0" layoutY="2.0" preserveRatio="false" />
 
+    <!-- Active camera name — below feed -->
+    <Label fx:id="activeCameraLabel" layoutX="0" layoutY="610" prefWidth="946" style="-fx-font-family: 'Courier New';                -fx-font-size: 15px;                -fx-font-weight: bold;                -fx-text-fill: #00ff41;                -fx-alignment: center;                -fx-background-color: #0a0a0a;                -fx-padding: 6px 0;" text="CAM 1 — Entrance Hall" />
 
-    <!-- Camera feed label showing which camera is active -->
-    <Label
-        fx:id="activeCameraLabel"
-        text="CAM 1 — Entrance Hall"
-        layoutX="822" layoutY="342"
-        prefWidth="436"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 13px;
-               -fx-text-fill: #00ff41;
-               -fx-alignment: center;"/>
+    <!-- Lower cameras — bottom left under feed -->
+    <Button fx:id="lowerCamerasButton" layoutX="333" layoutY="668" onAction="#onLowerCameras" prefHeight="42" prefWidth="280" style="-fx-font-family: 'Courier New';                -fx-font-size: 15px;                -fx-font-weight: bold;                -fx-text-fill: #ffcc00;                -fx-background-color: #1a1a1a;                -fx-border-color: #ffcc00;                -fx-border-width: 2px;                -fx-cursor: hand;" text="▼  LOWER CAMERAS" />
 
-    <!-- ── FLOOR SELECTOR TABS (bottom left) ─────────────────────────── -->
-    <Button
-        fx:id="floor1Button"
-        text="FLOOR 1"
-        onAction="#onSelectFloor1"
-        layoutX="30" layoutY="668"
-        prefWidth="110" prefHeight="40"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 14px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #ffcc00;
-               -fx-background-color: #2d2d2d;
-               -fx-border-color: #ffcc00;
-               -fx-border-width: 2px;
-               -fx-cursor: hand;"/>
+    <!-- ══════════════════════════════════════════════════════════════════
+         RIGHT — MAP PANEL (bottom-right corner, ~1/4 screen)
+    ══════════════════════════════════════════════════════════════════ -->
 
-    <Button
-        fx:id="floor2Button"
-        text="FLOOR 2"
-        onAction="#onSelectFloor2"
-        layoutX="155" layoutY="668"
-        prefWidth="110" prefHeight="40"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 14px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #aaaaaa;
-               -fx-background-color: #1a1a1a;
-               -fx-border-color: #555555;
-               -fx-border-width: 2px;
-               -fx-cursor: hand;"/>
+    <!-- "SECURITY CAMERAS" header -->
+    <Label layoutX="952" layoutY="14" prefWidth="326" style="-fx-font-family: 'Courier New';                -fx-font-size: 13px;                -fx-font-weight: bold;                -fx-text-fill: #00ff41;                -fx-alignment: center;" text="SECURITY CAMERAS" />
 
-    <Button
-        fx:id="floor3Button"
-        text="FLOOR 3"
-        onAction="#onSelectFloor3"
-        layoutX="280" layoutY="668"
-        prefWidth="110" prefHeight="40"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 14px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #aaaaaa;
-               -fx-background-color: #1a1a1a;
-               -fx-border-color: #555555;
-               -fx-border-width: 2px;
-               -fx-cursor: hand;"/>
+    <!-- ── FLOOR SELECTOR TABS (above map) ───────────────────────────── -->
+    <Button fx:id="floor1Button" layoutX="952" layoutY="350" onAction="#onSelectFloor1" prefHeight="34" prefWidth="108" style="-fx-font-family: 'Courier New';                -fx-font-size: 12px;                -fx-font-weight: bold;                -fx-text-fill: #ffcc00;                -fx-background-color: #2d2d2d;                -fx-border-color: #ffcc00;                -fx-border-width: 2px;                -fx-cursor: hand;" text="FLOOR 1" />
 
-    <!-- ── LOWER CAMERAS BUTTON (bottom right) ───────────────────────── -->
-    <Button
-        fx:id="lowerCamerasButton"
-        text="▼  LOWER CAMERAS"
-        onAction="#onLowerCameras"
-        layoutX="1060" layoutY="668"
-        prefWidth="200" prefHeight="40"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 14px;
-               -fx-font-weight: bold;
-               -fx-text-fill: #ffcc00;
-               -fx-background-color: #1a1a1a;
-               -fx-border-color: #ffcc00;
-               -fx-border-width: 2px;
-               -fx-cursor: hand;"/>
+    <Button fx:id="floor2Button" layoutX="1062" layoutY="350" onAction="#onSelectFloor2" prefHeight="34" prefWidth="108" style="-fx-font-family: 'Courier New';                -fx-font-size: 12px;                -fx-font-weight: bold;                -fx-text-fill: #aaaaaa;                -fx-background-color: #1a1a1a;                -fx-border-color: #555555;                -fx-border-width: 2px;                -fx-cursor: hand;" text="FLOOR 2" />
+
+    <Button fx:id="floor3Button" layoutX="1172" layoutY="350" onAction="#onSelectFloor3" prefHeight="34" prefWidth="108" style="-fx-font-family: 'Courier New';                -fx-font-size: 12px;                -fx-font-weight: bold;                -fx-text-fill: #aaaaaa;                -fx-background-color: #1a1a1a;                -fx-border-color: #555555;                -fx-border-width: 2px;                -fx-cursor: hand;" text="FLOOR 3" />
+
+    <!-- ── FLOOR MAP (bottom-right, ~1/4 screen) ─────────────────────── -->
+    <!-- Backing -->
+    <Rectangle fill="#050505" height="244" layoutX="952" layoutY="388" stroke="#2a2a2a" strokeWidth="2" width="326" />
+
+    <!-- Floor map image — swapped by controller on floor change -->
+    <ImageView fx:id="floorMapImage" fitHeight="240" fitWidth="322" layoutX="954.0" layoutY="390.0" preserveRatio="false" />
 
     <!-- ══════════════════════════════════════════════════════════════════
          CAMERA BUTTONS — overlaid on the floor map.
-         Move each button in SceneBuilder to sit on its room icon.
-         Floor 1: CAM 1-4  |  Floor 2: CAM 5-7  |  Floor 3: CAM 8-12
-         Visibility is toggled by the controller when floor changes.
+         Each button is positioned to sit on its room icon in the PNG.
+         Drag in SceneBuilder once your final floor map PNGs are in place.
+
+         Map panel origin: x=954  y=390   size: 322 x 240
+         Floor 1: CAM 1–4  |  Floor 2: CAM 5–7  |  Floor 3: CAM 8–12
     ══════════════════════════════════════════════════════════════════ -->
 
-    <!-- ── FLOOR 1 CAMERAS ────────────────────────────────────────────── -->
-    <Button
-        fx:id="cam1Button"
-        text="CAM 1&#10;Entrance"
-        onAction="#onSelectCamera1"
-        layoutX="80" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <!-- Shared camera button style — tiny green markers on the map -->
 
-    <Button
-        fx:id="cam2Button"
-        text="CAM 2&#10;Mid-Stair 1"
-        onAction="#onSelectCamera2"
-        layoutX="220" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <!-- ── FLOOR 1 CAMERAS (visible by default) ──────────────────────── -->
+    <Button fx:id="cam1Button" layoutX="964.0" layoutY="528.0" onAction="#onSelectCamera1" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C1" />
 
-    <Button
-        fx:id="cam3Button"
-        text="CAM 3&#10;Hallway 1A"
-        onAction="#onSelectCamera3"
-        layoutX="360" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam2Button" layoutX="998.0" layoutY="492.0" onAction="#onSelectCamera2" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C2" />
 
-    <Button
-        fx:id="cam4Button"
-        text="CAM 4&#10;Elevator 1"
-        onAction="#onSelectCamera4"
-        layoutX="500" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam3Button" layoutX="1104" layoutY="514" onAction="#onSelectCamera3" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C3" />
 
-    <!-- ── FLOOR 2 CAMERAS (hidden by default — controller shows on floor 2) -->
-    <Button
-        fx:id="cam5Button"
-        text="CAM 5&#10;L-Stair 2"
-        onAction="#onSelectCamera5"
-        layoutX="80" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam4Button" layoutX="1209" layoutY="562" onAction="#onSelectCamera4" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C4" />
 
-    <Button
-        fx:id="cam6Button"
-        text="CAM 6&#10;Hallway 2A"
-        onAction="#onSelectCamera6"
-        layoutX="220" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <!-- ── FLOOR 2 CAMERAS (hidden by default) ───────────────────────── -->
+    <Button fx:id="cam5Button" layoutX="989" layoutY="510" onAction="#onSelectCamera5" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C5" visible="false" />
 
-    <Button
-        fx:id="cam7Button"
-        text="CAM 7&#10;Hallway 2B"
-        onAction="#onSelectCamera7"
-        layoutX="360" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam6Button" layoutX="1059" layoutY="492" onAction="#onSelectCamera6" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C6" visible="false" />
 
-    <!-- ── FLOOR 3 CAMERAS (hidden by default — controller shows on floor 3) -->
-    <Button
-        fx:id="cam8Button"
-        text="CAM 8&#10;Mid-Stair 3"
-        onAction="#onSelectCamera8"
-        layoutX="80" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam7Button" layoutX="1129" layoutY="517" onAction="#onSelectCamera7" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C7" visible="false" />
 
-    <Button
-        fx:id="cam9Button"
-        text="CAM 9&#10;Hallway 3B"
-        onAction="#onSelectCamera9"
-        layoutX="220" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <!-- ── FLOOR 3 CAMERAS (hidden by default) ───────────────────────── -->
+    <Button fx:id="cam8Button" layoutX="1009" layoutY="437" onAction="#onSelectCamera8" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C8" visible="false" />
 
-    <Button
-        fx:id="cam10Button"
-        text="CAM 10&#10;R-Stair 3"
-        onAction="#onSelectCamera10"
-        layoutX="360" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam9Button" layoutX="1109" layoutY="522" onAction="#onSelectCamera9" prefHeight="22" prefWidth="34" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C9" visible="false" />
 
-    <Button
-        fx:id="cam11Button"
-        text="CAM 11&#10;Office Door"
-        onAction="#onSelectCamera11"
-        layoutX="500" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam10Button" layoutX="1196" layoutY="467" onAction="#onSelectCamera10" prefHeight="22" prefWidth="36" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C10" visible="false" />
 
-    <Button
-        fx:id="cam12Button"
-        text="CAM 12&#10;Classroom"
-        onAction="#onSelectCamera12"
-        layoutX="640" layoutY="480"
-        prefWidth="100" prefHeight="44"
-        visible="false"
-        style="-fx-font-family: 'Courier New'; -fx-font-size: 11px;
-               -fx-text-fill: #00ff41; -fx-background-color: #1a2a1a;
-               -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;"/>
+    <Button fx:id="cam11Button" layoutX="1050.0" layoutY="570.0" onAction="#onSelectCamera11" prefHeight="22" prefWidth="36" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C11" visible="false" />
+
+    <Button fx:id="cam12Button" layoutX="1010.0" layoutY="410.0" onAction="#onSelectCamera12" prefHeight="22" prefWidth="36" style="-fx-font-family: 'Courier New'; -fx-font-size: 10px; -fx-font-weight: bold;                -fx-text-fill: #00ff41; -fx-background-color: #0d1f0d;                -fx-border-color: #00ff41; -fx-border-width: 1px; -fx-cursor: hand;" text="C12" visible="false" />
 
 </AnchorPane>
