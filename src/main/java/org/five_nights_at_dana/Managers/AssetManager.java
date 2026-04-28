@@ -20,54 +20,61 @@ import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AssetManager {
 
-    private static Map<String, Image> images = new HashMap<>();
-    private static Map<String, AudioClip> sounds = new HashMap<>();
+    private static final Map<String, Image> images = new HashMap<>();
+    private static final Map<String, AudioClip> sounds = new HashMap<>();
+
+    // Base paths inside your resources directory
+    private static final String IMAGE_PATH = "/assets/images/";
+    private static final String SOUND_PATH = "/assets/sounds/";
 
     /**
-     * Preloads all assets.
+     * Preloads all required assets.
+     * Call this at application launch
      */
     public static void preloadAll() {
-        // TODO load all assets into maps
+        System.out.println("AssetManager: Preloading assets...");
+
+        // Example loading:
+        // loadImage("cam_1a_entrance", "cam_1a_entrance.png");
+        // loadSound("camera_switch", "camera_switch.wav");
+
+        System.out.println("AssetManager: Loaded " + images.size() + " images and " + sounds.size() + " sounds.");
     }
 
     /**
-     * Retrieves an image.
-     * @param key asset key
-     * @return Image or null
+     * Retrieves an image. Falls back to a "cam_error" image if key not found.
      */
     public static Image getImage(String key) {
+        if (!images.containsKey(key)) {
+            System.err.println("AssetManager: Warning - Image key not found: " + key);
+            return images.getOrDefault("cam_error", null);
+        }
         return images.get(key);
     }
 
-    /**
-     * Retrieves a sound.
-     * @param key asset key
-     * @return AudioClip or null
-     */
     public static AudioClip getSound(String key) {
         return sounds.get(key);
     }
 
-    /**
-     * Loads an image from disk.
-     * @param path file path
-     * @return loaded Image
-     */
-    private static Image loadImage(String path) {
-        // TODO implement file loading
-        return null;
+    private static void loadImage(String key, String fileName) {
+        try {
+            Image img = new Image(Objects.requireNonNull(AssetManager.class.getResourceAsStream(IMAGE_PATH + fileName)));
+            images.put(key, img);
+        } catch (Exception e) {
+            System.err.println("AssetManager: Failed to load image: " + fileName);
+        }
     }
 
-    /**
-     * Loads a sound from disk.
-     * @param path file path
-     * @return loaded AudioClip
-     */
-    private static AudioClip loadSound(String path) {
-        // TODO implement file loading
-        return null;
+    private static void loadSound(String key, String fileName) {
+        try {
+            AudioClip clip = new AudioClip(Objects.requireNonNull(AssetManager.class.getResource(SOUND_PATH + fileName)).toString());
+            sounds.put(key, clip);
+        } catch (Exception e) {
+            System.err.println("AssetManager: Failed to load sound: " + fileName);
+        }
     }
 }
