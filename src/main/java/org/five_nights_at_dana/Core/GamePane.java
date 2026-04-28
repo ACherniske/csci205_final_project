@@ -63,7 +63,7 @@ public class GamePane extends Pane {
     public void update() {
         studentManager.update();
         officeView.update();
-        cameraSystem.update();
+        //cameraSystem.update();
 
         elevator.update();
         stairSystem.update();
@@ -84,7 +84,7 @@ public class GamePane extends Pane {
 
         switch (currentState) {
             case PLAYING -> officeView.render(gc);
-            case VIEWING_CAMERAS -> cameraSystem.render(gc);
+            //case VIEWING_CAMERAS -> cameraSystem.render(gc);
             default -> {}
         }
 
@@ -128,8 +128,8 @@ public class GamePane extends Pane {
      */
     private void initializeSystems() {
         officeView = new OfficeViewManager();
-//        studentManager = new StudentManager();
-        cameraSystem = new CameraSystem(this);
+        studentManager = new StudentManager();
+        cameraSystem = new CameraSystem(studentManager);
 
         elevator = new ElevatorSystem();
         stairSystem = new StairSystem();

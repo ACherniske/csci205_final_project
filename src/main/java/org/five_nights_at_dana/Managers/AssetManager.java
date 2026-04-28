@@ -16,6 +16,8 @@
 
 package org.five_nights_at_dana.Managers;
 
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
+
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
 import java.util.HashMap;
@@ -38,11 +40,25 @@ public class AssetManager {
     public static void preloadAll() {
         System.out.println("AssetManager: Preloading assets...");
 
-        // Example loading:
-        // loadImage("cam_1a_entrance", "cam_1a_entrance.png");
-        // loadSound("camera_switch", "camera_switch.wav");
+        // Load the Error Image first (so it's ready for fallbacks)
+        loadImage("cam_error", "cam_error.png");
 
-        System.out.println("AssetManager: Loaded " + images.size() + " images and " + sounds.size() + " sounds.");
+        // Automate loading of all 22 Camera feeds from CameraConfig
+        for (String id : CameraConfig.CAMERA_IDS) {
+            CameraConfig.CameraEntry entry = CameraConfig.getCamera(id);
+            if (entry != null) {
+                loadImage(id, entry.imageFilename());
+            }
+        }
+
+        // Load other static assets
+        //loadImage("static_overlay", "static_overlay.png");
+
+        // Load Sounds
+        //loadSound("camera_switch", "camera_switch.wav");
+        // loadSound("jumpscare", "jumpscare.mp3");
+
+        System.out.println("AssetManager: Preload complete. Images: " + images.size() + " | Sounds: " + sounds.size());
     }
 
     /**

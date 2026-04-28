@@ -17,49 +17,40 @@
 
 package org.five_nights_at_dana.Rendering.Camera;
 
-import javafx.scene.canvas.GraphicsContext;
-import org.five_nights_at_dana.Core.GamePane;
+import org.five_nights_at_dana.Managers.StudentManager;
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig.CameraEntry;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Handles camera feeds and rendering.
+ * Manages camera states, student visibility lookups, and feed switching.
  */
 public class CameraSystem {
 
-    private GamePane gamePaneReference;
+    private String currentCameraId = "1A";
+    private final StudentManager studentManager;
 
-    public CameraSystem(GamePane pane) {
-        this.gamePaneReference = pane;
+    public CameraSystem(StudentManager studentManager) {
+        this.studentManager = studentManager;
     }
 
-    /** Updates camera logic. */
-    public void update() {
-        // TODO handle switching/static
+    public void setActiveCamera(String cameraId) {
+        if (CameraConfig.isValidCamera(cameraId)) {
+            this.currentCameraId = cameraId;
+            // TODO: Add audio trigger here: AudioManager.play("cam_switch");
+        }
     }
 
-    /**
-     * Renders camera feed.
-     */
-    public void render(GraphicsContext gc) {
-        // TODO draw feed + overlay
-    }
-
-    /**
-     * Sets active camera.
-     */
-    public void setCamera(String cam) {
-        // TODO validate and switch
+    public CameraEntry getActiveCamera() {
+        return CameraConfig.getCamera(currentCameraId);
     }
 
     /**
-     * @return current camera
+     * Checks if any students are currently in the location
+     * monitored by the active camera.
      */
-    public String getCurrentCamera() {
-        // TODO return camera id
-        return null;
-    }
-
-    /** Resets system. */
-    public void reset() {
-        // TODO reset state
+    public boolean isStudentVisible() {
+        return !studentManager.getStudentsAt(CameraConfig.getLocation(currentCameraId)).isEmpty();
     }
 }
