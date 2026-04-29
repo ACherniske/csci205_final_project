@@ -19,7 +19,7 @@ package org.five_nights_at_dana.Systems.Elevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.five_nights_at_dana.AI.Personality;
+import org.five_nights_at_dana.AI.Location;import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,277 +30,137 @@ import org.junit.jupiter.api.Test;
  */
 public class ElevatorTest {
 
-    ElevatorSystem elevator;
-    Student student1;
-    Student student2;
+    private ElevatorSystem elevator;
+    private Student student1;
 
     /**
      * This will set up two students and the elevator for testing
      */
     @BeforeEach
     void setUp() {
-        student1 = new Student("Test", "question", Personality.EAGER);
-        student2 = new Student("Test2", "question", Personality.EAGER);
+        student1 = new Student("Test Student", "Test", Personality.EAGER);
         elevator = new ElevatorSystem(); // adjust constructor if needed
     }
 
-
     /**
-     * This test will work to test that the first update method that is called
-     * on the elevator will cause the state to change to doors opening, which is
-     * the next expected state.
+     * This will test a student enters the elevator
      */
     @Test
-    void elevatorOpensDoorsFromFirstUpdateCall() {
-        elevator.update();
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
-    }
-
-
-    /**
-     * This test will make sure that a student is not in the elevator after
-     * the first update and then the student is properly added when it is allowed
-     *
-     */
-    @Test
-    void aStudentCanEnterTheElevator() {
-        elevator.update();
-        assertFalse(elevator.isStudentInElevator());
-        assertTrue(elevator.canStudentEnter());
-        elevator.addStudent(student1);
-        assertTrue(elevator.isStudentInElevator());
-
+    public void testStudentEntersElevator() {
+        boolean success = elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
+        assertTrue(success, "Student should enter Elevator");
+        assertTrue(elevator.hasStudent());
+        assertEquals(student1, elevator.getStudentInElevator());
     }
 
     /**
-     * This test will work to test that once the doors have opened a student
-     * can enter, then once the system is updated again the elevator state
-     * will change to moving up
+     * This will test that the cooldown works properly and cannot be immediately
+     * restopped
      */
     @Test
-    void elevatorStartsMovingUpAfterStudentEnters() {
-        elevator.update(); //updating to doors opening
-        elevator.addStudent(student1); //adding student into the elevator
-        elevator.update();
-        assertSame(ElevatorState.MOVING_UP, elevator.getCurrentElevatorState());
+    public void testEmergencyCooldownPreventsImmediateRestop() {
+        elevator.emergencyStop();
+        elevator.reset();
+        elevator.emergencyStop();
+        assertTrue(elevator.isEmergencyStopped());
+        elevator.unEmergencyStop();
+
+        assertFalse(elevator.canStop(), "Should not be able to seal during cooldown");
+
     }
 
     /**
-     * This test will make sure that the elevator does not move up when a student
-     * has not entered the elevator.
+     * This will test the transit time for the student in the elevator
      */
     @Test
-    void elevatorDoesNotStartMovingWhenAStudentDoesNotEnter() {
-        elevator.update();
-        elevator.update();
-        assertNotSame(ElevatorState.MOVING_UP, elevator.getCurrentElevatorState());
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
-    }
+    public void testStudentTransitTime() {
+        elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
 
+        // Fast-forward 5 seconds
+        for (int i = 0; i < 300; i++) elevator.update();
 
-    /**
-     * This test will test that if the elevator is moving up it will reach the
-     * third floor on the next update method call
-     */
-    @Test
-    void elevatorGoesToThirdFloorAfterMovingUp() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        assertSame(ElevatorState.THIRD_FLOOR, elevator.getCurrentElevatorState());
+        assertEquals(5, elevator.getTravelTimeRemainingSeconds(), "Travel time should decrease.");
     }
 
     /**
-     * This test will check to see that once the elevator has reached
-     * the third floor the doors will open
+     * This will test the elevator has the student exit
      */
     @Test
-    void elevatorOpensTheDoorsAfterReachingThirdFloor() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
+    public void testElevatorTransitExits() {
+        elevator.studentEnterElevator(student1, Location.FLOOR2_CLASSROOM);
+
+        // Fast-forward full transit
+        for (int i = 0; i < 600; i++) elevator.update();
+
+        assertFalse(elevator.hasStudent(), "Student should have exited.");
     }
 
     /**
-     * This test will test that a student can leave the elevator once it has
-     * reached the third floor and has opened the doors
+     * This will test that two students cannot enter the elevator
      */
     @Test
-    void studentIsInElevatorAndCanLeaveOnceTheDoorsOpen() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        assertTrue(elevator.isStudentInElevator());
-        elevator.removeStudent();
-        assertFalse(elevator.isStudentInElevator());
-    }
+    public void testCannotDoubleEnterElevator() {
+        Student student2 = new Student("Second Student", "Test", Personality.RUNNER);
+        elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
 
-
-    /**
-     * This method will check to make sure that you can add another student
-     * once the elevator has reached the third floor and has opened its doors.
-     */
-    @Test
-    void studentCanReEnterTheElevator() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        assertTrue(elevator.canStudentLeave());
-        elevator.removeStudent();
-        assertTrue(elevator.canStudentEnter());
-        elevator.addStudent(student2);
-        assertTrue(elevator.isStudentInElevator());
+        boolean success = elevator.studentEnterElevator(student2, Location.FLOOR1_ELEVATOR);
+        assertFalse(success, "Second student should not be able to enter an occupied Elevator.");
     }
 
     /**
-     * This method will test to make sure that after the elevator
-     * has reached the third floor, left the student, and taken a new student
-     * that it will then being moving down
+     * This will test on invalid entry points
      */
     @Test
-    void elevatorShouldBeingToMoveDownOnceStudentHasEntered() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        elevator.removeStudent();
-        elevator.addStudent(student2);
-        elevator.update();
-        assertSame(ElevatorState.MOVING_DOWN, elevator.getCurrentElevatorState());
+    public void testInvalidEntryPoint() {
+        boolean success = elevator.studentEnterElevator(student1, Location.FLOOR3_COMPUTER_LAB);
+        assertFalse(success, "Entering from an invalid location should return false.");
+        assertFalse(elevator.hasStudent());
     }
 
     /**
-     * This test will test that once the elevator has started moving down it will
-     * properly stop at the first floor
+     * This will test that the emergency stop functions correctly
      */
     @Test
-    void elevatorShouldStopAtTheFirstFloorAfterMovingDown() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        elevator.removeStudent();
-        elevator.addStudent(student2);
-        elevator.update();
-        elevator.update();
-        assertSame(ElevatorState.FIRST_FLOOR, elevator.getCurrentElevatorState());
-    }
-
-
-    /**
-     * This test will test that the elevator will open after it
-     * reaches the first floor.
-     */
-    @Test
-    void elevatorShouldOpenDoorsWhenTheElevatorReachesTheFirstFloor() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        elevator.removeStudent();
-        elevator.addStudent(student2);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
+    public void testEmergencyStopWhenEmpty() {
+        boolean success = elevator.emergencyStop();
+        assertTrue(success, "Should be able to stop an empty elevator.");
+        assertTrue(elevator.isEmergencyStopped());
+        assertFalse(elevator.hasStudent());
     }
 
     /**
-     * This method will test that students can leave once the doors open after
-     * reaching the first floor from the third
+     * This will test that once a student enters the first floor they are
+     * taken to the third floor and exits.
      */
     @Test
-    void elevatorShouldBeAbleToHaveAStudentLeaveAndEnter() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        elevator.removeStudent();
-        elevator.addStudent(student2);
-        elevator.update();
-        elevator.update();
-        elevator.update();
-        assertTrue(elevator.canStudentLeave());
-        elevator.removeStudent();
-        assertFalse(elevator.isStudentInElevator());
+    public void testStudentArrivesAtThirdFloorExit() {
+
+        // Student enters elevator from first floor
+        boolean success = elevator.studentEnterElevator(
+                student1,
+                Location.FLOOR1_ELEVATOR
+        );
+
+        assertTrue(success, "Student should successfully enter elevator.");
+
+        // Simulate full elevator travel time
+        for (int i = 0; i < 600; i++) {
+            elevator.update();
+        }
+
+        // Student should no longer be in elevator
+        assertFalse(elevator.hasStudent(),
+                "Student should have exited the elevator.");
+
+        // Verify student arrived at third floor exit
+        assertEquals(
+                Location.FLOOR3_ELEVATOR_EXIT,
+                student1.getCurrentLocation(),
+                "Student should arrive at the third floor elevator exit."
+        );
     }
 
 
-    /**
-     * This method that the emergency stop is only able to be called
-     * when the elevator is moving up or down and when it is called
-     * the state gets set to STOPPPED_EMERGENCY
-     */
-    @Test
-    void whenEmergencyStoppedIsCalledTheSystemResets() {
-        elevator.update();
-        elevator.addStudent(student1);
-        assertFalse(elevator.activateEmergencyStop());
-        elevator.update();
-        //elevator is Moving Up
-        assertTrue(elevator.activateEmergencyStop());
-        assertSame(ElevatorState.STOPPED_EMERGENCY, elevator.getCurrentElevatorState());
-    }
-
-    /**
-     * This will test that after emergency is called the elevator will be on the
-     * first floor with the doors open
-     */
-    @Test
-    void afterEmergencyStoppedIsCalledTheElevatorIsReset() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.activateEmergencyStop();
-        elevator.update();
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
-    }
-
-    /**
-     * This test will test to make sure that emergency stop can be called
-     * when the elevator is on the third floor.
-     */
-    @Test
-    void emergencyStopCanBeCalledWhenElevatorIsOnThirdFloor() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        assertSame(ElevatorState.THIRD_FLOOR, elevator.getCurrentElevatorState());
-        assertTrue(elevator.activateEmergencyStop());
-    }
-
-
-    /**
-     * This test will make sure that when the emergency stop is called from the
-     * third floor it will properly reset the elevator to doors opening on the first
-     * floor.
-     */
-    @Test
-    void emergencyStopWillResetElevatorFromThirdFloor() {
-        elevator.update();
-        elevator.addStudent(student1);
-        elevator.update();
-        elevator.update();
-        elevator.activateEmergencyStop();
-        elevator.update();
-        assertSame(ElevatorState.DOORS_OPENING, elevator.getCurrentElevatorState());
-        assertSame(ElevatorState.FIRST_FLOOR, elevator.getPreviousElevatorState());
-
-
-    }
 
 
 
