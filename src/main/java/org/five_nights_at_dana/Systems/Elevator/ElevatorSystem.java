@@ -27,17 +27,14 @@ import java.util.List;
  */
 public class ElevatorSystem {
 
-    private ElevatorState currentElevatorState = ElevatorState.FIRST_FLOOR;
-    private ElevatorState previousElevatorState = ElevatorState.FIRST_FLOOR;
-
-    private static final int ELEVATOR_MOVING = 600;
-    private static final int EMERGENCY_STOPPING = 600;
+    private static final int ELEVATOR_TRAVEL_TIME = 600;
+    private static final int EMERGENCY_STOP_DURATION = 600;
     private static final int EMERGENCY_STOP_COOLDOWN = 720;
-    private static final double EMERGENCY_STOP_POWER = 0.08;
+    private static final double EMERGENCY_STOP_POWER_DRAIN = 0.08;
 
     private int emergencyStopCooldown;
     private int emergencyTimer;
-    private int elevatorMoving;
+    private int elevatorTimer;
 
     private boolean isEmergencyStopped;
     private Student studentInElevator;
@@ -63,16 +60,20 @@ public class ElevatorSystem {
             emergencyStopCooldown --;
         }
 
+        // Handle transit
         if (!isEmergencyStopped && studentInElevator != null) {
-            elevatorMoving --;
-        }
+            elevatorTimer--;
 
-        if (elevatorMoving == 180) {
-            System.out.println("ElevatorSystem: Student arriving in 3s");
-            // TODO AudioManager.play("elevator_open");
-        }
-        if (elevatorMoving <= 0) {
-            studentExitElevator();
+            // Threshold warning
+            if (elevatorTimer == 180) {
+                System.out.println("ElevatorSystem: Student arriving in 3s");
+                // TODO AudioManager.play("elevator_open");
+            }
+
+            // Transit complete
+            if (elevatorTimer <= 0) {
+                studentExitElevator();
+            }
         }
     }
 
@@ -90,28 +91,18 @@ public class ElevatorSystem {
             return false;
         }
 
-        switch (entryPoint) {
-            case FLOOR1_ELEVATOR:
-                elevatorMoving = ELEVATOR_MOVING;
-                previousElevatorState = ElevatorState.FIRST_FLOOR;
-                System.out.println("ElevatorSystem: " + student.getName() + " entered Elevator On Floor 1");
-                break;
-            case FLOOR3_ELEVATOR_EXIT:
-                elevatorMoving = ELEVATOR_MOVING;
-                previousElevatorState = ElevatorState.THIRD_FLOOR;
-                System.out.println("ElevatorSystem: " + student.getName() + " entered Elevator On Floor 3");
-                break;
-            default:
-                System.out.println("VentSystem: Invalid entry attempt from " + entryPoint);
-                return false;
+        // Define valid entry points for the elevator
+        if (entryPoint == Location.FLOOR1_ELEVATOR || entryPoint == Location.FLOOR3_ELEVATOR_EXIT) {
+            elevatorTimer = ELEVATOR_TRAVEL_TIME;
+            studentInElevator = student;
+            elevatorEntry = entryPoint;
+            System.out.println("ElevatorSystem: " + student.getName() + " entered elevator.");
+            // TODO AudioManager.play("elevator_enter");
+            return true;
         }
 
-        studentInElevator = student;
-        elevatorEntry = entryPoint;
-
-        //TODO AudioManager.play("Elevator_enter")
-        return true;
-
+        System.out.println("ElevatorSystem: Invalid entry attempt from " + entryPoint);
+        return false;
     }
 
     /**
@@ -121,10 +112,11 @@ public class ElevatorSystem {
     private void studentExitElevator() {
         if (studentInElevator == null) return;
 
-        System.out.println("VentSystem: " + studentInElevator.getName() + " exited at office!");
+        System.out.println("ElevatorSystem: " + studentInElevator.getName() + " arrived at destination!");
         // TODO AudioManager.play("elevator_exit");
 
-        if (previousElevatorState == ElevatorState.FIRST_FLOOR) {
+        // Logic to determine destination based on entry
+        if (elevatorEntry == Location.FLOOR1_ELEVATOR) {
             studentInElevator.setLocation(Location.FLOOR3_ELEVATOR_EXIT);
         } else {
             studentInElevator.setLocation(Location.FLOOR1_ELEVATOR);
@@ -134,7 +126,7 @@ public class ElevatorSystem {
 
         studentInElevator = null;
         elevatorEntry = null;
-        elevatorMoving = 0;
+        elevatorTimer = 0;
     }
 
 
@@ -150,7 +142,7 @@ public class ElevatorSystem {
         }
 
         isEmergencyStopped = true;
-        emergencyTimer = EMERGENCY_STOPPING;
+        emergencyTimer = EMERGENCY_STOP_DURATION;
         emergencyStopCooldown = EMERGENCY_STOP_COOLDOWN;
 
         //TODO AudioManager.play("Elevator_STOP);
@@ -167,16 +159,17 @@ public class ElevatorSystem {
     /**
      * Forcefully ejects a student from the elevator if the seal is activated.
      */
-    public void ejectStudent() {
+    private void ejectStudent() {
         if (studentInElevator == null) return;
 
-        System.out.println("ElevatorSystem: EJECTED");
-        //TODO.AudioManager.play("elevator_eject");
+        System.out.println("ElevatorSystem: EJECTED " + studentInElevator.getName());
+        // TODO AudioManager.play("elevator_eject");
 
-        //TODO studentInElevator.setLocation(elevatorEntryPoint);
+        studentInElevator.setLocation(elevatorEntry);
 
         studentInElevator = null;
-        elevatorMoving = 0;
+        elevatorEntry = null;
+        elevatorTimer = 0;
     }
 
     /**
@@ -221,7 +214,7 @@ public class ElevatorSystem {
      * @return Remaining time in seconds, or 0 if no student is inside.
      */
     public int getTravelTimeRemainingSeconds() {
-        return studentInElevator == null ? 0 : elevatorMoving / 60;
+        return studentInElevator == null ? 0 : elevatorTimer / 60;
     }
 
 
@@ -248,7 +241,7 @@ public class ElevatorSystem {
         isEmergencyStopped = false;
         studentInElevator = null;
         elevatorEntry = null;
-        elevatorMoving = 0;
+        elevatorTimer = 0;
         emergencyTimer = 0;
         emergencyStopCooldown = 0;
     }

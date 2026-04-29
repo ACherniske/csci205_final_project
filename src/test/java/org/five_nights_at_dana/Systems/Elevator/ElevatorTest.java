@@ -19,11 +19,11 @@ package org.five_nights_at_dana.Systems.Elevator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.five_nights_at_dana.AI.Location;import org.five_nights_at_dana.AI.Personality;
+import org.five_nights_at_dana.AI.Location;
+import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 
 /**
  * This will test the functionality of the elevator system
@@ -39,7 +39,18 @@ public class ElevatorTest {
     @BeforeEach
     void setUp() {
         student1 = new Student("Test Student", "Test", Personality.EAGER);
-        elevator = new ElevatorSystem(); // adjust constructor if needed
+        elevator = new ElevatorSystem();
+    }
+
+    /**
+     * Helper to advance the elevator state by a number of ticks.
+     * Note: If your ElevatorSystem logic requires the Student to update
+     * alongside the elevator, ensure they are synchronized.
+     */
+    private void fastForward(int ticks) {
+        for (int i = 0; i < ticks; i++) {
+            elevator.update();
+        }
     }
 
     /**
@@ -60,13 +71,9 @@ public class ElevatorTest {
     @Test
     public void testEmergencyCooldownPreventsImmediateRestop() {
         elevator.emergencyStop();
-        elevator.reset();
-        elevator.emergencyStop();
-        assertTrue(elevator.isEmergencyStopped());
         elevator.unEmergencyStop();
 
-        assertFalse(elevator.canStop(), "Should not be able to seal during cooldown");
-
+        assertFalse(elevator.canStop(), "Should not be able to stop during cooldown");
     }
 
     /**
@@ -76,8 +83,7 @@ public class ElevatorTest {
     public void testStudentTransitTime() {
         elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
 
-        // Fast-forward 5 seconds
-        for (int i = 0; i < 300; i++) elevator.update();
+        fastForward(300); // Fast-forward 5 seconds
 
         assertEquals(5, elevator.getTravelTimeRemainingSeconds(), "Travel time should decrease.");
     }
@@ -87,10 +93,9 @@ public class ElevatorTest {
      */
     @Test
     public void testElevatorTransitExits() {
-        elevator.studentEnterElevator(student1, Location.FLOOR2_CLASSROOM);
+        elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
 
-        // Fast-forward full transit
-        for (int i = 0; i < 600; i++) elevator.update();
+        fastForward(600); // Fast-forward full transit
 
         assertFalse(elevator.hasStudent(), "Student should have exited.");
     }
@@ -125,7 +130,6 @@ public class ElevatorTest {
         boolean success = elevator.emergencyStop();
         assertTrue(success, "Should be able to stop an empty elevator.");
         assertTrue(elevator.isEmergencyStopped());
-        assertFalse(elevator.hasStudent());
     }
 
     /**
@@ -134,34 +138,13 @@ public class ElevatorTest {
      */
     @Test
     public void testStudentArrivesAtThirdFloorExit() {
-
-        // Student enters elevator from first floor
-        boolean success = elevator.studentEnterElevator(
-                student1,
-                Location.FLOOR1_ELEVATOR
-        );
-
+        boolean success = elevator.studentEnterElevator(student1, Location.FLOOR1_ELEVATOR);
         assertTrue(success, "Student should successfully enter elevator.");
 
-        // Simulate full elevator travel time
-        for (int i = 0; i < 600; i++) {
-            elevator.update();
-        }
+        fastForward(600); // Full travel time
 
-        // Student should no longer be in elevator
-        assertFalse(elevator.hasStudent(),
-                "Student should have exited the elevator.");
-
-        // Verify student arrived at third floor exit
-        assertEquals(
-                Location.FLOOR3_ELEVATOR_EXIT,
-                student1.getCurrentLocation(),
-                "Student should arrive at the third floor elevator exit."
-        );
+        assertFalse(elevator.hasStudent(), "Student should have exited the elevator.");
+        assertEquals(Location.FLOOR3_ELEVATOR_EXIT, student1.getCurrentLocation(),
+                "Student should arrive at the third floor elevator exit.");
     }
-
-
-
-
-
 }

@@ -22,7 +22,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import org.five_nights_at_dana.Managers.StudentManager;
 import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
-import org.five_nights_at_dana.Rendering.Office.OfficeViewManager;
 import org.five_nights_at_dana.Systems.Classroom.ClassroomMechanic;
 import org.five_nights_at_dana.Systems.Elevator.ElevatorSystem;
 import org.five_nights_at_dana.Systems.Stairwells.StairSystem;
@@ -39,7 +38,6 @@ public class GamePane extends Pane {
     private double coffeeLevel;
     private int frameCounter;
 
-    private OfficeViewManager officeView;
     private StudentManager studentManager;
     private CameraSystem cameraSystem;
     private ElevatorSystem elevator;
@@ -62,7 +60,6 @@ public class GamePane extends Pane {
      */
     public void update() {
         studentManager.update();
-        officeView.update();
         //cameraSystem.update();
 
         elevator.update();
@@ -83,7 +80,6 @@ public class GamePane extends Pane {
         gc.clearRect(0, 0, 1280, 720);
 
         switch (currentState) {
-            case PLAYING -> officeView.render(gc);
             //case VIEWING_CAMERAS -> cameraSystem.render(gc);
             default -> {}
         }
@@ -127,7 +123,6 @@ public class GamePane extends Pane {
      * Initializes all gameplay systems.
      */
     private void initializeSystems() {
-        officeView = new OfficeViewManager();
         studentManager = new StudentManager();
         cameraSystem = new CameraSystem(studentManager);
 
