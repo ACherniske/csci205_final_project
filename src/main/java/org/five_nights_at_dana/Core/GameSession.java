@@ -16,6 +16,8 @@
 
 package org.five_nights_at_dana.Core;
 
+import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
+import org.five_nights_at_dana.Managers.StudentManager;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,19 +37,34 @@ public class GameSession {
 
     private static GameSession instance;
 
+    // Singleton components
+    private final CameraSystem cameraSystem;
+    private final StudentManager studentManager;
+
     private volatile int hour = 12;
     private volatile int minute = 0;
     private volatile boolean active = false;
 
     private ScheduledExecutorService nightClock;
 
-    private GameSession() {}
+    private GameSession() {
+        this.studentManager = new StudentManager();
+        this.cameraSystem = new CameraSystem(this.studentManager);
+    }
 
     public static GameSession getInstance() {
         if (instance == null) {
             instance = new GameSession();
         }
         return instance;
+    }
+
+    public CameraSystem getCameraSystem() {
+        return this.cameraSystem;
+    }
+
+    public StudentManager getStudentManager() {
+        return this.studentManager;
     }
 
     /** Resets time and starts the background clock. Call this on new game. */

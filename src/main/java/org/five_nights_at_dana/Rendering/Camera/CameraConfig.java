@@ -34,7 +34,7 @@ public class CameraConfig {
     /**
      * Camera metadata record.
      *
-     * @param id Camera ID (e.g., "1A", "S-L1")
+     * @param id Camera ID (e.g., "1A", "SL1")
      * @param label Display name shown in UI
      * @param imageFilename Image file for camera feed background
      * @param location Location this camera monitors
@@ -99,24 +99,24 @@ public class CameraConfig {
             )),
 
             // Stairwell cameras
-            Map.entry("S-L1", new CameraEntry(
-                    "S-L1",
+            Map.entry("SL1", new CameraEntry(
+                    "SL1",
                     "Left Stairs F1",
                     "cam_s_l1_stairs.png",
                     Location.FLOOR1_STAIR_LEFT,
                     1
             )),
 
-            Map.entry("S-M1", new CameraEntry(
-                    "S-M1",
+            Map.entry("SM1", new CameraEntry(
+                    "SM1",
                     "Middle Stairs F1",
                     "cam_s_m1_stairs.png",
                     Location.FLOOR1_STAIR_MID,
                     1
             )),
 
-            Map.entry("S-R1", new CameraEntry(
-                    "S-R1",
+            Map.entry("SR1", new CameraEntry(
+                    "SR1",
                     "Right Stairs F1",
                     "cam_s_r1_stairs.png",
                     Location.FLOOR1_STAIR_RIGHT,
@@ -159,24 +159,24 @@ public class CameraConfig {
             )),
 
             // Stairwell cameras
-            Map.entry("S-L2", new CameraEntry(
-                    "S-L2",
+            Map.entry("SL2", new CameraEntry(
+                    "SL2",
                     "Left Stairs F2",
                     "cam_s_l2_stairs.png",
                     Location.FLOOR2_STAIR_LEFT,
                     2
             )),
 
-            Map.entry("S-M2", new CameraEntry(
-                    "S-M2",
+            Map.entry("SM2", new CameraEntry(
+                    "SM2",
                     "Middle Stairs F2",
                     "cam_s_m2_stairs.png",
                     Location.FLOOR2_STAIR_MID,
                     2
             )),
 
-            Map.entry("S-R2", new CameraEntry(
-                    "S-R2",
+            Map.entry("SR2", new CameraEntry(
+                    "SR2",
                     "Right Stairs F2",
                     "cam_s_r2_stairs.png",
                     Location.FLOOR2_STAIR_RIGHT,
@@ -219,24 +219,24 @@ public class CameraConfig {
             )),
 
             // Stairwell cameras
-            Map.entry("S-L3", new CameraEntry(
-                    "S-L3",
+            Map.entry("SL3", new CameraEntry(
+                    "SL3",
                     "Left Stairs F3",
                     "cam_s_l3_stairs.png",
                     Location.FLOOR3_STAIR_LEFT,
                     3
             )),
 
-            Map.entry("S-M3", new CameraEntry(
-                    "S-M3",
+            Map.entry("SM3", new CameraEntry(
+                    "SM3",
                     "Middle Stairs F3",
                     "cam_s_m3_stairs.png",
                     Location.FLOOR3_STAIR_MID,
                     3
             )),
 
-            Map.entry("S-R3", new CameraEntry(
-                    "S-R3",
+            Map.entry("SR3", new CameraEntry(
+                    "SR3",
                     "Right Stairs F3",
                     "cam_s_r3_stairs.png",
                     Location.FLOOR3_STAIR_RIGHT,
@@ -251,22 +251,22 @@ public class CameraConfig {
     public static final String[] CAMERA_IDS = {
             // Floor 1
             "1A", "1B", "1C", "1D", "1E", "1F",
-            "S-L1", "S-M1", "S-R1",
+            "SL1", "SM1", "SR1",
             // Floor 2
             "2A", "2B", "2C", "BUCKY",
-            "S-L2", "S-M2", "S-R2",
+            "SL2", "SM2", "SR2",
             // Floor 3
             "3A", "3B", "3C", "3D",
-            "S-L3", "S-M3", "S-R3"
+            "SL3", "SM3", "SR3"
     };
 
     /**
      * Camera IDs organized by floor for floor-based filtering.
      */
     public static final Map<Integer, String[]> CAMERAS_BY_FLOOR = Map.of(
-            1, new String[]{"1A", "1B", "1C", "1D", "1E", "1F", "S-L1", "S-M1", "S-R1"},
-            2, new String[]{"2A", "2B", "2C", "BUCKY", "S-L2", "S-M2", "S-R2"},
-            3, new String[]{"3A", "3B", "3C", "3D", "S-L3", "S-M3", "S-R3"}
+            1, new String[]{"1A", "1B", "1C", "1D", "1E", "1F", "SL1", "SM1", "SR1"},
+            2, new String[]{"2A", "2B", "2C", "BUCKY", "SL2", "SM2", "SR2"},
+            3, new String[]{"3A", "3B", "3C", "3D", "SL3", "SM3", "SR3"}
     );
 
     /**

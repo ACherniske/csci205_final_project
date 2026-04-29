@@ -116,8 +116,6 @@ public class GameViewController {
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
         // TODO: call Player.toggleLeftDoor() or DoorWithBlinds logic
-        // Update button text to reflect state:
-        // leftDoorButton.setText(isDoorClosed ? "OPEN DOOR" : "CLOSE DOOR");
     }
 
     // ── CAMERA HOOK
@@ -126,9 +124,15 @@ public class GameViewController {
     private void onOpenCameras(ActionEvent event) {
         stopDisplayUpdater();
         try {
+            // Load using instance to access controller
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
+            Parent root = loader.load();
+
+            // Inject system
+            CameraViewController controller = loader.getController();
+            controller.setCameraSystem(GameSession.getInstance().getCameraSystem());
+
             Stage stage = (Stage) cameraButton.getScene().getWindow();
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) {
             e.printStackTrace();
