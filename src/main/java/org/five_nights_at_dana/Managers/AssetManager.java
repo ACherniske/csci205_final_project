@@ -53,6 +53,12 @@ public class AssetManager {
 
         // Load other static assets
         //loadImage("static_overlay", "static_overlay.png");
+        // NEW: Add character assets
+        loadImage("char_confused", "character_confused.png");
+        loadImage("char_eager", "character_eager.png");
+        loadImage("char_persistent", "character_persistent.png");
+        loadImage("char_runner", "character_runner.png");
+        loadImage("char_shy", "character_shy.png");
 
         // Load Sounds
         //loadSound("camera_switch", "camera_switch.wav");
