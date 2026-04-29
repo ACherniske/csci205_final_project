@@ -17,49 +17,40 @@
 
 package org.five_nights_at_dana.Rendering.Camera;
 
-import javafx.scene.canvas.GraphicsContext;
-import org.five_nights_at_dana.Core.GamePane;
+import org.five_nights_at_dana.Managers.AssetManager; // ADDED
+import org.five_nights_at_dana.Managers.StudentManager;
+import javafx.scene.image.Image; // ADDED
 
-/**
- * Handles camera feeds and rendering.
- */
 public class CameraSystem {
 
-    private GamePane gamePaneReference;
+    private String currentCameraId = "1A";
+    private final StudentManager studentManager;
 
-    public CameraSystem(GamePane pane) {
-        this.gamePaneReference = pane;
+    public CameraSystem(StudentManager studentManager) {
+        this.studentManager = studentManager;
     }
 
-    /** Updates camera logic. */
-    public void update() {
-        // TODO handle switching/static
-    }
-
-    /**
-     * Renders camera feed.
-     */
-    public void render(GraphicsContext gc) {
-        // TODO draw feed + overlay
+    public void setActiveCamera(String cameraId) {
+        if (CameraConfig.isValidCamera(cameraId)) {
+            this.currentCameraId = cameraId;
+            // You can now easily trigger the sound here using your AssetManager
+            // AssetManager.getSound("camera_switch").play();
+        }
     }
 
     /**
-     * Sets active camera.
+     * New method: Returns the visual feed directly.
+     * The UI Controller just calls system.getFeedImage() to update the screen.
      */
-    public void setCamera(String cam) {
-        // TODO validate and switch
+    public Image getFeedImage() {
+        return AssetManager.getImage(currentCameraId);
     }
 
-    /**
-     * @return current camera
-     */
-    public String getCurrentCamera() {
-        // TODO return camera id
-        return null;
+    public CameraConfig.CameraEntry getActiveCamera() {
+        return CameraConfig.getCamera(currentCameraId);
     }
 
-    /** Resets system. */
-    public void reset() {
-        // TODO reset state
+    public boolean isStudentVisible() {
+        return !studentManager.getStudentsAt(CameraConfig.getLocation(currentCameraId)).isEmpty();
     }
 }

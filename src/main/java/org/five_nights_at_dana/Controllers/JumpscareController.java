@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/26/2026
+ * Time: 9:22 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: JumpscareController
+ *
+ * Description:
+ * Controller for JumpscareView.fxml scene which plays the jumpscare animation
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.animation.FadeTransition;
@@ -15,7 +31,6 @@ import javafx.util.Duration;
 
 /**
  * Controller for JumpscareView.fxml.
- *
  * Call startJumpscare(studentName) from GameViewController when a student
  * reaches the office. The sequence runs automatically then returns to the
  * main menu (or a dedicated Game Over screen when one is added).

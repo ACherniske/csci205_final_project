@@ -1,3 +1,19 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/24/2026
+ * Time: 8:46 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: MainMenuController
+ *
+ * Description:
+ * Controller for MainMenu.fxml scene which displays the main menu screen.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
 import javafx.event.ActionEvent;
@@ -10,10 +26,10 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import org.five_nights_at_dana.Core.GameSession;
 
 /**
  * Controller for MainMenu.fxml.
- *
  * Hook point: implement onStartGame() to launch the gameplay scene.
  */
 public class MainMenuController {
@@ -25,7 +41,7 @@ public class MainMenuController {
     @FXML
     public void initialize() {
         backgroundImage.setImage(new Image(
-                getClass().getResourceAsStream("/assets/images/MainMenu.png")));
+                getClass().getResourceAsStream("/assets/images/MainMenuBackground.png")));
         // Add intro animations or sound here.
     }
 
@@ -36,6 +52,7 @@ public class MainMenuController {
     @FXML
     private void onStartGame(ActionEvent event) {
         try {
+            GameSession.getInstance().startNight();
             Stage stage = (Stage) startButton.getScene().getWindow();
             Parent root = FXMLLoader.load(
                     getClass().getResource("/org/five_nights_at_dana/GameView.fxml"));

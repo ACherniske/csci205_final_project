@@ -1,5 +1,22 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/22/2026
+ * Time: 10:34 PM
+ *
+ * Project: csci205_final_project
+ * Package: org.five_nights_at_dana.Controllers;
+ * Class: GameViewController
+ *
+ * Description:
+ * Controller for GameView.fxml scene which displays the main office gameplay screen.
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Controllers;
 
+import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,32 +29,28 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import org.five_nights_at_dana.Core.GameSession;
 
 /**
  * Controller for GameView.fxml — the main office gameplay screen.
- *
- * Each method below is a hook for a specific game mechanic.
- * Wire the actual logic by calling into the relevant system class
- * (Player, Power, VentSystem, etc.) from inside these methods.
  */
 public class GameViewController {
 
-    // ── HUD ──────────────────────────────────────────────────────────────
+    // ── HUD
     @FXML private Label timeLabel;
     @FXML private ProgressBar powerBar;
     @FXML private Label powerLabel;
     @FXML private ProgressBar classroomActivityBar;
     @FXML private Label stairChargesLabel;
 
-    // ── OFFICE OBJECTS ────────────────────────────────────────────────────
+    // ── OFFICE OBJECTS
     @FXML private ImageView officeBackground;
     @FXML private ImageView coffeeMugImage;
 
-    // ── DOOR BUTTONS ──────────────────────────────────────────────────────
+    // ── DOOR BUTTON
     @FXML private Button leftDoorButton;
-    @FXML private Button rightDoorButton;
 
-    // ── SYSTEM BUTTONS ────────────────────────────────────────────────────
+    // ── SYSTEM BUTTONS
     @FXML private Button cameraButton;
     @FXML private Button ventSealButton;
     @FXML private Button elevatorStopButton;
@@ -45,105 +58,127 @@ public class GameViewController {
     @FXML private Button middleStairwellButton;
     @FXML private Button rightStairwellButton;
 
+    // Polls GameSession each frame and refreshes the label only when the time changes
+    private AnimationTimer displayUpdater;
+    private int lastDisplayedHour = -1;
+    private int lastDisplayedMinute = -1;
+
     @FXML
     public void initialize() {
         officeBackground.setImage(new Image(
                 getClass().getResourceAsStream("/assets/images/OfficeView.png")));
-        // Start game loop / timers here.
+        startDisplayUpdater();
     }
 
-    // ── HOOK: update HUD every game tick ─────────────────────────────────
-    /**
-     * Call this each game tick to refresh all HUD displays.
-     * Example: controller.updateHUD(power.getPercent(), hour, minute, classActivity, charges);
-     */
-    public void updateHUD(double powerPercent, int hour, int minute,
-                          double classActivity, int stairCharges) {
+    // ── CLOCK DISPLAY
+    private void startDisplayUpdater() {
+        GameSession session = GameSession.getInstance();
+        lastDisplayedHour = session.getHour();
+        lastDisplayedMinute = session.getMinute();
+        updateTimeLabel(lastDisplayedHour, lastDisplayedMinute);
+
+        displayUpdater = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                int h = GameSession.getInstance().getHour();
+                int m = GameSession.getInstance().getMinute();
+                if (h != lastDisplayedHour || m != lastDisplayedMinute) {
+                    lastDisplayedHour = h;
+                    lastDisplayedMinute = m;
+                    updateTimeLabel(h, m);
+                }
+            }
+        };
+        displayUpdater.start();
+    }
+
+    private void stopDisplayUpdater() {
+        if (displayUpdater != null) {
+            displayUpdater.stop();
+            displayUpdater = null;
+        }
+    }
+
+    private void updateTimeLabel(int hour, int minute) {
+        timeLabel.setText(String.format("%d:%02d AM", hour, minute));
+    }
+
+    // ── HOOK: update full HUD each game tick
+    public void updateHUD(double powerPercent, double classActivity, int stairCharges) {
         powerBar.setProgress(powerPercent);
         powerLabel.setText((int)(powerPercent * 100) + "%");
-        timeLabel.setText(String.format("%d:%02d AM", hour, minute));
         classroomActivityBar.setProgress(classActivity);
         stairChargesLabel.setText("Stair Charges: " + "● ".repeat(stairCharges).trim());
     }
 
-    // ── DOOR HOOKS ────────────────────────────────────────────────────────
+    // ── DOOR HOOK
 
-    /** Hook: toggle the left office door open/closed. */
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
         // TODO: call Player.toggleLeftDoor() or DoorWithBlinds logic
-        // Update button text to reflect state:
-        // leftDoorButton.setText(isDoorClosed ? "OPEN LEFT DOOR" : "CLOSE LEFT DOOR");
     }
 
-    /** Hook: toggle the right office door open/closed. */
-    @FXML
-    private void onToggleRightDoor(ActionEvent event) {
-        // TODO: call Player.toggleRightDoor() or DoorWithBlinds logic
-    }
+    // ── CAMERA HOOK
 
-    // ── CAMERA HOOK ───────────────────────────────────────────────────────
-
-    /** Hook: flip up the camera tablet — switch to CameraView scene. */
     @FXML
     private void onOpenCameras(ActionEvent event) {
+        stopDisplayUpdater();
         try {
+            // Load using instance to access controller
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
+            Parent root = loader.load();
+
+            // Inject system
+            CameraViewController controller = loader.getController();
+            controller.setCameraSystem(GameSession.getInstance().getCameraSystem());
+
             Stage stage = (Stage) cameraButton.getScene().getWindow();
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // ── VENT HOOK ─────────────────────────────────────────────────────────
+    // ── VENT HOOK
 
-    /** Hook: toggle the vent seal on/off (VentSystem). */
     @FXML
     private void onToggleVentSeal(ActionEvent event) {
         // TODO: call VentSystem.toggleSeal()
-        // Update label: ventSealButton.setText(sealed ? "UNSEAL VENT" : "SEAL VENT");
     }
 
-    // ── COFFEE MUG HOOK ───────────────────────────────────────────────────
+    // ── COFFEE MUG HOOK
 
-    /** Hook: player clicks the coffee mug to restore alertness. */
     @FXML
     private void onCoffeeMugClicked(MouseEvent event) {
         // TODO: call CoffeeMugObject.interact() or Player.drinkCoffee()
     }
 
-    // ── STAIRWELL & ELEVATOR HOOKS ────────────────────────────────────────
+    // ── STAIRWELL & ELEVATOR HOOKS
 
-    /** Hook: activate emergency lights in the left stairwell (limited uses). */
     @FXML
     private void onLeftStairwellLights(ActionEvent event) {
         // TODO: call LeftStairwell.activateEmergencyLights()
     }
 
-    /** Hook: activate emergency lighting in the middle stairwell (stuns students). */
     @FXML
     private void onMiddleStairwellLights(ActionEvent event) {
         // TODO: call MiddleStairwell.activateEmergencyLighting()
     }
 
-    /** Hook: query the right stairwell motion sensor. */
     @FXML
     private void onRightStairwellSensor(ActionEvent event) {
         // TODO: call RightStairwell.querySensor() and display result
     }
 
-    /** Hook: trigger an elevator emergency stop. */
     @FXML
     private void onElevatorEmergencyStop(ActionEvent event) {
         // TODO: call ElevatorSystem.emergencyStop()
     }
 
-    // ── JUMPSCARE TRIGGER (called by game logic, not a button) ────────────
+    // ── JUMPSCARE TRIGGER
 
-    /** Call this from the game loop when a student reaches the office. */
     public void triggerJumpscare(String studentName) {
+        stopDisplayUpdater();
         try {
             Stage stage = (Stage) officeBackground.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(
