@@ -32,7 +32,7 @@ public class ClassroomMechanic {
     private static final int MAX_ACTIVITY = 100;
 
     /** Rate at which activity increases per frame when not watched. */
-    private static final double ACTIVITY_INCREASE_RATE = 0.05;
+    private static final double ACTIVITY_INCREASE_RATE = 0.00000000001;
 
     /** Frames to wait before activity begins increasing (3s). */
     private static final int RESET_COOLDOWN = 180; // frames -> 3s

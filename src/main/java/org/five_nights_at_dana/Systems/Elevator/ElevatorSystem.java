@@ -219,6 +219,15 @@ public class ElevatorSystem {
 
 
     /**
+     * Returns the current power drain rate of the elevator system.
+     *
+     * @return The drain value when emergency-stopped, 0.0 otherwise.
+     */
+    public double getPowerDrain() {
+        return isEmergencyStopped ? EMERGENCY_STOP_POWER_DRAIN : 0.0;
+    }
+
+    /**
      * Checks if the user is allowed to stop the elevator.
      *
      * @return true if stoppig is permitted.

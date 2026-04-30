@@ -241,7 +241,7 @@ public class Student {
      * Resets the movement cooldown timer. Higher difficulty reduces the wait time.
      */
     private void resetMovementTimer() {
-        int baseTimer = Math.max(30, 180 - (difficulty * 20));
+        int baseTimer = Math.max(60, 600000000 - (difficulty * 20));
         movementTimer = switch (personality) {
             case EAGER -> (int) (baseTimer * 0.7);
             case SHY -> (int) (baseTimer * 1.3);

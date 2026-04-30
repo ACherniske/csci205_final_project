@@ -16,6 +16,8 @@
 
 package org.five_nights_at_dana.Controllers;
 
+import org.five_nights_at_dana.Core.GameSession;
+import org.five_nights_at_dana.Core.GameState;
 import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -44,13 +46,18 @@ public class CameraViewController {
     public void setCameraSystem(CameraSystem system) {
         this.cameraSystem = system;
 
-        // This runs only after the system is provided
         buttonToIdMap.forEach((btn, id) -> btn.setOnAction(e -> {
             cameraSystem.setActiveCamera(id);
             updateView();
         }));
 
-        updateView(); // Safe to call now
+        // Handle jumpscare/win/gameover while camera view is active
+        GameSession session = GameSession.getInstance();
+        session.setOnJumpscare(this::triggerJumpscare);
+        session.setOnWin(this::returnToMainMenu);
+        session.setOnGameOver(this::returnToMainMenu);
+
+        updateView();
     }
 
     // ── UI ELEMENTS ──────────────────────────────────────────────────────
@@ -108,6 +115,10 @@ public class CameraViewController {
     private void updateView() {
         cameraFeedImage.setImage(cameraSystem.getFeedImage());
         activeCameraLabel.setText(cameraSystem.getActiveCamera().label());
+        // Watching CAM 3D resets the runner's activity meter
+        if ("3D".equals(cameraSystem.getActiveCamera().id())) {
+            GameSession.getInstance().getClassroom().resetActivity();
+        }
     }
 
     // ── FLOOR SELECTION ───────────────────────────────────────────────────
@@ -134,9 +145,34 @@ public class CameraViewController {
 
     @FXML
     private void onLowerCameras(ActionEvent event) {
+        GameSession.getInstance().setCurrentState(GameState.PLAYING);
+        returnToGameView();
+    }
+
+    private void returnToGameView() {
         try {
             Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/GameView.fxml"));
+            stage.setScene(new Scene(root, 1280, 720));
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void returnToMainMenu() {
+        try {
+            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
+            stage.setScene(new Scene(root, 1280, 720));
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    private void triggerJumpscare(String studentQuestion) {
+        try {
+            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
+            Parent root = loader.load();
+            JumpscareController jc = loader.getController();
+            jc.startJumpscare(studentQuestion);
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) { e.printStackTrace(); }
     }

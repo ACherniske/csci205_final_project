@@ -10,13 +10,14 @@
  * Class: GameViewController
  *
  * Description:
- * Controller for GameView.fxml scene which displays the main office gameplay screen.
+ * Controller for GameView.fxml — the main office gameplay screen.
+ * Embeds the GamePane rendering canvas, wires all player actions to
+ * their respective subsystems in GameSession, and updates the HUD.
  * ****************************************
  */
 
 package org.five_nights_at_dana.Controllers;
 
-import javafx.animation.AnimationTimer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -28,29 +29,28 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import org.five_nights_at_dana.Core.GamePane;
 import org.five_nights_at_dana.Core.GameSession;
+import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
 
-/**
- * Controller for GameView.fxml — the main office gameplay screen.
- */
 public class GameViewController {
 
-    // ── HUD
-    @FXML private Label timeLabel;
+    // ── HUD ──────────────────────────────────────────────────────────
+    @FXML private Label       timeLabel;
     @FXML private ProgressBar powerBar;
-    @FXML private Label powerLabel;
+    @FXML private Label       powerLabel;
     @FXML private ProgressBar classroomActivityBar;
-    @FXML private Label stairChargesLabel;
+    @FXML private Label       stairChargesLabel;
 
-    // ── OFFICE OBJECTS
+    // ── OFFICE OBJECTS ────────────────────────────────────────────────
     @FXML private ImageView officeBackground;
     @FXML private ImageView coffeeMugImage;
 
-    // ── DOOR BUTTON
+    // ── BUTTONS ───────────────────────────────────────────────────────
     @FXML private Button leftDoorButton;
-
-    // ── SYSTEM BUTTONS
     @FXML private Button cameraButton;
     @FXML private Button ventSealButton;
     @FXML private Button elevatorStopButton;
@@ -58,80 +58,71 @@ public class GameViewController {
     @FXML private Button middleStairwellButton;
     @FXML private Button rightStairwellButton;
 
-    // Polls GameSession each frame and refreshes the label only when the time changes
-    private AnimationTimer displayUpdater;
-    private int lastDisplayedHour = -1;
-    private int lastDisplayedMinute = -1;
+    private GamePane    gamePane;
+    private GameSession session;
 
     @FXML
     public void initialize() {
         officeBackground.setImage(new Image(
                 getClass().getResourceAsStream("/assets/images/OfficeView.png")));
-        startDisplayUpdater();
+
+        session = GameSession.getInstance();
+        // Do not override state here — startNight() sets PLAYING for a fresh game,
+        // and CameraViewController.onLowerCameras() restores it when returning from cameras.
+
+        // Add the rendering canvas between the background ImageView and HUD controls
+        gamePane = new GamePane();
+        AnchorPane root = (AnchorPane) timeLabel.getParent();
+        root.getChildren().add(1, gamePane);
+        AnchorPane.setTopAnchor(gamePane,    0.0);
+        AnchorPane.setBottomAnchor(gamePane, 0.0);
+        AnchorPane.setLeftAnchor(gamePane,   0.0);
+        AnchorPane.setRightAnchor(gamePane,  0.0);
+
+        // Register event callbacks with the session
+        session.setOnFrameRender(this::onFrame);
+        session.setOnJumpscare(this::triggerJumpscare);
+        session.setOnWin(this::handleWin);
+        session.setOnGameOver(this::handleGameOver);
     }
 
-    // ── CLOCK DISPLAY
-    private void startDisplayUpdater() {
-        GameSession session = GameSession.getInstance();
-        lastDisplayedHour = session.getHour();
-        lastDisplayedMinute = session.getMinute();
-        updateTimeLabel(lastDisplayedHour, lastDisplayedMinute);
+    // ── Frame callback (called every frame by GameSession's AnimationTimer) ──
 
-        displayUpdater = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                int h = GameSession.getInstance().getHour();
-                int m = GameSession.getInstance().getMinute();
-                if (h != lastDisplayedHour || m != lastDisplayedMinute) {
-                    lastDisplayedHour = h;
-                    lastDisplayedMinute = m;
-                    updateTimeLabel(h, m);
-                }
-            }
-        };
-        displayUpdater.start();
+    private void onFrame() {
+        gamePane.render();
+        refreshHUD();
     }
 
-    private void stopDisplayUpdater() {
-        if (displayUpdater != null) {
-            displayUpdater.stop();
-            displayUpdater = null;
-        }
+    private void refreshHUD() {
+        powerBar.setProgress(session.getPower());
+        powerLabel.setText((int)(session.getPower() * 100) + "%");
+        classroomActivityBar.setProgress(session.getClassroom().getActivityPercentage());
+        int charges = session.getStairSystem().getLightCharges();
+        stairChargesLabel.setText("Stair Charges: " + "● ".repeat(charges).trim());
+        timeLabel.setText(String.format("%d:%02d AM", session.getHour(), session.getMinute()));
     }
 
-    private void updateTimeLabel(int hour, int minute) {
-        timeLabel.setText(String.format("%d:%02d AM", hour, minute));
-    }
-
-    // ── HOOK: update full HUD each game tick
-    public void updateHUD(double powerPercent, double classActivity, int stairCharges) {
-        powerBar.setProgress(powerPercent);
-        powerLabel.setText((int)(powerPercent * 100) + "%");
-        classroomActivityBar.setProgress(classActivity);
-        stairChargesLabel.setText("Stair Charges: " + "● ".repeat(stairCharges).trim());
-    }
-
-    // ── DOOR HOOK
+    // ── DOOR ──────────────────────────────────────────────────────────
 
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
-        // TODO: call Player.toggleLeftDoor() or DoorWithBlinds logic
+        // TODO: implement door toggle mechanic
     }
 
-    // ── CAMERA HOOK
+    // ── CAMERAS ───────────────────────────────────────────────────────
 
     @FXML
     private void onOpenCameras(ActionEvent event) {
-        stopDisplayUpdater();
+        if (session.getCurrentState() != GameState.PLAYING) return;
+        session.setCurrentState(GameState.VIEWING_CAMERAS);
+        // Pause the render callback while the camera scene is visible
+        session.setOnFrameRender(null);
         try {
-            // Load using instance to access controller
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/org/five_nights_at_dana/CameraView.fxml"));
             Parent root = loader.load();
-
-            // Inject system
             CameraViewController controller = loader.getController();
-            controller.setCameraSystem(GameSession.getInstance().getCameraSystem());
-
+            controller.setCameraSystem(session.getCameraSystem());
             Stage stage = (Stage) cameraButton.getScene().getWindow();
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) {
@@ -139,56 +130,89 @@ public class GameViewController {
         }
     }
 
-    // ── VENT HOOK
+    // ── VENT ──────────────────────────────────────────────────────────
 
     @FXML
     private void onToggleVentSeal(ActionEvent event) {
-        // TODO: call VentSystem.toggleSeal()
+        session.getVents().sealVent();
     }
 
-    // ── COFFEE MUG HOOK
+    // ── COFFEE MUG ────────────────────────────────────────────────────
 
     @FXML
     private void onCoffeeMugClicked(MouseEvent event) {
-        // TODO: call CoffeeMugObject.interact() or Player.drinkCoffee()
+        session.refillCoffee(0.3);
     }
 
-    // ── STAIRWELL & ELEVATOR HOOKS
+    // ── STAIRWELLS ────────────────────────────────────────────────────
 
     @FXML
     private void onLeftStairwellLights(ActionEvent event) {
-        // TODO: call LeftStairwell.activateEmergencyLights()
+        session.getStairSystem().activateLights(Stairwell.LEFT);
     }
 
     @FXML
     private void onMiddleStairwellLights(ActionEvent event) {
-        // TODO: call MiddleStairwell.activateEmergencyLighting()
+        session.getStairSystem().activateLights(Stairwell.MIDDLE);
     }
 
     @FXML
     private void onRightStairwellSensor(ActionEvent event) {
-        // TODO: call RightStairwell.querySensor() and display result
+        session.getStairSystem().activateLights(Stairwell.RIGHT);
     }
+
+    // ── ELEVATOR ──────────────────────────────────────────────────────
 
     @FXML
     private void onElevatorEmergencyStop(ActionEvent event) {
-        // TODO: call ElevatorSystem.emergencyStop()
+        session.getElevator().emergencyStop();
     }
 
-    // ── JUMPSCARE TRIGGER
+    // ── WIN / LOSE ────────────────────────────────────────────────────
 
-    public void triggerJumpscare(String studentName) {
-        stopDisplayUpdater();
+    private void handleWin() {
+        // TODO: load dedicated win screen
+        System.out.println("YOU SURVIVED THE NIGHT!");
+        returnToMainMenu();
+    }
+
+    private void handleGameOver() {
+        System.out.println("GAME OVER — power out");
+        returnToMainMenu();
+    }
+
+    private void returnToMainMenu() {
+        try {
+            Stage stage = (Stage) officeBackground.getScene().getWindow();
+            Parent root = FXMLLoader.load(
+                    getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
+            stage.setScene(new Scene(root, 1280, 720));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ── JUMPSCARE ─────────────────────────────────────────────────────
+
+    public void triggerJumpscare(String studentQuestion) {
         try {
             Stage stage = (Stage) officeBackground.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
             Parent root = loader.load();
             JumpscareController jc = loader.getController();
-            jc.startJumpscare(studentName);
+            jc.startJumpscare(studentQuestion);
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /** External hook to push HUD values if needed outside the frame callback. */
+    public void updateHUD(double powerPercent, double classActivity, int stairCharges) {
+        powerBar.setProgress(powerPercent);
+        powerLabel.setText((int)(powerPercent * 100) + "%");
+        classroomActivityBar.setProgress(classActivity);
+        stairChargesLabel.setText("Stair Charges: " + "● ".repeat(stairCharges).trim());
     }
 }
