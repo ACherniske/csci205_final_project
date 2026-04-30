@@ -101,7 +101,7 @@ public class CameraConfig {
             // Stairwell cameras
             Map.entry("SL1", new CameraEntry(
                     "SL1",
-                    "Left Stairs F1",
+                    "Floor 1 Left Stairs",
                     "cam_s_l1_stairs.png",
                     Location.FLOOR1_STAIR_LEFT,
                     1
@@ -109,7 +109,7 @@ public class CameraConfig {
 
             Map.entry("SM1", new CameraEntry(
                     "SM1",
-                    "Middle Stairs F1",
+                    "Floor 1 Middle Stairs",
                     "cam_s_m1_stairs.png",
                     Location.FLOOR1_STAIR_MID,
                     1
@@ -117,7 +117,7 @@ public class CameraConfig {
 
             Map.entry("SR1", new CameraEntry(
                     "SR1",
-                    "Right Stairs F1",
+                    "Floor 1 Right Stairs",
                     "cam_s_r1_stairs.png",
                     Location.FLOOR1_STAIR_RIGHT,
                     1
@@ -144,7 +144,7 @@ public class CameraConfig {
 
             Map.entry("BUCKY", new CameraEntry(
                     "BUCKY",
-                    "Hallway Right (Hidden)",
+                    "Hallway Right",
                     "cam_bucky_hallway_right.png",
                     Location.FLOOR2_HALLWAY_RIGHT,
                     2
@@ -161,7 +161,7 @@ public class CameraConfig {
             // Stairwell cameras
             Map.entry("SL2", new CameraEntry(
                     "SL2",
-                    "Left Stairs F2",
+                    "Floor 2 Left Stairs",
                     "cam_s_l2_stairs.png",
                     Location.FLOOR2_STAIR_LEFT,
                     2
@@ -169,7 +169,7 @@ public class CameraConfig {
 
             Map.entry("SM2", new CameraEntry(
                     "SM2",
-                    "Middle Stairs F2",
+                    "Floor 2 Middle Stairs",
                     "cam_s_m2_stairs.png",
                     Location.FLOOR2_STAIR_MID,
                     2
@@ -177,7 +177,7 @@ public class CameraConfig {
 
             Map.entry("SR2", new CameraEntry(
                     "SR2",
-                    "Right Stairs F2",
+                    "Floor 2 Right Stairs",
                     "cam_s_r2_stairs.png",
                     Location.FLOOR2_STAIR_RIGHT,
                     2
@@ -188,7 +188,7 @@ public class CameraConfig {
             // Room cameras
             Map.entry("3A", new CameraEntry(
                     "3A",
-                    "Testing Lab",
+                    "ECEG Testing Lab",
                     "cam_3a_testing_lab.png",
                     Location.FLOOR3_TESTING_LAB,
                     3
@@ -212,7 +212,7 @@ public class CameraConfig {
 
             Map.entry("3D", new CameraEntry(
                     "3D",
-                    "Computer Lab (RUNNER)",
+                    "Computer Lab",
                     "cam_3d_computer_lab.png",
                     Location.FLOOR3_COMPUTER_LAB,
                     3
@@ -221,7 +221,7 @@ public class CameraConfig {
             // Stairwell cameras
             Map.entry("SL3", new CameraEntry(
                     "SL3",
-                    "Left Stairs F3",
+                    "Floor 3 Left Stairs",
                     "cam_s_l3_stairs.png",
                     Location.FLOOR3_STAIR_LEFT,
                     3
@@ -229,7 +229,7 @@ public class CameraConfig {
 
             Map.entry("SM3", new CameraEntry(
                     "SM3",
-                    "Middle Stairs F3",
+                    "Floor 3 Middle Stairs",
                     "cam_s_m3_stairs.png",
                     Location.FLOOR3_STAIR_MID,
                     3
@@ -237,7 +237,7 @@ public class CameraConfig {
 
             Map.entry("SR3", new CameraEntry(
                     "SR3",
-                    "Right Stairs F3",
+                    "Floor 3 Right Stairs",
                     "cam_s_r3_stairs.png",
                     Location.FLOOR3_STAIR_RIGHT,
                     3
