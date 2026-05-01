@@ -58,8 +58,11 @@ public class ClassroomMechanic {
      * @param runner The Student object representing the runner.
      */
     public void setRunner(Student runner) {
+        if (this.runner == runner) return;
         this.runner = runner;
-        System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
+        if (runner != null) {
+            System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
+        }
     }
 
     /**

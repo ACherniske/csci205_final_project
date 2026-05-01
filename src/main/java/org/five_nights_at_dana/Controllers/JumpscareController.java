@@ -19,15 +19,15 @@ package org.five_nights_at_dana.Controllers;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.SequentialTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.five_nights_at_dana.UI.FadeUtil;
 
 /**
  * Controller for JumpscareView.fxml.
@@ -49,6 +49,12 @@ public class JumpscareController {
     public void initialize() {
         jumpscareImage.setImage(new Image(
                 getClass().getResourceAsStream("/assets/images/JumpscareScreen.png")));
+
+        Platform.runLater(() -> {
+            if (jumpscareImage.getScene() != null) {
+                FadeUtil.fadeIn(jumpscareImage.getScene().getRoot(), 0.18);
+            }
+        });
     }
 
     /**
@@ -56,6 +62,13 @@ public class JumpscareController {
      * @param studentName the name of the student who caught the player
      */
     public void startJumpscare(String studentName) {
+        // If called before this view is attached to a scene (common during fade scene switches),
+        // defer until the next FX pulse.
+        if (jumpscareImage.getScene() == null) {
+            Platform.runLater(() -> startJumpscare(studentName));
+            return;
+        }
+
         studentNameLabel.setText("Caught by " + studentName);
 
         // 1s scare image shown → fade in "GAME OVER" → wait → return to menu
@@ -84,10 +97,9 @@ public class JumpscareController {
      */
     private void returnToMainMenu() {
         try {
-            Stage stage = (Stage) jumpscareImage.getScene().getWindow();
             Parent root = FXMLLoader.load(
                     getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
-            stage.setScene(new Scene(root, 1280, 720));
+            FadeUtil.fadeOutAndSwitch(jumpscareImage, root, 1280, 720, 0.25);
         } catch (Exception e) {
             e.printStackTrace();
         }

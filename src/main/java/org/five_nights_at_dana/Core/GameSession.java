@@ -115,7 +115,6 @@ public class GameSession {
         stairSystem    = new StairSystem();
         vents          = new VentSystem();
         classroom      = new ClassroomMechanic();
-        wireRunner();
     }
 
     /**
@@ -132,6 +131,9 @@ public class GameSession {
 
     /** Resets all state and starts both the clock and the frame loop. */
     public void startNight() {
+        // Enable verbose AI movement roll logging for debugging.
+        Student.setDebugMoveLogs(true);
+
         hour       = 12;
         minute     = 0;
         power      = BATTERY_CAPACITY;
@@ -180,6 +182,9 @@ public class GameSession {
         applyLeftDoorBlock();
 
         studentManager.update();
+
+        emitDoorArrivalWarnings();
+
         integrateSpecialTransitions();
         integrateStairTransitions();
         applyLeftDoorBlock();
@@ -189,9 +194,24 @@ public class GameSession {
         vents.update();
         classroom.update();
 
+        // Catch arrivals to the door caused by subsystem transitions (e.g., vent exit).
+        emitDoorArrivalWarnings();
+
         updatePower();
         updateCoffee();
         checkConditions();
+    }
+
+    /**
+     * Emits a warning toast when a student first reaches the office door.
+     * Uses a one-shot flag stored on each Student to avoid spam.
+     */
+    private void emitDoorArrivalWarnings() {
+        for (Student s : studentManager.getAllStudents()) {
+            if (s.consumeJustArrivedAtDoor()) {
+                SensorHelper.emit(s.getName() + " is at the door!", Notification.Type.DANGER);
+            }
+        }
     }
 
     /**
@@ -221,9 +241,9 @@ public class GameSession {
 
         lastDifficultyIncreaseHour = hour;
 
-        // Increase from 1 AM onward (avoid a “free” increase at the starting 12 AM)
-        if (hour != 12) {
-            studentManager.increaseDifficulty();
+        // FNAF-style Night 1 aggression growth: only at 2AM, 3AM, 4AM.
+        if (hour == 2 || hour == 3 || hour == 4) {
+            studentManager.applyNight1AggressionGrowth(hour);
             NotificationManager.push("Students are getting bolder...", Notification.Type.SYSTEM);
         }
     }
@@ -249,16 +269,6 @@ public class GameSession {
         Student inOffice = studentManager.getStudentInOffice();
         if (inOffice != null) {
             String question = inOffice.getQuestion();
-            Consumer<String> cb = onJumpscare;
-            endGame(GameState.JUMPSCARE);
-            if (cb != null) cb.accept(question);
-            return;
-        }
-
-        // Student at door triggers only if the door is open.
-        Student atDoor = studentManager.getStudentAtDoor();
-        if (atDoor != null && !leftDoorClosed) {
-            String question = atDoor.getQuestion();
             Consumer<String> cb = onJumpscare;
             endGame(GameState.JUMPSCARE);
             if (cb != null) cb.accept(question);

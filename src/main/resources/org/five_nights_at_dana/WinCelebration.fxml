@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+
+<!--
+    WinCelebration.fxml
+    Quick "6:00 AM" moment with fireworks; click anywhere to skip.
+-->
+<AnchorPane
+        fx:id="root"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="org.five_nights_at_dana.Controllers.WinCelebrationController"
+        prefWidth="1280" prefHeight="720"
+        onMouseClicked="#onSkip"
+        style="-fx-background-color: #000000;">
+
+    <Label
+            fx:id="timeLabel"
+            text="6:00 AM"
+            layoutX="0" layoutY="0"
+            prefWidth="1280" prefHeight="720"
+            style="-fx-font-family: 'Courier New';
+                   -fx-font-size: 84px;
+                   -fx-font-weight: bold;
+                   -fx-text-fill: #ffffff;
+                   -fx-alignment: center;
+                   -fx-effect: dropshadow(gaussian, rgba(255,255,255,0.35), 22, 0.25, 0, 0);"/>
+
+</AnchorPane>

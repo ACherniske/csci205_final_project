@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Rectangle?>
 
-<AnchorPane prefHeight="720" prefWidth="1280" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.five_nights_at_dana.Controllers.CameraViewController">
+<AnchorPane prefHeight="720" prefWidth="1280" style="-fx-background-color: #000000;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.five_nights_at_dana.Controllers.CameraViewController">
 
     <!-- ── CAMERA FEED (left panel) ──────────────────────────────────── -->
     <Rectangle fill="#050505" height="648" layoutX="0" layoutY="0" stroke="#2a2a2a" strokeWidth="2" width="946" />

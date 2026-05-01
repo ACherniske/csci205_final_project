@@ -18,7 +18,9 @@ package org.five_nights_at_dana.Controllers;
 
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.Managers.ObservationManager;
 import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -42,6 +44,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.five_nights_at_dana.UI.NotificationToastOverlay;
+import org.five_nights_at_dana.UI.FadeUtil;
 
 /**
  * Controller for CameraView.fxml — the security camera tablet.
@@ -71,7 +74,7 @@ public class CameraViewController {
         // Handle jumpscare/win/gameover while camera view is active
         GameSession session = GameSession.getInstance();
         session.setOnJumpscare(this::triggerJumpscare);
-        session.setOnWin(this::returnToMainMenu);
+        session.setOnWin(this::goToWinCelebration);
         session.setOnGameOver(this::returnToMainMenu);
 
         updateView();
@@ -144,6 +147,11 @@ public class CameraViewController {
     private void updateView() {
         cameraFeedImage.setImage(cameraSystem.getFeedImage());
         activeCameraLabel.setText(cameraSystem.getActiveCamera().label());
+
+        // Mark the current camera location as being "watched" for AI stalling.
+        ObservationManager.setCamerasUp(true);
+        ObservationManager.setWatchedLocation(CameraConfig.getLocation(cameraSystem.getActiveCamera().id()));
+
         // Watching CAM 3D resets the runner's activity meter
         if ("3D".equals(cameraSystem.getActiveCamera().id())) {
             GameSession.getInstance().getClassroom().resetActivity();
@@ -204,6 +212,7 @@ public class CameraViewController {
     @FXML
     private void onLowerCameras(ActionEvent event) {
         GameSession.getInstance().setCurrentState(GameState.PLAYING);
+        ObservationManager.setCamerasUp(false);
         returnToGameView();
     }
 
@@ -212,8 +221,9 @@ public class CameraViewController {
      */
     private void returnToGameView() {
         try {
-            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
             Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/GameView.fxml"));
+            // Lower cameras should be instant (no fade).
+            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) { e.printStackTrace(); }
     }
@@ -223,10 +233,23 @@ public class CameraViewController {
      */
     private void returnToMainMenu() {
         try {
-            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
+            ObservationManager.setCamerasUp(false);
             Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
-            stage.setScene(new Scene(root, 1280, 720));
+            FadeUtil.fadeOutAndSwitch(lowerCamerasButton, root, 1280, 720, 0.30);
         } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    /**
+     * Goes to the short win animation scene ("6:00 AM" + fireworks), then to the win screen.
+     */
+    private void goToWinCelebration() {
+        try {
+            ObservationManager.setCamerasUp(false);
+            Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/WinCelebration.fxml"));
+            FadeUtil.fadeOutAndSwitch(lowerCamerasButton, root, 1280, 720, 0.30);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -247,13 +270,14 @@ public class CameraViewController {
         PauseTransition holdStatic = new PauseTransition(Duration.millis(500));
         holdStatic.setOnFinished(e -> {
             try {
-                Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
                 Parent root = loader.load();
                 JumpscareController jc = loader.getController();
                 jc.startJumpscare(studentQuestion);
-                stage.setScene(new Scene(root, 1280, 720));
+
+                ObservationManager.setCamerasUp(false);
+                FadeUtil.fadeOutAndSwitch(lowerCamerasButton, root, 1280, 720, 0.18);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

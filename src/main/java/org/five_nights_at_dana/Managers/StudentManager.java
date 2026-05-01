@@ -151,6 +151,40 @@ public class StudentManager {
     }
 
     /**
+     * Applies a FNAF-1 Night-1 inspired aggression schedule at specific hours.
+     *
+     * <p>Reference schedule (AI 0..20):
+     * - 2AM: Bonnie +1
+     * - 3AM: Bonnie +1, Chica +1, Foxy +1
+     * - 4AM: Bonnie +1, Chica +1, Foxy +1
+     *
+     * <p>Mapping in this project (by personality):
+     * - EAGER behaves like Bonnie (increments at 2/3/4)
+     * - PERSISTENT behaves like Chica (increments at 3/4)
+     * - CONFUSED behaves like Foxy (increments at 3/4)
+     * - SHY stays at 0 on Night 1 (Freddy-like)
+     * - RUNNER is handled by the Classroom mechanic
+     */
+    public void applyNight1AggressionGrowth(int hour) {
+        // Scale factor for this project’s larger 3-floor map.
+        // FNAF 1 Night 1 increases are very small because the map is short;
+        // here we need larger steps so AI meaningfully ramps within one night.
+        final int SCALE = 2;
+
+        for (Student s : students) {
+            int delta = switch (s.getPersonality()) {
+                case EAGER -> (hour == 2 || hour == 3 || hour == 4) ? (1 * SCALE) : 0;
+                case PERSISTENT, CONFUSED -> (hour == 3 || hour == 4) ? (1 * SCALE) : 0;
+                default -> 0;
+            };
+
+            if (delta > 0) {
+                s.increaseAiLevel(delta);
+            }
+        }
+    }
+
+    /**
      * Resets all students to their initial state.
      */
     public void reset() {

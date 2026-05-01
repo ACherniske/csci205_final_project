@@ -18,6 +18,7 @@
 
 package org.five_nights_at_dana.Controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -37,6 +38,7 @@ import javafx.stage.Stage;
 import org.five_nights_at_dana.Core.GamePane;
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.UI.FadeUtil;
 import org.five_nights_at_dana.UI.NotificationToastOverlay;
 import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
 
@@ -97,6 +99,8 @@ public class GameViewController {
 
         refreshDoorButton();
         drawBattery(session.getPower());
+
+        Platform.runLater(() -> FadeUtil.fadeIn(root, 0.35));
     }
 
     // ── Frame callback (called every frame by GameSession's AnimationTimer) ──
@@ -214,6 +218,8 @@ public class GameViewController {
             Parent root = loader.load();
             CameraViewController controller = loader.getController();
             controller.setCameraSystem(session.getCameraSystem());
+
+            // Camera open should be instant (no fade).
             Stage stage = (Stage) cameraButton.getScene().getWindow();
             stage.setScene(new Scene(root, 1280, 720));
         } catch (Exception e) {
@@ -295,9 +301,8 @@ public class GameViewController {
      * Handles the win condition callback (survive until 6 AM).
      */
     private void handleWin() {
-        // TODO: load dedicated win screen
         System.out.println("YOU SURVIVED THE NIGHT!");
-        returnToMainMenu();
+        goToWinCelebration();
     }
 
     /**
@@ -309,14 +314,26 @@ public class GameViewController {
     }
 
     /**
+     * Goes to the short win animation scene ("6:00 AM" + fireworks), then to the win screen.
+     */
+    private void goToWinCelebration() {
+        try {
+            Parent root = FXMLLoader.load(
+                    getClass().getResource("/org/five_nights_at_dana/WinCelebration.fxml"));
+            FadeUtil.fadeOutAndSwitch(officeBackground, root, 1280, 720, 0.30);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Returns to the main menu scene.
      */
     private void returnToMainMenu() {
         try {
-            Stage stage = (Stage) officeBackground.getScene().getWindow();
             Parent root = FXMLLoader.load(
                     getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
-            stage.setScene(new Scene(root, 1280, 720));
+            FadeUtil.fadeOutAndSwitch(officeBackground, root, 1280, 720, 0.30);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -331,13 +348,13 @@ public class GameViewController {
      */
     public void triggerJumpscare(String studentQuestion) {
         try {
-            Stage stage = (Stage) officeBackground.getScene().getWindow();
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
             Parent root = loader.load();
             JumpscareController jc = loader.getController();
             jc.startJumpscare(studentQuestion);
-            stage.setScene(new Scene(root, 1280, 720));
+
+            FadeUtil.fadeOutAndSwitch(officeBackground, root, 1280, 720, 0.18);
         } catch (Exception e) {
             e.printStackTrace();
         }

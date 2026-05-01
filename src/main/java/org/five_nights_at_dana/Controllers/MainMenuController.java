@@ -16,17 +16,17 @@
 
 package org.five_nights_at_dana.Controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Stage;
 import org.five_nights_at_dana.Core.GameSession;
+import org.five_nights_at_dana.UI.FadeUtil;
 
 /**
  * Controller for MainMenu.fxml.
@@ -47,6 +47,8 @@ public class MainMenuController {
         backgroundImage.setImage(new Image(
                 getClass().getResourceAsStream("/assets/images/MainMenuBackground.png")));
         // Add intro animations or sound here.
+
+        Platform.runLater(() -> FadeUtil.fadeIn(startButton.getParent(), 0.35));
     }
 
     /**
@@ -57,10 +59,10 @@ public class MainMenuController {
     private void onStartGame(ActionEvent event) {
         try {
             GameSession.getInstance().startNight();
-            Stage stage = (Stage) startButton.getScene().getWindow();
             Parent root = FXMLLoader.load(
                     getClass().getResource("/org/five_nights_at_dana/GameView.fxml"));
-            stage.setScene(new Scene(root, 1280, 720));
+
+            FadeUtil.fadeOutAndSwitch(startButton, root, 1280, 720);
         } catch (Exception e) {
             e.printStackTrace();
         }

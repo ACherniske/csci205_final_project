@@ -17,6 +17,7 @@
 package org.five_nights_at_dana.AI;
 
 import org.five_nights_at_dana.Managers.NavigationManager;
+import org.five_nights_at_dana.Managers.ObservationManager;
 import java.util.*;
 
 /**
@@ -26,6 +27,29 @@ import java.util.*;
  */
 public class Student {
 
+    /**
+     * AI level in the classic 0..20 range.
+     * 0 => will never move on a movement opportunity.
+     * 20 => will always move on a movement opportunity (unless stalled/blocked).
+     */
+    private static final int MAX_AI_LEVEL = 20;
+
+    /** Assumed sim tick-rate for converting seconds -> frames. */
+    private static final int TICKS_PER_SECOND = 60;
+
+    /**
+     * Global scaling for move-opportunity timing.
+     * The original FNAF-style intervals were designed for a much smaller map; this project
+     * has 3 floors, so we shorten intervals so students can realistically reach Floor 3.
+     */
+    private static final double BUILDING_INTERVAL_MULTIPLIER = 0.65;
+
+    /** Additional per-AI-level speedup applied to the movement-opportunity interval. */
+    private static final double INTERVAL_REDUCTION_PER_AI_LEVEL = 0.01;
+
+    /** Hard minimum interval to avoid absurdly fast movement at high AI. */
+    private static final double MIN_MOVE_INTERVAL_SECONDS = 0.75;
+
     private final String name;
     private final String question;
     private final Personality personality;
@@ -33,12 +57,21 @@ public class Student {
     private Location previousLocation;
     private PathType preferredPath;
 
+    /** Frames remaining until the next "movement opportunity" check. */
     private int movementTimer;
-    private int difficulty;
+
+    /** FNAF-style aggressiveness level (0..20). */
+    private int aiLevel;
     private double awarenessLevel;
     private boolean charging;
     private int chargeTimer;
     private boolean sprinting;
+
+    /** When a student reaches the office door, they must "linger" for N movement opportunities. */
+    private int doorLingerMovesRemaining = 0;
+
+    /** One-shot flag used by GameSession to emit a warning toast when a student arrives at the door. */
+    private boolean justArrivedAtDoor = false;
 
     // Memory system for tracking recent path history
     private static final int MEMORY_SIZE = 5;
@@ -46,6 +79,9 @@ public class Student {
 
     // Controlled randomness for deterministic testing
     private static Random rand = new Random();
+
+    /** Debug toggle for printing every move roll/comparison to the console. */
+    private static boolean debugMoveLogs = false;
 
     // Tuning constants
     private static final int CHARGE_DURATION = 120; // frames -> 2s
@@ -56,6 +92,11 @@ public class Student {
      */
     public static void setRandom(Random r) {
         rand = r;
+    }
+
+    /** Enables/disables verbose movement roll debug logging. */
+    public static void setDebugMoveLogs(boolean enabled) {
+        debugMoveLogs = enabled;
     }
 
     /**
@@ -70,7 +111,7 @@ public class Student {
         this.question = question;
         this.personality = personality;
 
-        this.difficulty = 0;
+    this.aiLevel = 0;
         this.awarenessLevel = 0.5;
         this.charging = false;
         this.chargeTimer = 0;
@@ -170,8 +211,9 @@ public class Student {
     // ========== MOVEMENT LOGIC ==========
 
     /**
-     * Updates student behavior per frame. Decrements the movement timer
-     * and triggers pathfinding attempts when the timer expires.
+     * Updates student behavior per sim tick.
+     * A "movement opportunity" occurs whenever the timer elapses.
+     * On a movement opportunity, a 1..20 roll is compared to AI level.
      */
     public void update() {
         // Transitional states are controlled by their respective systems.
@@ -212,21 +254,63 @@ public class Student {
     }
 
     /**
-     * Logic to determine if the student moves this frame based on calculated
-     * probability and updates the current location node.
+     * Movement-opportunity logic.
+     * Rolls 1..20 and moves iff roll <= AI level, unless stalled by cameras.
      */
     public void attemptMove() {
-        double moveChance = calculateMoveChance();
+        Location before = currentLocation;
 
-        if (rand.nextDouble() < moveChance) {
-            Location nextLocation = NavigationManager.getNextLocation(this);
-
-            if (nextLocation != null) {
-                this.previousLocation = this.currentLocation;
-                this.currentLocation = nextLocation;
-                rememberLocation(this.currentLocation);
-                System.out.println(name + " moved to " + currentLocation);
+        // Camera stalling: some personalities cannot move while being watched.
+        if (personality.stallsWhenWatched() && ObservationManager.isWatching(currentLocation)) {
+            if (debugMoveLogs) {
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
+                        " | STALL watched");
             }
+            return;
+        }
+
+        // FNAF-style door timing: when a student reaches the door, they "hang" there
+        // for one full movement opportunity before attempting to enter.
+        if (currentLocation == Location.FLOOR3_AT_DOOR && doorLingerMovesRemaining > 0) {
+            doorLingerMovesRemaining--;
+            if (debugMoveLogs) {
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
+                        " | DOOR linger (remaining=" + doorLingerMovesRemaining + ")");
+            }
+            return;
+        }
+
+        // RUNNER sprint is deterministic and always succeeds.
+        if (personality == Personality.RUNNER) {
+            if (!sprinting) return;
+            doMoveStep();
+            if (currentLocation == Location.IN_OFFICE) {
+                sprinting = false;
+            }
+            if (debugMoveLogs) {
+                System.out.println("[AI-MOVE] " + name + " (RUNNER) " + before + " -> " + currentLocation +
+                        " | sprinting=" + sprinting);
+            }
+            return;
+        }
+
+        if (aiLevel <= 0) {
+            if (debugMoveLogs) {
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
+                        " | AI=" + aiLevel + " (no move)");
+            }
+            return;
+        }
+
+        int roll = rand.nextInt(20) + 1; // 1..20
+        boolean willMove = roll <= aiLevel;
+
+        if (willMove) doMoveStep();
+
+        if (debugMoveLogs) {
+            System.out.println("[AI-MOVE] " + name + " (" + personality + ") " + before +
+                    " | roll=" + roll + " <= AI=" + aiLevel + " ? " + (willMove ? "MOVE" : "STAY") +
+                    (willMove ? (" -> " + currentLocation) : ""));
         }
 
         if (currentLocation == Location.IN_OFFICE) {
@@ -234,20 +318,12 @@ public class Student {
         }
     }
 
-    /**
-     * Calculates the probability that this student will move when their timer elapses.
-     *
-     * @return movement probability in the range [0, 1]
-     */
-    private double calculateMoveChance() {
-        double baseChance = 0.15 + (difficulty * 0.1);
-        return switch (personality) {
-            case EAGER -> baseChance * 1.5;
-            case SHY -> baseChance * 0.7;
-            case CONFUSED -> baseChance * (rand.nextDouble() * 2);
-            case PERSISTENT -> baseChance * 1.2;
-            case RUNNER -> sprinting ? 1.0 : 0.0;
-        };
+    private void doMoveStep() {
+        Location nextLocation = NavigationManager.getNextLocation(this);
+        if (nextLocation == null) return;
+
+        setLocation(nextLocation);
+        System.out.println(name + " moved to " + currentLocation);
     }
 
     /**
@@ -258,27 +334,50 @@ public class Student {
     }
 
     /**
-     * Resets the movement cooldown timer. Higher difficulty reduces the wait time.
+     * Resets the movement-opportunity timer.
+     * Interval is character/personality-specific (FNAF-style).
      */
     private void resetMovementTimer() {
-        int baseTimer = Math.max(60, 180 - (difficulty * 20));
-        movementTimer = switch (personality) {
-            case EAGER -> (int) (baseTimer * 0.7);
-            case SHY -> (int) (baseTimer * 1.3);
-            case PERSISTENT -> (int) (baseTimer * 0.9);
-            case RUNNER -> sprinting ? 10 : Integer.MAX_VALUE;
-            default -> baseTimer;
-        };
+        if (personality == Personality.RUNNER) {
+            // Runner only moves while sprinting; charging/idle runner is locked in place.
+            movementTimer = sprinting ? 10 : Integer.MAX_VALUE;
+            return;
+        }
+
+        double seconds = personality.getMoveOpportunityIntervalSeconds();
+        seconds *= BUILDING_INTERVAL_MULTIPLIER;
+
+        // As AI rises, checks happen slightly more frequently (more aggressive progression).
+        seconds *= (1.0 - (Math.max(0, aiLevel) * INTERVAL_REDUCTION_PER_AI_LEVEL));
+        seconds = Math.max(MIN_MOVE_INTERVAL_SECONDS, seconds);
+
+        int frames = (int) Math.round(seconds * (double) TICKS_PER_SECOND);
+        movementTimer = Math.max(1, frames);
     }
 
     // ========== ACTIONS ==========
 
     /**
-     * Increases the student's difficulty level, capped at a maximum value.
+     * Increases the student's AI level (0..20), capped at 20.
      */
     public void increaseDifficulty() {
-        difficulty = Math.min(6, difficulty + 1);
-        System.out.println(name + " difficulty: " + difficulty);
+        setAiLevel(aiLevel + 1);
+        System.out.println(name + " AI level: " + aiLevel);
+    }
+
+    /**
+     * Increases AI level by a delta amount.
+     */
+    public void increaseAiLevel(int delta) {
+        if (delta <= 0) return;
+        setAiLevel(aiLevel + delta);
+    }
+
+    /**
+     * Sets the AI level, clamped to [0..20].
+     */
+    public void setAiLevel(int newLevel) {
+        aiLevel = Math.max(0, Math.min(MAX_AI_LEVEL, newLevel));
     }
 
     /**
@@ -302,6 +401,26 @@ public class Student {
         this.previousLocation = this.currentLocation;
         this.currentLocation = location;
         rememberLocation(location);
+
+        // Door linger + warning flag. Only fires on transitions INTO the door node.
+        if (location == Location.FLOOR3_AT_DOOR && previousLocation != Location.FLOOR3_AT_DOOR) {
+            doorLingerMovesRemaining = 1;
+            justArrivedAtDoor = true;
+        }
+
+        // Reset door state when leaving.
+        if (location != Location.FLOOR3_AT_DOOR) {
+            doorLingerMovesRemaining = 0;
+        }
+    }
+
+    /**
+     * Returns true exactly once when this student transitions into the office door node.
+     */
+    public boolean consumeJustArrivedAtDoor() {
+        if (!justArrivedAtDoor) return false;
+        justArrivedAtDoor = false;
+        return true;
     }
 
     /**
@@ -332,8 +451,11 @@ public class Student {
     /** @return preferred path type derived from personality */
     public PathType getPreferredPath() { return preferredPath; }
 
-    /** @return current difficulty level */
-    public int getDifficulty() { return difficulty; }
+    /** @return current AI level (0..20) */
+    public int getDifficulty() { return aiLevel; }
+
+    /** @return current AI level (0..20) */
+    public int getAiLevel() { return aiLevel; }
 
     /** @return awareness level (tuning value used by AI) */
     public double getAwarenessLevel() { return awarenessLevel; }

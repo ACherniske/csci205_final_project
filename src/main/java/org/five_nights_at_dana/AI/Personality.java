@@ -59,6 +59,34 @@ public enum Personality {
     RUNNER;
 
     /**
+     * Returns the movement-opportunity interval (in seconds) for this personality.
+     *
+     * <p>This is inspired by FNAF-style AI checks: every N seconds, the AI gets a
+     * chance to move (subject to AI level + stalling rules).
+     */
+    public double getMoveOpportunityIntervalSeconds() {
+        return switch (this) {
+            // Roughly modeled after classic FNAF 1 timings (character-specific)
+            case SHY -> 3.02;        // Freddy-like: frequent checks, often stallable
+            case EAGER -> 4.97;      // Bonnie-like
+            case PERSISTENT -> 4.90; // Chica-like (close to Bonnie)
+            case CONFUSED -> 5.00;   // Foxy-like
+            case RUNNER -> 0.17;     // sprint step interval (handled specially by Student)
+        };
+    }
+
+    /**
+     * Whether this personality is prevented from moving while being watched on cameras.
+     * This varies by character in the original games.
+     */
+    public boolean stallsWhenWatched() {
+        return switch (this) {
+            case SHY -> true;
+            default -> false;
+        };
+    }
+
+    /**
      * Gets the primary path type this personality will generally prefer.
      *
      * @return preferred path type
