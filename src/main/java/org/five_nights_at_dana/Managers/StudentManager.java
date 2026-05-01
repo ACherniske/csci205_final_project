@@ -90,6 +90,20 @@ public class StudentManager {
     }
 
     /**
+     * Returns a student currently inside the office.
+     *
+     * @return student in office, or null if none
+     */
+    public Student getStudentInOffice() {
+        for (Student student : students) {
+            if (student.getCurrentLocation() == Location.IN_OFFICE) {
+                return student;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Checks if any student is at the office door.
      *
      * @return true if a student is at the door

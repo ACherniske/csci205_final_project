@@ -120,7 +120,7 @@ public class VentSystem {
         // TODO AudioManager.play("vent_exit");
 
         // Student now at door
-        // TODO: studentInVent.setLocation(Location.FLOOR3_AT_DOOR);
+        studentInVent.setLocation(Location.FLOOR3_AT_DOOR);
 
         studentInVent = null;
         ventEntryPoint = null;
@@ -161,7 +161,9 @@ public class VentSystem {
         System.out.println("VentSystem: EJECTED " + studentInVent.getName());
         // TODO AudioManager.play("vent_eject");
 
-        // TODO: studentInVent.setLocation(ventEntryPoint);
+        if (ventEntryPoint != null) {
+            studentInVent.setLocation(ventEntryPoint);
+        }
 
         studentInVent = null;
         ventEntryPoint = null;

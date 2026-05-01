@@ -84,6 +84,8 @@ public class GameViewController {
         session.setOnJumpscare(this::triggerJumpscare);
         session.setOnWin(this::handleWin);
         session.setOnGameOver(this::handleGameOver);
+
+        refreshDoorButton();
     }
 
     // ── Frame callback (called every frame by GameSession's AnimationTimer) ──
@@ -106,7 +108,13 @@ public class GameViewController {
 
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
-        // TODO: implement door toggle mechanic
+        session.toggleLeftDoor();
+        refreshDoorButton();
+    }
+
+    private void refreshDoorButton() {
+        boolean closed = session.isLeftDoorClosed();
+        leftDoorButton.setText((closed ? "OPEN" : "CLOSE") + "\nDOOR");
     }
 
     // ── CAMERAS ───────────────────────────────────────────────────────

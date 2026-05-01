@@ -172,6 +172,11 @@ public class Student {
      * and triggers pathfinding attempts when the timer expires.
      */
     public void update() {
+        // Transitional states are controlled by their respective systems.
+        if (currentLocation == Location.IN_VENT || currentLocation == Location.IN_ELEVATOR) {
+            return;
+        }
+
         // RUNNER special state machine
         if (personality == Personality.RUNNER) {
             if (isRunnerDoneCharging()) return;
@@ -241,7 +246,7 @@ public class Student {
      * Resets the movement cooldown timer. Higher difficulty reduces the wait time.
      */
     private void resetMovementTimer() {
-        int baseTimer = Math.max(60, 600000000 - (difficulty * 20));
+        int baseTimer = Math.max(60, 180 - (difficulty * 20));
         movementTimer = switch (personality) {
             case EAGER -> (int) (baseTimer * 0.7);
             case SHY -> (int) (baseTimer * 1.3);
