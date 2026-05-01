@@ -41,6 +41,9 @@ public class VentSystem {
     private int sealTimer;
     private int sealCooldown;
 
+    /**
+     * Constructs a vent system and resets it to its initial state.
+     */
     public VentSystem() {
         reset();
     }
@@ -179,7 +182,8 @@ public class VentSystem {
     }
 
     /**
-     * Resets the vent state to unsealed and clears all active timers and student data.
+     * Unseals the vent after the seal duration expires.
+     * This is package-private for tests/system integration.
      */
     void unsealVent() {
         isSealed = false;

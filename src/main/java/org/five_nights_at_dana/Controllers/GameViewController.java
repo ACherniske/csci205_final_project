@@ -62,6 +62,10 @@ public class GameViewController {
     private GamePane    gamePane;
     private GameSession session;
 
+    /**
+     * Initializes the office view controller after FXML loading.
+     * Wires callbacks to the active {@link GameSession} and installs the toast overlay.
+     */
     @FXML
     public void initialize() {
         officeBackground.setImage(new Image(
@@ -94,11 +98,17 @@ public class GameViewController {
 
     // ── Frame callback (called every frame by GameSession's AnimationTimer) ──
 
+    /**
+     * Per-frame render callback registered with {@link GameSession}.
+     */
     private void onFrame() {
         gamePane.render();
         refreshHUD();
     }
 
+    /**
+     * Refreshes HUD elements (power, time, activity, stair charges).
+     */
     private void refreshHUD() {
         powerBar.setProgress(session.getPower());
         powerLabel.setText((int)(session.getPower() * 100) + "%");
@@ -110,12 +120,20 @@ public class GameViewController {
 
     // ── DOOR ──────────────────────────────────────────────────────────
 
+    /**
+     * Handles the left door toggle button.
+     *
+     * @param event button event
+     */
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
         session.toggleLeftDoor();
         refreshDoorButton();
     }
 
+    /**
+     * Updates the left door button label to match the current door state.
+     */
     private void refreshDoorButton() {
         boolean closed = session.isLeftDoorClosed();
         leftDoorButton.setText((closed ? "OPEN" : "CLOSE") + "\nDOOR");
@@ -123,6 +141,11 @@ public class GameViewController {
 
     // ── CAMERAS ───────────────────────────────────────────────────────
 
+    /**
+     * Opens the camera tablet view.
+     *
+     * @param event button event
+     */
     @FXML
     private void onOpenCameras(ActionEvent event) {
         if (session.getCurrentState() != GameState.PLAYING) return;
@@ -144,6 +167,11 @@ public class GameViewController {
 
     // ── VENT ──────────────────────────────────────────────────────────
 
+    /**
+     * Attempts to seal the vents.
+     *
+     * @param event button event
+     */
     @FXML
     private void onToggleVentSeal(ActionEvent event) {
         session.getVents().sealVent();
@@ -151,6 +179,11 @@ public class GameViewController {
 
     // ── COFFEE MUG ────────────────────────────────────────────────────
 
+    /**
+     * Handles clicking the coffee mug to refill coffee.
+     *
+     * @param event mouse event
+     */
     @FXML
     private void onCoffeeMugClicked(MouseEvent event) {
         session.refillCoffee(0.3);
@@ -158,16 +191,31 @@ public class GameViewController {
 
     // ── STAIRWELLS ────────────────────────────────────────────────────
 
+    /**
+     * Activates emergency lights in the left stairwell.
+     *
+     * @param event button event
+     */
     @FXML
     private void onLeftStairwellLights(ActionEvent event) {
         session.getStairSystem().activateLights(Stairwell.LEFT);
     }
 
+    /**
+     * Activates emergency lights in the middle stairwell.
+     *
+     * @param event button event
+     */
     @FXML
     private void onMiddleStairwellLights(ActionEvent event) {
         session.getStairSystem().activateLights(Stairwell.MIDDLE);
     }
 
+    /**
+     * Activates emergency lights in the right stairwell.
+     *
+     * @param event button event
+     */
     @FXML
     private void onRightStairwellSensor(ActionEvent event) {
         session.getStairSystem().activateLights(Stairwell.RIGHT);
@@ -175,6 +223,11 @@ public class GameViewController {
 
     // ── ELEVATOR ──────────────────────────────────────────────────────
 
+    /**
+     * Triggers an emergency stop in the elevator subsystem.
+     *
+     * @param event button event
+     */
     @FXML
     private void onElevatorEmergencyStop(ActionEvent event) {
         session.getElevator().emergencyStop();
@@ -182,17 +235,26 @@ public class GameViewController {
 
     // ── WIN / LOSE ────────────────────────────────────────────────────
 
+    /**
+     * Handles the win condition callback (survive until 6 AM).
+     */
     private void handleWin() {
         // TODO: load dedicated win screen
         System.out.println("YOU SURVIVED THE NIGHT!");
         returnToMainMenu();
     }
 
+    /**
+     * Handles the game over callback (power out).
+     */
     private void handleGameOver() {
         System.out.println("GAME OVER — power out");
         returnToMainMenu();
     }
 
+    /**
+     * Returns to the main menu scene.
+     */
     private void returnToMainMenu() {
         try {
             Stage stage = (Stage) officeBackground.getScene().getWindow();
@@ -206,6 +268,11 @@ public class GameViewController {
 
     // ── JUMPSCARE ─────────────────────────────────────────────────────
 
+    /**
+     * Transitions into the jumpscare scene.
+     *
+     * @param studentQuestion the question displayed during the jumpscare
+     */
     public void triggerJumpscare(String studentQuestion) {
         try {
             Stage stage = (Stage) officeBackground.getScene().getWindow();

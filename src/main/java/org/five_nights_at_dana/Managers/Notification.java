@@ -32,21 +32,56 @@ public class Notification {
     private final Type type;
     private final int timestamp;
 
+    /**
+     * Constructs a notification.
+     *
+     * @param message   user-facing message text
+     * @param type      notification type
+     * @param timestamp simulation frame timestamp
+     */
     public Notification(String message, Type type, int timestamp) {
         this.message = message;
         this.type = type;
         this.timestamp = timestamp;
     }
 
+    /**
+     * Gets the message text.
+     *
+     * @return message
+     */
     public String getMessage() { return message; }
+
+    /**
+     * Gets the notification type.
+     *
+     * @return type
+     */
     public Type getType() { return type; }
+
+    /**
+     * Gets the timestamp (frame count) at which the notification was created.
+     *
+     * @return timestamp
+     */
     public int getTimestamp() { return timestamp; }
 
+    /**
+     * Returns a readable string representation.
+     *
+     * @return formatted notification
+     */
     @Override
     public String toString() {
         return "[" + timestamp + "] " + type + ": " + message;
     }
 
+    /**
+     * Compares notifications by message, type, and timestamp.
+     *
+     * @param o other object
+     * @return true if equal
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -57,6 +92,11 @@ public class Notification {
                 type == that.type;
     }
 
+    /**
+     * Computes a hash code consistent with {@link #equals(Object)}.
+     *
+     * @return hash code
+     */
     @Override
     public int hashCode() {
         int result = message.hashCode();

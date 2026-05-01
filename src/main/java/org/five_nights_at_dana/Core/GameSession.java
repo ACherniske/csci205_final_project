@@ -98,6 +98,10 @@ public class GameSession {
     private long lastNowNanos = 0L;
     private long accumulatedNanos = 0L;
 
+    /**
+     * Constructs the singleton game session and initializes all subsystems.
+     * Use {@link #getInstance()} to access the shared instance.
+     */
     private GameSession() {
         studentManager = new StudentManager();
         cameraSystem   = new CameraSystem(studentManager);
@@ -108,6 +112,11 @@ public class GameSession {
         wireRunner();
     }
 
+    /**
+     * Returns the singleton GameSession instance.
+     *
+     * @return the shared GameSession
+     */
     public static GameSession getInstance() {
         if (instance == null) instance = new GameSession();
         return instance;
@@ -151,6 +160,10 @@ public class GameSession {
 
     // ── Internal update (called every frame by AnimationTimer) ────────
 
+    /**
+     * Advances the simulation by exactly one fixed tick.
+     * This method is called by the AnimationTimer-backed fixed-step loop.
+     */
     private void updateTick() {
         frameCount++;
         NotificationManager.update();
@@ -175,6 +188,9 @@ public class GameSession {
         checkConditions();
     }
 
+    /**
+     * Applies power drain for this tick (base drain + subsystem drain + door drain).
+     */
     private void updatePower() {
         // Base drain + per-system drain converted from per-second to per-frame
         power -= 0.000005;
@@ -187,6 +203,10 @@ public class GameSession {
         power  = Math.max(0.0, power);
     }
 
+    /**
+     * Increases AI difficulty on the hour (starting at 1 AM).
+     * This runs on the FX tick thread to avoid mutating AI from the clock thread.
+     */
     private void maybeIncreaseDifficulty() {
         // hour/minute are updated by the background clock thread; keep AI mutation here.
         if (minute != 0) return;
@@ -201,11 +221,18 @@ public class GameSession {
         }
     }
 
+    /**
+     * Applies coffee depletion for this tick.
+     */
     private void updateCoffee() {
         coffeeLevel -= 0.000008;
         coffeeLevel  = Math.max(0.0, coffeeLevel);
     }
 
+    /**
+     * Checks end-game conditions (jumpscare, power out, win).
+     * Runs while playing and while viewing cameras.
+     */
     private void checkConditions() {
         // The player can lose/win while the camera tablet is up.
         // Only suppress checks in non-gameplay states (menus, already-ended states).
@@ -261,6 +288,10 @@ public class GameSession {
 
     // ── Clock tick (background thread) ────────────────────────────────
 
+    /**
+     * Advances the in-game clock by one minute.
+     * Invoked on a background scheduled executor.
+     */
     private void tick() {
         minute++;
         if (minute >= 60) {
@@ -271,11 +302,17 @@ public class GameSession {
 
     // ── Helpers ───────────────────────────────────────────────────────
 
+    /**
+     * Wires the runner student (if present) into the classroom mechanic.
+     */
     private void wireRunner() {
         Student runner = studentManager.getRunnerStudent();
         if (runner != null) classroom.setRunner(runner);
     }
 
+    /**
+     * Starts the background in-game clock executor.
+     */
     private void startNightClock() {
         if (nightClock != null) nightClock.shutdownNow();
         long intervalMs = Math.max(1, (long)(SECONDS_PER_GAME_MINUTE * 1000));
@@ -287,9 +324,18 @@ public class GameSession {
         nightClock.scheduleAtFixedRate(this::tick, intervalMs, intervalMs, TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Starts the AnimationTimer loop which drives the fixed-step simulation and render callback.
+     */
     private void startGameLoop() {
         if (gameLoop != null) gameLoop.stop();
         gameLoop = new AnimationTimer() {
+            /**
+             * JavaFX frame callback.
+             * Accumulates real time and advances the simulation in fixed 60Hz ticks.
+             *
+             * @param now current timestamp in nanoseconds
+             */
             @Override
             public void handle(long now) {
                 if (!active) return;
@@ -365,6 +411,12 @@ public class GameSession {
         }
     }
 
+    /**
+     * Converts a Location enum into a Stairwell identifier (or null if not a stair location).
+     *
+     * @param loc location to map
+     * @return the stairwell, or null if the location is not a stairwell node
+     */
     private Stairwell stairwellFromLocation(Location loc) {
         if (loc == null) return null;
         String name = loc.name();
@@ -398,28 +450,65 @@ public class GameSession {
 
     // ── Getters ───────────────────────────────────────────────────────
 
-    public StudentManager    getStudentManager() { return studentManager; }
-    public CameraSystem      getCameraSystem()   { return cameraSystem;   }
-    public ElevatorSystem    getElevator()       { return elevator;       }
-    public StairSystem       getStairSystem()    { return stairSystem;    }
-    public VentSystem        getVents()          { return vents;          }
-    public ClassroomMechanic getClassroom()      { return classroom;      }
+    /** @return the StudentManager backing all AI updates */
+    public StudentManager getStudentManager() { return studentManager; }
 
-    public int       getHour()         { return hour;         }
-    public int       getMinute()       { return minute;       }
-    public boolean   isActive()        { return active;       }
-    public double    getPower()        { return power;        }
-    public double    getCoffeeLevel()  { return coffeeLevel;  }
-    public int       getFrameCount()   { return frameCount;   }
+    /** @return the camera system used by the camera tablet */
+    public CameraSystem getCameraSystem() { return cameraSystem; }
+
+    /** @return the elevator subsystem */
+    public ElevatorSystem getElevator() { return elevator; }
+
+    /** @return the stair system subsystem */
+    public StairSystem getStairSystem() { return stairSystem; }
+
+    /** @return the vent subsystem */
+    public VentSystem getVents() { return vents; }
+
+    /** @return the classroom mechanic */
+    public ClassroomMechanic getClassroom() { return classroom; }
+
+    /** @return current in-game hour */
+    public int getHour() { return hour; }
+
+    /** @return current in-game minute */
+    public int getMinute() { return minute; }
+
+    /** @return true if the night is currently active */
+    public boolean isActive() { return active; }
+
+    /** @return current power fraction (0..1) */
+    public double getPower() { return power; }
+
+    /** @return current coffee level fraction (0..1) */
+    public double getCoffeeLevel() { return coffeeLevel; }
+
+    /** @return total tick counter since night start */
+    public int getFrameCount() { return frameCount; }
+
+    /** @return the current game state */
     public GameState getCurrentState() { return currentState; }
 
+    /** @return true if the night has reached 6 AM */
     public boolean isNightOver() { return hour == 6; }
 
     // ── Setters / callbacks ───────────────────────────────────────────
 
-    public void setCurrentState(GameState s)        { currentState = s;     }
-    public void refillCoffee(double amount)         { coffeeLevel = Math.min(1.0, coffeeLevel + amount); }
+    /**
+     * Sets the current state of the session.
+     *
+     * @param s new state
+     */
+    public void setCurrentState(GameState s) { currentState = s; }
 
+    /**
+     * Refills coffee by a given fraction.
+     *
+     * @param amount amount to add (clamped so coffee stays within 0..1)
+     */
+    public void refillCoffee(double amount) { coffeeLevel = Math.min(1.0, coffeeLevel + amount); }
+
+    /** @return true if the left door is currently closed */
     public boolean isLeftDoorClosed() { return leftDoorClosed; }
 
     /** Toggle the left door state. Returns the new state (true = closed). */
@@ -428,8 +517,31 @@ public class GameSession {
         return leftDoorClosed;
     }
 
-    public void setOnJumpscare(Consumer<String> c) { onJumpscare   = c; }
-    public void setOnWin(Runnable r)               { onWin         = r; }
-    public void setOnGameOver(Runnable r)          { onGameOver    = r; }
-    public void setOnFrameRender(Runnable r)       { onFrameRender = r; }
+    /**
+     * Registers a callback for jumpscare events.
+     *
+     * @param c consumer receiving the student question text
+     */
+    public void setOnJumpscare(Consumer<String> c) { onJumpscare = c; }
+
+    /**
+     * Registers a callback invoked when the player survives until 6 AM.
+     *
+     * @param r runnable callback
+     */
+    public void setOnWin(Runnable r) { onWin = r; }
+
+    /**
+     * Registers a callback invoked when power reaches 0.
+     *
+     * @param r runnable callback
+     */
+    public void setOnGameOver(Runnable r) { onGameOver = r; }
+
+    /**
+     * Registers a per-frame render callback (invoked once per JavaFX frame).
+     *
+     * @param r runnable callback
+     */
+    public void setOnFrameRender(Runnable r) { onFrameRender = r; }
 }

@@ -28,6 +28,14 @@ public class SensorHelper {
     private static final int COOLDOWN = 60;
 
     // ===== WITH COOLDOWN (for sensors, spammy events) =====
+    /**
+     * Emits a notification if the given key has not fired within the cooldown window.
+     *
+     * @param key          unique cooldown key
+     * @param message      notification message
+     * @param type         notification type
+     * @param currentFrame current simulation frame
+     */
     public static void trigger(String key, String message,
                                Notification.Type type, int currentFrame) {
 
@@ -41,10 +49,19 @@ public class SensorHelper {
     }
 
     // ===== NO COOLDOWN (for important events) =====
+    /**
+     * Emits a notification immediately with no cooldown.
+     *
+     * @param message notification message
+     * @param type    notification type
+     */
     public static void emit(String message, Notification.Type type) {
         NotificationManager.push(message, type);
     }
 
+    /**
+     * Clears all stored cooldown state.
+     */
     public static void reset() {
         lastTriggerFrame.clear();
     }

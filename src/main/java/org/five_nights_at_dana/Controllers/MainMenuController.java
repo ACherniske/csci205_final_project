@@ -38,6 +38,10 @@ public class MainMenuController {
     @FXML private Label titleLabel;
     @FXML private Button startButton;
 
+    /**
+     * Initializes the main menu scene after FXML load.
+     * Sets the background image and provides a hook point for intro audio/animations.
+     */
     @FXML
     public void initialize() {
         backgroundImage.setImage(new Image(

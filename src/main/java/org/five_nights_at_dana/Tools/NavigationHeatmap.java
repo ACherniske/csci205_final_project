@@ -7,6 +7,15 @@ import java.util.*;
 
 public class NavigationHeatmap {
 
+    /**
+     * Runs repeated simulations and counts how often each location is visited.
+     *
+     * @param personality student personality to simulate
+     * @param start       starting location (ignored for RUNNER)
+     * @param steps       max steps per run
+     * @param runs        number of runs
+     * @return map of location -> visit count
+     */
     public static Map<Location, Integer> generateHeatmap(
             Personality personality,
             Location start,
@@ -64,6 +73,14 @@ public class NavigationHeatmap {
         return heatmap;
     }
 
+    /**
+     * Builds a human-readable report of visit percentages by location.
+     *
+     * @param personality  personality being simulated
+     * @param heatmap      location visit counts
+     * @param totalSamples total sample count (sum of heatmap values)
+     * @return formatted report
+     */
     public static String buildStatsReport(Personality personality,
                                           Map<Location, Integer> heatmap,
                                           int totalSamples) {

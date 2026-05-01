@@ -78,10 +78,22 @@ public class AssetManager {
         return images.get(key);
     }
 
+    /**
+     * Retrieves a preloaded sound effect.
+     *
+     * @param key sound key
+     * @return audio clip, or null if not present
+     */
     public static AudioClip getSound(String key) {
         return sounds.get(key);
     }
 
+    /**
+     * Loads an image resource into the cache.
+     *
+     * @param key      lookup key
+     * @param fileName filename relative to {@link #IMAGE_PATH}
+     */
     private static void loadImage(String key, String fileName) {
         try {
             Image img = new Image(Objects.requireNonNull(AssetManager.class.getResourceAsStream(IMAGE_PATH + fileName)));
@@ -91,6 +103,12 @@ public class AssetManager {
         }
     }
 
+    /**
+     * Loads a sound resource into the cache.
+     *
+     * @param key      lookup key
+     * @param fileName filename relative to {@link #SOUND_PATH}
+     */
     private static void loadSound(String key, String fileName) {
         try {
             AudioClip clip = new AudioClip(Objects.requireNonNull(AssetManager.class.getResource(SOUND_PATH + fileName)).toString());

@@ -31,10 +31,21 @@ public class CameraSystem {
     private String currentCameraId = "1A";
     private final StudentManager studentManager;
 
+    /**
+     * Constructs a camera system that uses the given student manager for visibility/occupancy queries.
+     *
+     * @param studentManager student manager to query for occupants
+     */
     public CameraSystem(StudentManager studentManager) {
         this.studentManager = studentManager;
     }
 
+    /**
+     * Sets which camera is active on the tablet UI.
+     * Invalid IDs are ignored.
+     *
+     * @param cameraId camera ID from {@link CameraConfig}
+     */
     public void setActiveCamera(String cameraId) {
         if (CameraConfig.isValidCamera(cameraId)) {
             this.currentCameraId = cameraId;
@@ -81,10 +92,20 @@ public class CameraSystem {
         return canvas.snapshot(new SnapshotParameters(), null);
     }
 
+    /**
+     * Gets the active camera entry metadata.
+     *
+     * @return active camera entry, or null if the current ID is unknown
+     */
     public CameraConfig.CameraEntry getActiveCamera() {
         return CameraConfig.getCamera(currentCameraId);
     }
 
+    /**
+     * Checks whether any student is currently visible on the active camera.
+     *
+     * @return true if at least one student occupies the active camera's location
+     */
     public boolean isStudentVisible() {
         return !studentManager.getStudentsAt(CameraConfig.getLocation(currentCameraId)).isEmpty();
     }

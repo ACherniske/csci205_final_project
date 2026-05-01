@@ -132,8 +132,9 @@ public enum Location {
     /**
      * Determines the {@link PathType} associated with this location.
      * Used by AI to prioritize movement based on their personality preferences.
-     * * @return The {@link PathType} assigned to this location, or null if it
-     * is a neutral zone (like a hallway or office).
+        *
+        * @return the {@link PathType} assigned to this location, or null if it
+        * is a neutral zone (like a hallway or office)
      */
     public PathType getPathType() {
         String name = this.name();
@@ -145,6 +146,11 @@ public enum Location {
         return null; // For general hallways or special locations
     }
 
+    /**
+     * Indicates whether this location is an entry point into the vent system.
+     *
+     * @return true if students can enter vents from this location
+     */
     public boolean hasVentAccess() {
         return switch (this) {
             case FLOOR1_GARDNER,
@@ -153,6 +159,11 @@ public enum Location {
         };
     }
 
+    /**
+     * Gets the floor number for this location.
+     *
+     * @return 1-3 for standard floor nodes, 4 for office (goal layer), -1 for transitional nodes, 0 otherwise
+     */
     public int getFloor() {
         String name = this.name();
 

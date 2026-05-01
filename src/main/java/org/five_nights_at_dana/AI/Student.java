@@ -141,7 +141,9 @@ public class Student {
         }
     }
 
-    // Overload providing default of 1 step
+    /**
+     * Pushes the student back by one step in their recent path history.
+     */
     public void pushBack() {
         pushBack(1);
     }
@@ -190,6 +192,11 @@ public class Student {
         }
     }
 
+    /**
+     * Advances the RUNNER charge timer and transitions to sprinting when complete.
+     *
+     * @return true if the runner is currently charging (i.e., movement should be blocked)
+     */
     private boolean isRunnerDoneCharging() {
         if (charging) {
             chargeTimer--;
@@ -227,6 +234,11 @@ public class Student {
         }
     }
 
+    /**
+     * Calculates the probability that this student will move when their timer elapses.
+     *
+     * @return movement probability in the range [0, 1]
+     */
     private double calculateMoveChance() {
         double baseChance = 0.15 + (difficulty * 0.1);
         return switch (personality) {
@@ -238,6 +250,9 @@ public class Student {
         };
     }
 
+    /**
+     * Chooses the preferred movement path based on personality.
+     */
     private void selectPreferredPath() {
         preferredPath = personality.getPreferredPath();
     }
@@ -258,11 +273,18 @@ public class Student {
 
     // ========== ACTIONS ==========
 
+    /**
+     * Increases the student's difficulty level, capped at a maximum value.
+     */
     public void increaseDifficulty() {
         difficulty = Math.min(6, difficulty + 1);
         System.out.println(name + " difficulty: " + difficulty);
     }
 
+    /**
+     * Starts the RUNNER charging phase, which later transitions into sprinting.
+     * No effect for non-RUNNER students.
+     */
     public void startSprint() {
         if (personality == Personality.RUNNER && !sprinting && !charging) {
             charging = true;
@@ -271,29 +293,69 @@ public class Student {
         }
     }
 
+    /**
+     * Sets the student's current location and updates history.
+     *
+     * @param location new location
+     */
     public void setLocation(Location location) {
         this.previousLocation = this.currentLocation;
         this.currentLocation = location;
         rememberLocation(location);
     }
 
+    /**
+     * Sets the internal movement timer.
+     * Package-private for deterministic tests and simulation tools.
+     *
+     * @param t new movement timer value (frames)
+     */
     void setMovementTimer(int t) { this.movementTimer = t; }
 
     // ========== GETTERS ==========
 
+    /** @return student display name */
     public String getName() { return name; }
+
+    /** @return student jumpscare question/dialogue */
     public String getQuestion() { return question; }
+
+    /** @return student personality */
     public Personality getPersonality() { return personality; }
+
+    /** @return current location */
     public Location getCurrentLocation() { return currentLocation; }
+
+    /** @return previous location (may be null at start) */
     public Location getPreviousLocation() { return previousLocation; }
+
+    /** @return preferred path type derived from personality */
     public PathType getPreferredPath() { return preferredPath; }
+
+    /** @return current difficulty level */
     public int getDifficulty() { return difficulty; }
+
+    /** @return awareness level (tuning value used by AI) */
     public double getAwarenessLevel() { return awarenessLevel; }
+
+    /** @return true if currently sprinting */
     public boolean isSprinting() { return sprinting; }
+
+    /** @return movement timer value in frames */
     public int getMovementTimer() { return movementTimer; }
+
+    /** @return true if currently charging (RUNNER only) */
     public boolean isCharging() { return charging; }
+
+    /** @return remaining charge timer in frames */
     public int getChargeTimer() { return chargeTimer; }
 
+    /**
+     * Counts how often a location appears in the student's short-term memory window.
+     *
+     * @param loc location to count
+     * @return visit count within the last {@link #MEMORY_SIZE} remembered locations
+     */
     public int getRecentVisitCount(Location loc) {
         int count = 0;
         for (Location l : recentLocations) {
@@ -302,6 +364,11 @@ public class Student {
         return count;
     }
 
+    /**
+     * Returns a concise debug string.
+     *
+     * @return string form
+     */
     @Override
     public String toString() {
         return name + " (" + personality + ") @ " + currentLocation;

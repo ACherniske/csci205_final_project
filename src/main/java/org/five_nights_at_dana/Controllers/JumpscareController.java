@@ -41,6 +41,10 @@ public class JumpscareController {
     @FXML private Label gameOverLabel;
     @FXML private Label studentNameLabel;
 
+    /**
+     * Initializes the jumpscare scene after FXML load.
+     * Preloads the scare image so it can display immediately.
+     */
     @FXML
     public void initialize() {
         jumpscareImage.setImage(new Image(
@@ -74,7 +78,10 @@ public class JumpscareController {
         sequence.play();
     }
 
-    /** Hook: override or extend to go to a custom Game Over screen instead. */
+    /**
+     * Returns to the main menu after the jumpscare sequence finishes.
+     * Hook point: replace this with a dedicated Game Over screen if desired.
+     */
     private void returnToMainMenu() {
         try {
             Stage stage = (Stage) jumpscareImage.getScene().getWindow();

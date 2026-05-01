@@ -33,6 +33,10 @@ public class GamePane extends Pane {
     private final Canvas canvas;
     private final GraphicsContext gc;
 
+    /**
+     * Constructs the transparent rendering pane and its backing canvas.
+     * The pane is mouse-transparent so underlying FXML controls remain clickable.
+     */
     public GamePane() {
         canvas = new Canvas(WIDTH, HEIGHT);
         gc     = canvas.getGraphicsContext2D();
@@ -55,6 +59,11 @@ public class GamePane extends Pane {
 
     // ── Per-state renderers ───────────────────────────────────────────
 
+    /**
+     * Renders the office overlay for danger cues (e.g., student at door).
+     *
+     * @param session active game session
+     */
     private void renderOffice(GameSession session) {
         Student atDoor = session.getStudentManager().getStudentAtDoor();
         if (atDoor != null) {
@@ -64,6 +73,9 @@ public class GamePane extends Pane {
         }
     }
 
+    /**
+     * Renders the power-out state as a full black screen.
+     */
     private void renderPowerOut() {
         gc.setFill(Color.BLACK);
         gc.fillRect(0, 0, WIDTH, HEIGHT);

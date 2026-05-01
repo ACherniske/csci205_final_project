@@ -30,7 +30,12 @@ public enum ElevatorState {
     THIRD_FLOOR,
     DOORS_OPENING;
 
-
+    /**
+     * Determines whether the elevator state machine is allowed to transition to the given next state.
+     *
+     * @param next proposed next state
+     * @return true if the transition is valid
+     */
     public boolean canTransitionTo(ElevatorState next) {
         switch (this) {
             case FIRST_FLOOR:

@@ -39,6 +39,7 @@ public final class NotificationToastOverlay {
     private static final Duration HOLD_DURATION = Duration.millis(2400);
     private static final Duration OUT_DURATION = Duration.millis(220);
 
+    /** Prevent instantiation; this class provides static helpers only. */
     private NotificationToastOverlay() {
     }
 
@@ -80,6 +81,12 @@ public final class NotificationToastOverlay {
         NotificationManager.addListener(handle[0]);
     }
 
+    /**
+     * Renders a single notification as a transient toast.
+     *
+     * @param stack the toast stack container (bottom-right)
+     * @param n     the notification to display
+     */
     private static void showToast(VBox stack, Notification n) {
         Node toast = buildToast(n);
 
@@ -127,6 +134,13 @@ public final class NotificationToastOverlay {
         hold.play();
     }
 
+    /**
+     * Determines whether a Discord-style notification sound should be played for this toast.
+     * Intended to be used for stair/vent alerts only.
+     *
+     * @param n the notification
+     * @return true if a sound should play
+     */
     private static boolean shouldPlayDiscordSound(Notification n) {
         if (n == null) return false;
         if (n.getType() == Notification.Type.STAIR_SENSOR) return true;
@@ -138,6 +152,12 @@ public final class NotificationToastOverlay {
         return msg.contains("Vent") || msg.contains("vents");
     }
 
+    /**
+     * Builds the toast Node (Discord-like dark card with a colored dot + title/message).
+     *
+     * @param n the notification to display
+     * @return a Node ready to be inserted into the toast stack
+     */
     private static Node buildToast(Notification n) {
         HBox root = new HBox(10);
         root.setAlignment(Pos.TOP_LEFT);
@@ -170,6 +190,12 @@ public final class NotificationToastOverlay {
         return root;
     }
 
+    /**
+     * Maps a notification type to the small accent dot color.
+     *
+     * @param t the notification type
+     * @return the color for that type
+     */
     private static Color colorForType(Notification.Type t) {
         return switch (t) {
             case DANGER -> Color.web("#ED4245");
@@ -181,6 +207,12 @@ public final class NotificationToastOverlay {
         };
     }
 
+    /**
+     * Maps a notification type to a short toast title.
+     *
+     * @param t the notification type
+     * @return a short title string
+     */
     private static String titleForType(Notification.Type t) {
         return switch (t) {
             case STAIR_SENSOR -> "STAIR SENSOR";

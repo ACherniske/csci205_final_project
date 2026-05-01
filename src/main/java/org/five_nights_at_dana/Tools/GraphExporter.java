@@ -15,6 +15,11 @@ public class GraphExporter {
     private static final String OUTPUT_DIR =
             "src/main/java/org/five_nights_at_dana/Tools/";
 
+        /**
+         * Generates GraphViz `.dot` files and heatmap reports for each personality.
+         *
+         * @param args unused
+         */
     public static void main(String[] args) {
 
         exportBaseGraph();
@@ -58,6 +63,9 @@ public class GraphExporter {
         System.out.println("All graphs + reports exported.");
     }
 
+    /**
+     * Exports the baseline navigation graph.
+     */
     private static void exportBaseGraph() {
         try (FileWriter writer = new FileWriter(
                 OUTPUT_DIR + "Navigation_BASE.dot")) {
@@ -69,6 +77,12 @@ public class GraphExporter {
         }
     }
 
+    /**
+     * Exports a heat-colored navigation graph for a personality.
+     *
+     * @param personality personality being simulated
+     * @param heatmap     location visit counts
+     */
     private static void exportHeatGraph(Personality personality,
                                         Map<Location, Integer> heatmap) {
 
@@ -82,6 +96,12 @@ public class GraphExporter {
         }
     }
 
+    /**
+     * Exports a text report summarizing navigation stats for a personality.
+     *
+     * @param personality personality being simulated
+     * @param report      report contents
+     */
     private static void exportTextReport(Personality personality,
                                          String report) {
 
@@ -95,6 +115,11 @@ public class GraphExporter {
         }
     }
 
+    /**
+     * Exports the combined report for all personalities.
+     *
+     * @param report report contents
+     */
     private static void exportGlobalReport(String report) {
         try (FileWriter writer = new FileWriter(
                 OUTPUT_DIR + "Navigation_ALL_STATS.txt")) {

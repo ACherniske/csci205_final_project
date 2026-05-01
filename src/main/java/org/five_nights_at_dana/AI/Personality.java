@@ -58,6 +58,11 @@ public enum Personality {
      */
     RUNNER;
 
+    /**
+     * Gets the primary path type this personality will generally prefer.
+     *
+     * @return preferred path type
+     */
     public PathType getPreferredPath() {
         return switch (this) {
             case EAGER -> PathType.ELEVATOR;

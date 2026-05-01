@@ -30,6 +30,12 @@ public class NavigationManager {
         final Location to;
         final PathType type;
 
+        /**
+         * Constructs an outgoing edge in the navigation graph.
+         *
+         * @param to   destination node
+         * @param type path type for the transition
+         */
         Edge(Location to, PathType type) {
             this.to = to;
             this.type = type;
@@ -103,12 +109,27 @@ public class NavigationManager {
         addEdge(Location.IN_OFFICE, Location.IN_OFFICE, PathType.NORMAL);
     }
 
+    /**
+     * Adds a directed edge to the navigation graph.
+     * Duplicate edges (same destination + type) are ignored.
+     *
+     * @param from source node
+     * @param to   destination node
+     * @param type path type for the transition
+     */
     private static void addEdge(Location from, Location to, PathType type) {
         List<Edge> edges = graph.get(from);
         for (Edge e : edges) { if (e.to == to && e.type == type) return; }
         edges.add(new Edge(to, type));
     }
 
+    /**
+     * Adds edges in both directions between two nodes.
+     *
+     * @param a    first node
+     * @param b    second node
+     * @param type path type for both directions
+     */
     private static void addBidirectionalEdge(Location a, Location b, PathType type) {
         addEdge(a, b, type);
         addEdge(b, a, type);
@@ -229,6 +250,12 @@ public class NavigationManager {
     }
 
     // ===== TEST HELPERS =====
+    /**
+     * Returns the list of neighbors reachable from a given location.
+     *
+     * @param loc source location
+     * @return list of neighbor locations (possibly empty)
+     */
     public static List<Location> getNeighbors(Location loc) {
         List<Location> result = new ArrayList<>();
         List<Edge> edges = graph.get(loc);
@@ -237,6 +264,13 @@ public class NavigationManager {
         return result;
     }
 
+    /**
+     * Checks whether a directed transition exists in the graph.
+     *
+     * @param from source location
+     * @param to   destination location
+     * @return true if a direct transition exists
+     */
     public static boolean isValidTransition(Location from, Location to) {
         List<Edge> edges = graph.get(from);
         if (edges == null) return false;
@@ -244,6 +278,11 @@ public class NavigationManager {
         return false;
     }
 
+    /**
+     * Exports the navigation graph in GraphViz DOT format.
+     *
+     * @return DOT graph as a string
+     */
     public static String toDot() {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph G {\n").append("    rankdir=TB;\n")
@@ -267,6 +306,13 @@ public class NavigationManager {
         return sb.toString();
     }
 
+    /**
+     * Adds a GraphViz cluster for nodes that share a prefix (e.g., FLOOR1).
+     *
+     * @param sb     output builder
+     * @param label  cluster label
+     * @param prefix enum name prefix to include
+     */
     private static void addCluster(StringBuilder sb, String label, String prefix) {
         sb.append("    subgraph cluster_").append(prefix).append(" {\n")
                 .append("        label=\"").append(label).append("\";\n");
@@ -276,6 +322,12 @@ public class NavigationManager {
         sb.append("    }\n");
     }
 
+    /**
+     * Exports the navigation graph in DOT format with node colors determined by a heatmap.
+     *
+     * @param heatmap location -> visit count
+     * @return DOT graph as a string
+     */
     public static String toDotWithHeat(Map<Location, Integer> heatmap) {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph G {\n");

@@ -54,6 +54,12 @@ public class CameraViewController {
     private CameraSystem cameraSystem;
     private boolean jumpscareTransitionInProgress = false;
 
+    /**
+     * Injects the camera system dependency and wires button actions.
+     * Also registers session callbacks so jumpscare/win/game-over can transition while cameras are up.
+     *
+     * @param system active camera system
+     */
     public void setCameraSystem(CameraSystem system) {
         this.cameraSystem = system;
 
@@ -87,6 +93,10 @@ public class CameraViewController {
 
     private final Map<Button, String> buttonToIdMap = new HashMap<>();
 
+    /**
+     * Initializes the camera tablet controller after FXML load.
+     * Sets up the button->camera mapping and installs the toast overlay.
+     */
     @FXML
     public void initialize() {
         initializeButtonMap();
@@ -96,7 +106,9 @@ public class CameraViewController {
         NotificationToastOverlay.install(root);
     }
 
-    // Inside initializeButtonMap()
+    /**
+     * Builds the mapping from each camera button to its logical camera ID.
+     */
     private void initializeButtonMap() {
         // Floor 1
         buttonToIdMap.put(cam1A, "1A");
@@ -126,6 +138,9 @@ public class CameraViewController {
         buttonToIdMap.put(camSR3, "SR3");
     }
 
+    /**
+     * Refreshes the feed image and label to match the currently active camera.
+     */
     private void updateView() {
         cameraFeedImage.setImage(cameraSystem.getFeedImage());
         activeCameraLabel.setText(cameraSystem.getActiveCamera().label());
@@ -137,10 +152,34 @@ public class CameraViewController {
 
     // ── FLOOR SELECTION ───────────────────────────────────────────────────
 
+    /**
+     * Switches the map UI to floor 1.
+     *
+     * @param e action event
+     */
     @FXML private void onSelectFloor1(ActionEvent e) { switchFloor(1, "Map_Floor1.png", floor1Pane); }
+
+    /**
+     * Switches the map UI to floor 2.
+     *
+     * @param e action event
+     */
     @FXML private void onSelectFloor2(ActionEvent e) { switchFloor(2, "Map_Floor2.png", floor2Pane); }
+
+    /**
+     * Switches the map UI to floor 3.
+     *
+     * @param e action event
+     */
     @FXML private void onSelectFloor3(ActionEvent e) { switchFloor(3, "Map_Floor3.png", floor3Pane); }
 
+    /**
+     * Updates the floor tab styles, visible button pane, and map image.
+     *
+     * @param floor      selected floor number
+     * @param mapName    map asset filename
+     * @param activePane the pane containing the active floor's camera buttons
+     */
     private void switchFloor(int floor, String mapName, Pane activePane) {
         floorMapImage.setImage(new Image(getClass().getResourceAsStream("/assets/images/" + mapName)));
 
@@ -157,12 +196,20 @@ public class CameraViewController {
 
     // ── LOWER CAMERAS ─────────────────────────────────────────────────────
 
+    /**
+     * Lowers the camera tablet and returns to the office view.
+     *
+     * @param event action event
+     */
     @FXML
     private void onLowerCameras(ActionEvent event) {
         GameSession.getInstance().setCurrentState(GameState.PLAYING);
         returnToGameView();
     }
 
+    /**
+     * Loads the office scene.
+     */
     private void returnToGameView() {
         try {
             Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
@@ -171,6 +218,9 @@ public class CameraViewController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Loads the main menu scene.
+     */
     private void returnToMainMenu() {
         try {
             Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
@@ -179,6 +229,12 @@ public class CameraViewController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
+    /**
+     * Triggers a jumpscare transition while the camera tablet is visible.
+     * A short static flash is shown before switching to the jumpscare scene.
+     *
+     * @param studentQuestion question text displayed during the jumpscare
+     */
     private void triggerJumpscare(String studentQuestion) {
         if (jumpscareTransitionInProgress) return;
         jumpscareTransitionInProgress = true;
@@ -205,6 +261,11 @@ public class CameraViewController {
         holdStatic.play();
     }
 
+    /**
+     * Enables or disables all camera UI inputs (floor tabs, lower button, and camera buttons).
+     *
+     * @param disabled true to disable inputs
+     */
     private void setInputsDisabled(boolean disabled) {
         floor1Button.setDisable(disabled);
         floor2Button.setDisable(disabled);
@@ -219,6 +280,10 @@ public class CameraViewController {
     /**
      * Generates a small grayscale noise image to simulate camera static.
      * The ImageView will scale it up automatically.
+     *
+     * @param width  image width in pixels
+     * @param height image height in pixels
+     * @return generated noise image
      */
     private Image generateStaticImage(int width, int height) {
         WritableImage image = new WritableImage(width, height);

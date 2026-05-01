@@ -13,6 +13,13 @@ import org.five_nights_at_dana.Managers.AssetManager;
  */
 public class DanaEngineering extends Application {
 
+    /**
+     * JavaFX application entry point.
+     * Preloads assets and loads the main menu scene.
+     *
+     * @param stage primary stage
+     * @throws Exception if FXML loading fails
+     */
     @Override
     public void start(Stage stage) throws Exception {
         AssetManager.preloadAll();
@@ -26,6 +33,11 @@ public class DanaEngineering extends Application {
         stage.show();
     }
 
+    /**
+     * Launches the JavaFX application.
+     *
+     * @param args command line args
+     */
     public static void main(String[] args) {
         launch(args);
     }

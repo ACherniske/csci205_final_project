@@ -218,14 +218,29 @@ public class StairSystem {
 
     // ===== Optional Getters for Debug / UI =====
 
+    /**
+     * Gets the stairwell whose emergency lights are currently active.
+     *
+     * @return active stairwell, or null if lights are off
+     */
     public Stairwell getActiveLightsStairwell() {
         return activeLightsStairwell;
     }
 
+    /**
+     * Gets the remaining light duration in frames.
+     *
+     * @return remaining frames until lights auto-deactivate
+     */
     public int getLightTimer() {
         return lightTimer;
     }
 
+    /**
+     * Gets the current internal frame counter for this system.
+     *
+     * @return frame counter
+     */
     public int getCurrentFrame() {
         return currentFrame;
     }

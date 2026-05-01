@@ -43,6 +43,11 @@ public class NotificationManager {
 
     @FunctionalInterface
     public interface NotificationListener {
+        /**
+         * Called when a new {@link Notification} is pushed.
+         *
+         * @param notification the notification that was added
+         */
         void onNotification(Notification notification);
     }
 
@@ -88,30 +93,65 @@ public class NotificationManager {
         return new ArrayList<>(notifications);
     }
 
+    /**
+     * Registers a listener to receive real-time notifications.
+     *
+     * @param listener callback invoked whenever a notification is pushed
+     */
     public static void addListener(NotificationListener listener) {
         if (listener != null) listeners.add(listener);
     }
 
+    /**
+     * Removes a previously registered listener.
+     *
+     * @param listener the listener instance to remove
+     */
     public static void removeListener(NotificationListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * Convenience helper for stair sensor notifications.
+     *
+     * @param message the notification message
+     */
     public static void stair(String message) {
         push(message, Notification.Type.STAIR_SENSOR);
     }
 
+    /**
+     * Convenience helper for the runner charging notification.
+     *
+     * @param message the notification message
+     */
     public static void runnerCharging(String message) {
         push(message, Notification.Type.RUNNER_CHARGING);
     }
 
+    /**
+     * Convenience helper for the runner sprinting notification.
+     *
+     * @param message the notification message
+     */
     public static void runnerSprinting(String message) {
         push(message, Notification.Type.RUNNER_SPRINTING);
     }
 
+    /**
+     * Convenience helper for warning notifications.
+     *
+     * @param message the notification message
+     */
     public static void warning(String message) {
         push(message, Notification.Type.WARNING);
     }
 
+    /**
+     * Convenience helper for system/status notifications.
+     *
+     * @param message the notification message
+     */
     public static void system(String message) {
         push(message, Notification.Type.SYSTEM);
     }
