@@ -19,6 +19,7 @@ package org.five_nights_at_dana.Controllers;
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
 import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,12 +27,18 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Controller for CameraView.fxml — the security camera tablet.
@@ -42,6 +49,7 @@ import java.util.Map;
 public class CameraViewController {
 
     private CameraSystem cameraSystem;
+    private boolean jumpscareTransitionInProgress = false;
 
     public void setCameraSystem(CameraSystem system) {
         this.cameraSystem = system;
@@ -166,15 +174,61 @@ public class CameraViewController {
     }
 
     private void triggerJumpscare(String studentQuestion) {
-        try {
-            Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
-            Parent root = loader.load();
-            JumpscareController jc = loader.getController();
-            jc.startJumpscare(studentQuestion);
-            stage.setScene(new Scene(root, 1280, 720));
-        } catch (Exception e) { e.printStackTrace(); }
+        if (jumpscareTransitionInProgress) return;
+        jumpscareTransitionInProgress = true;
+
+        // Freeze camera interaction and flash static briefly (FNAF-style)
+        setInputsDisabled(true);
+        cameraFeedImage.setImage(generateStaticImage(320, 180));
+        activeCameraLabel.setText("SIGNAL LOST");
+
+        PauseTransition holdStatic = new PauseTransition(Duration.millis(500));
+        holdStatic.setOnFinished(e -> {
+            try {
+                Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
+                FXMLLoader loader = new FXMLLoader(
+                        getClass().getResource("/org/five_nights_at_dana/JumpscareView.fxml"));
+                Parent root = loader.load();
+                JumpscareController jc = loader.getController();
+                jc.startJumpscare(studentQuestion);
+                stage.setScene(new Scene(root, 1280, 720));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        holdStatic.play();
+    }
+
+    private void setInputsDisabled(boolean disabled) {
+        floor1Button.setDisable(disabled);
+        floor2Button.setDisable(disabled);
+        floor3Button.setDisable(disabled);
+        lowerCamerasButton.setDisable(disabled);
+
+        for (Button b : buttonToIdMap.keySet()) {
+            b.setDisable(disabled);
+        }
+    }
+
+    /**
+     * Generates a small grayscale noise image to simulate camera static.
+     * The ImageView will scale it up automatically.
+     */
+    private Image generateStaticImage(int width, int height) {
+        WritableImage image = new WritableImage(width, height);
+        PixelWriter writer = image.getPixelWriter();
+
+        Random r = new Random();
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int v = r.nextInt(256);
+                // Slightly reduce brightness to keep it less "white flash"
+                double g = (v / 255.0) * 0.85;
+                writer.setColor(x, y, Color.color(g, g, g));
+            }
+        }
+
+        return image;
     }
 
     private static final String STYLE_ACTIVE = "-fx-font-family: 'Courier New'; -fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #ffcc00; -fx-background-color: #2d2d2d; -fx-border-color: #ffcc00; -fx-border-width: 2px; -fx-cursor: hand;";

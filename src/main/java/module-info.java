@@ -1,4 +1,5 @@
 module csci205_final_project  {
+    requires javafx.base;
     requires javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;

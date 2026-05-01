@@ -205,7 +205,9 @@ public class GameSession {
     }
 
     private void checkConditions() {
-        if (currentState != GameState.PLAYING) return;
+        // The player can lose/win while the camera tablet is up.
+        // Only suppress checks in non-gameplay states (menus, already-ended states).
+        if (currentState != GameState.PLAYING && currentState != GameState.VIEWING_CAMERAS) return;
 
         // Jumpscare checked first — student in office always wins.
         Student inOffice = studentManager.getStudentInOffice();
