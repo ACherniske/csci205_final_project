@@ -20,6 +20,8 @@ package org.five_nights_at_dana.Systems.Vent;
 
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.AI.Location;
+import org.five_nights_at_dana.Managers.Notification;
+import org.five_nights_at_dana.Managers.NotificationManager;
 // TODO import org.five_nights_at_dana.Managers.AudioManager;
 
 public class VentSystem {
@@ -65,6 +67,7 @@ public class VentSystem {
             // Threshold warning
             if (travelTimer == 180) {
                 System.out.println("VentSystem: Student exiting in 3s");
+                NotificationManager.push("Vent movement detected — near office", Notification.Type.WARNING);
                 // TODO AudioManager.play("vent_close");
             }
 
@@ -92,10 +95,12 @@ public class VentSystem {
             case FLOOR1_GARDNER:  // V1
                 travelTimer = V1_TRAVEL_TIME;
                 System.out.println("VentSystem: " + student.getName() + " entered V1 (15s)");
+                NotificationManager.push(student.getName() + " entered vents (V1)", Notification.Type.SYSTEM);
                 break;
             case FLOOR2_CLASSROOM:  // V2
                 travelTimer = V2_TRAVEL_TIME;
                 System.out.println("VentSystem: " + student.getName() + " entered V2 (10s)");
+                NotificationManager.push(student.getName() + " entered vents (V2)", Notification.Type.SYSTEM);
                 break;
             default:
                 System.out.println("VentSystem: Invalid entry attempt from " + entryPoint);
@@ -117,6 +122,7 @@ public class VentSystem {
         if (studentInVent == null) return;
 
         System.out.println("VentSystem: " + studentInVent.getName() + " exited at office!");
+        NotificationManager.push("Vent exit at office!", Notification.Type.DANGER);
         // TODO AudioManager.play("vent_exit");
 
         // Student now at door
@@ -144,6 +150,7 @@ public class VentSystem {
 
         // TODO AudioManager.play("vent_seal");
         System.out.println("VentSystem: SEALED (8s)");
+        NotificationManager.push("Vent sealed", Notification.Type.SYSTEM);
 
         if (studentInVent != null) {
             ejectStudent();
@@ -159,6 +166,7 @@ public class VentSystem {
         if (studentInVent == null) return;
 
         System.out.println("VentSystem: EJECTED " + studentInVent.getName());
+        NotificationManager.push("Vent eject: " + studentInVent.getName(), Notification.Type.INFO);
         // TODO AudioManager.play("vent_eject");
 
         if (ventEntryPoint != null) {
@@ -177,6 +185,7 @@ public class VentSystem {
         isSealed = false;
         sealTimer = 0;
         // TODO AudioManager.play("vent_unseal");
+        NotificationManager.push("Vent unsealed", Notification.Type.SYSTEM);
     }
 
     /**

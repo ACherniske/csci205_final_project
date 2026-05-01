@@ -32,6 +32,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,6 +40,8 @@ import javafx.util.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+
+import org.five_nights_at_dana.UI.NotificationToastOverlay;
 
 /**
  * Controller for CameraView.fxml — the security camera tablet.
@@ -88,6 +91,9 @@ public class CameraViewController {
     public void initialize() {
         initializeButtonMap();
         onSelectFloor1(null);
+
+        AnchorPane root = (AnchorPane) activeCameraLabel.getParent();
+        NotificationToastOverlay.install(root);
     }
 
     // Inside initializeButtonMap()

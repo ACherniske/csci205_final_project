@@ -20,6 +20,7 @@
 package org.five_nights_at_dana.Managers;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A static manager class responsible for handling in-game notifications.
@@ -36,6 +37,14 @@ public class NotificationManager {
 
     /** Keeps track of the current frame count for timestamping notifications. */
     private static int currentFrame = 0;
+
+    /** Optional listeners for real-time UI/audio notification reactions. */
+    private static final List<NotificationListener> listeners = new CopyOnWriteArrayList<>();
+
+    @FunctionalInterface
+    public interface NotificationListener {
+        void onNotification(Notification notification);
+    }
 
     /**
      * Updates the manager's internal frame clock. Should be called
@@ -57,7 +66,17 @@ public class NotificationManager {
             notifications.removeFirst();
         }
 
-        notifications.addLast(new Notification(message, type, currentFrame));
+        Notification n = new Notification(message, type, currentFrame);
+        notifications.addLast(n);
+
+        // Notify listeners (UI toasts, audio, etc.). Keep it resilient in tests/headless runs.
+        for (NotificationListener l : listeners) {
+            try {
+                l.onNotification(n);
+            } catch (RuntimeException ignored) {
+                // Listener failures should not break gameplay/tests.
+            }
+        }
     }
 
     /**
@@ -67,6 +86,14 @@ public class NotificationManager {
      */
     public static List<Notification> getNotifications() {
         return new ArrayList<>(notifications);
+    }
+
+    public static void addListener(NotificationListener listener) {
+        if (listener != null) listeners.add(listener);
+    }
+
+    public static void removeListener(NotificationListener listener) {
+        listeners.remove(listener);
     }
 
     public static void stair(String message) {

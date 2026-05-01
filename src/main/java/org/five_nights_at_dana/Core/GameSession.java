@@ -28,6 +28,7 @@ import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
 import org.five_nights_at_dana.Systems.Classroom.ClassroomMechanic;
 import org.five_nights_at_dana.Systems.Elevator.ElevatorSystem;
 import org.five_nights_at_dana.Systems.Stairwells.StairSystem;
+import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
 import org.five_nights_at_dana.Systems.Vent.VentSystem;
 
 import org.five_nights_at_dana.Systems.SensorHelper;
@@ -161,6 +162,7 @@ public class GameSession {
 
         studentManager.update();
         integrateSpecialTransitions();
+        integrateStairTransitions();
         applyLeftDoorBlock();
 
         elevator.update();
@@ -343,6 +345,33 @@ public class GameSession {
                 }
             }
         }
+    }
+
+    /**
+     * Wires AI location changes into the stair system so sensors + deterrents work.
+     * StairSystem manages its own per-stairwell cooldown via SensorHelper.
+     */
+    private void integrateStairTransitions() {
+        for (Student s : studentManager.getAllStudents()) {
+            Stairwell prev = stairwellFromLocation(s.getPreviousLocation());
+            Stairwell cur = stairwellFromLocation(s.getCurrentLocation());
+
+            if (prev != null && prev != cur) {
+                stairSystem.studentExitStairwell(s, prev);
+            }
+            if (cur != null && cur != prev) {
+                stairSystem.studentEnterStairwell(s, cur);
+            }
+        }
+    }
+
+    private Stairwell stairwellFromLocation(Location loc) {
+        if (loc == null) return null;
+        String name = loc.name();
+        if (name.contains("STAIR_LEFT")) return Stairwell.LEFT;
+        if (name.contains("STAIR_MID")) return Stairwell.MIDDLE;
+        if (name.contains("STAIR_RIGHT")) return Stairwell.RIGHT;
+        return null;
     }
 
     /**

@@ -34,6 +34,7 @@ import javafx.stage.Stage;
 import org.five_nights_at_dana.Core.GamePane;
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.UI.NotificationToastOverlay;
 import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
 
 public class GameViewController {
@@ -84,6 +85,9 @@ public class GameViewController {
         session.setOnJumpscare(this::triggerJumpscare);
         session.setOnWin(this::handleWin);
         session.setOnGameOver(this::handleGameOver);
+
+        // Discord-style toasts for the notification system
+        NotificationToastOverlay.install(root);
 
         refreshDoorButton();
     }
