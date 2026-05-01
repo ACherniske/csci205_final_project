@@ -26,10 +26,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.five_nights_at_dana.Core.GamePane;
 import org.five_nights_at_dana.Core.GameSession;
@@ -41,10 +44,9 @@ public class GameViewController {
 
     // ── HUD ──────────────────────────────────────────────────────────
     @FXML private Label       timeLabel;
-    @FXML private ProgressBar powerBar;
+    @FXML private Canvas      powerBatteryCanvas;
     @FXML private Label       powerLabel;
     @FXML private ProgressBar classroomActivityBar;
-    @FXML private Label       stairChargesLabel;
 
     // ── OFFICE OBJECTS ────────────────────────────────────────────────
     @FXML private ImageView officeBackground;
@@ -94,6 +96,7 @@ public class GameViewController {
         NotificationToastOverlay.install(root);
 
         refreshDoorButton();
+        drawBattery(session.getPower());
     }
 
     // ── Frame callback (called every frame by GameSession's AnimationTimer) ──
@@ -107,15 +110,68 @@ public class GameViewController {
     }
 
     /**
-     * Refreshes HUD elements (power, time, activity, stair charges).
+        * Refreshes HUD elements (power, time, activity).
      */
     private void refreshHUD() {
-        powerBar.setProgress(session.getPower());
-        powerLabel.setText((int)(session.getPower() * 100) + "%");
+        double power = session.getPower();
+        drawBattery(power);
+        powerLabel.setText((int)(power * 100) + "%");
         classroomActivityBar.setProgress(session.getClassroom().getActivityPercentage());
-        int charges = session.getStairSystem().getLightCharges();
-        stairChargesLabel.setText("Stair Charges: " + "● ".repeat(charges).trim());
         timeLabel.setText(String.format("%d:%02d AM", session.getHour(), session.getMinute()));
+    }
+
+    private void drawBattery(double powerFraction) {
+        if (powerBatteryCanvas == null) return;
+        double clamped = Math.max(0.0, Math.min(1.0, powerFraction));
+
+        GraphicsContext gc = powerBatteryCanvas.getGraphicsContext2D();
+        double w = powerBatteryCanvas.getWidth();
+        double h = powerBatteryCanvas.getHeight();
+        gc.clearRect(0, 0, w, h);
+
+        Color color;
+        if (clamped <= 0.20) {
+            color = Color.web("#ff4444");
+        } else if (clamped <= 0.50) {
+            color = Color.web("#ffcc00");
+        } else {
+            color = Color.web("#00ff41");
+        }
+
+        double tipW = Math.max(6.0, Math.round(w * 0.10));
+        double bodyW = w - tipW - 1.0;
+        double bodyX = 0.5;
+        double bodyY = 1.5;
+        double bodyH = h - 3.0;
+
+        // Outline
+        gc.setStroke(color);
+        gc.setLineWidth(2.0);
+        gc.strokeRoundRect(bodyX, bodyY, bodyW, bodyH, 3.0, 3.0);
+
+        double tipX = bodyX + bodyW;
+        double tipH = bodyH * 0.45;
+        double tipY = bodyY + (bodyH - tipH) / 2.0;
+        gc.strokeRoundRect(tipX, tipY, tipW, tipH, 2.0, 2.0);
+
+        // Segment fill
+        int segments = 4;
+        double padding = 3.0;
+        double innerX = bodyX + padding;
+        double innerY = bodyY + padding;
+        double innerW = bodyW - 2.0 * padding;
+        double innerH = bodyH - 2.0 * padding;
+        double gap = 2.0;
+        double segW = (innerW - gap * (segments - 1)) / segments;
+
+        int filled = (int) Math.floor(clamped * segments + 1e-9);
+        if (clamped > 0 && filled == 0) filled = 1;
+
+        gc.setFill(color);
+        for (int i = 0; i < filled; i++) {
+            double x = innerX + i * (segW + gap);
+            gc.fillRoundRect(x, innerY, segW, innerH, 2.0, 2.0);
+        }
     }
 
     // ── DOOR ──────────────────────────────────────────────────────────
@@ -288,10 +344,9 @@ public class GameViewController {
     }
 
     /** External hook to push HUD values if needed outside the frame callback. */
-    public void updateHUD(double powerPercent, double classActivity, int stairCharges) {
-        powerBar.setProgress(powerPercent);
+    public void updateHUD(double powerPercent, double classActivity) {
+        drawBattery(powerPercent);
         powerLabel.setText((int)(powerPercent * 100) + "%");
         classroomActivityBar.setProgress(classActivity);
-        stairChargesLabel.setText("Stair Charges: " + "● ".repeat(stairCharges).trim());
     }
 }

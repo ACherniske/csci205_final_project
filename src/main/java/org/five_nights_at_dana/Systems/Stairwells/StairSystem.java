@@ -32,8 +32,8 @@ import java.util.*;
  */
 public class StairSystem {
 
-    /** Total emergency light charges available per night. */
-    private static final int TOTAL_LIGHT_CHARGES = 5;
+    /** Power drain reported while emergency lights are active. */
+    private static final double LIGHTS_POWER_DRAIN = 0.12;
 
     /** Duration lights stay on (5 seconds at 60 FPS). */
     private static final int LIGHT_DURATION = 300;
@@ -46,7 +46,6 @@ public class StairSystem {
 
     private Stairwell activeLightsStairwell;
     private int lightTimer;
-    private int lightCharges;
     private int currentFrame;
 
     /**
@@ -89,13 +88,10 @@ public class StairSystem {
      */
     public boolean activateLights(Stairwell stairwell) {
         if (!canActivateLights()) return false;
-
-        lightCharges--;
         activeLightsStairwell = stairwell;
         lightTimer = LIGHT_DURATION;
 
-        System.out.println("StairSystem: Lights ON in " + stairwell +
-                " (" + lightCharges + " left)");
+        System.out.println("StairSystem: Lights ON in " + stairwell);
 
         deterStudentsInStairwell(stairwell);
         return true;
@@ -157,8 +153,6 @@ public class StairSystem {
         }
 
         sensorLastTrigger.replaceAll((s, v) -> -SENSOR_COOLDOWN);
-
-        lightCharges = TOTAL_LIGHT_CHARGES;
         activeLightsStairwell = null;
         lightTimer = 0;
         currentFrame = 0;
@@ -168,14 +162,16 @@ public class StairSystem {
      * Checks if lights can currently be activated.
      */
     public boolean canActivateLights() {
-        return lightCharges > 0 && activeLightsStairwell == null;
+        return activeLightsStairwell == null;
     }
 
     /**
-     * Gets remaining light charges.
+     * Returns the power drain rate of the stair system.
+     *
+     * @return drain value when lights are active, 0.0 otherwise
      */
-    public int getLightCharges() {
-        return lightCharges;
+    public double getPowerDrain() {
+        return activeLightsStairwell != null ? LIGHTS_POWER_DRAIN : 0.0;
     }
 
     /**

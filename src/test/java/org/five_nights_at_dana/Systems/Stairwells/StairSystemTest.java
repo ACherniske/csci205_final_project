@@ -40,18 +40,18 @@ class StairSystemTest {
 
     @Test
     void testInitialState() {
-        assertEquals(5, stairSystem.getLightCharges());
         assertTrue(stairSystem.canActivateLights());
         assertNull(stairSystem.getActiveLightsStairwell());
+        assertEquals(0.0, stairSystem.getPowerDrain(), 0.0001);
     }
 
     @Test
-    void testActivateLightsConsumesCharge() {
+    void testActivateLightsActivatesAndDrainsPower() {
         boolean activated = stairSystem.activateLights(Stairwell.LEFT);
 
         assertTrue(activated);
-        assertEquals(4, stairSystem.getLightCharges());
         assertTrue(stairSystem.areLightsActive(Stairwell.LEFT));
+        assertTrue(stairSystem.getPowerDrain() > 0.0);
     }
 
     @Test
@@ -210,27 +210,21 @@ class StairSystemTest {
 
         stairSystem.reset();
 
-        assertEquals(5, stairSystem.getLightCharges());
         assertNull(stairSystem.getActiveLightsStairwell());
         assertTrue(stairSystem.getStudentsInStairwell(Stairwell.LEFT).isEmpty());
+        assertEquals(0.0, stairSystem.getPowerDrain(), 0.0001);
     }
 
-    // =========================
-    // EDGE CASE TESTS
-    // =========================
-
     @Test
-    void testCannotActivateLightsWithNoCharges() {
-        for (int i = 0; i < 5; i++) {
-            stairSystem.activateLights(Stairwell.LEFT);
+    void testCanReactivateLightsAfterDuration() {
+        assertTrue(stairSystem.activateLights(Stairwell.LEFT));
+        assertFalse(stairSystem.activateLights(Stairwell.RIGHT), "Cannot activate while lights already active");
 
-            for (int j = 0; j < 300; j++) {
-                stairSystem.update();
-            }
+        for (int i = 0; i < 300; i++) {
+            stairSystem.update();
         }
 
-        assertEquals(0, stairSystem.getLightCharges());
-        assertFalse(stairSystem.activateLights(Stairwell.LEFT));
+        assertTrue(stairSystem.activateLights(Stairwell.RIGHT), "Can activate again once lights turn off");
     }
 
     // =========================

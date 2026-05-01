@@ -51,11 +51,17 @@ public class GameSession {
     private static final long MAX_ACCUMULATED_NANOS = 250_000_000L; // clamp to avoid spiral-of-death
 
     /**
+     * Total available battery capacity in "power units".
+     * The HUD reads power as a fraction via {@link #getPower()}.
+     */
+    private static final double BATTERY_CAPACITY = 2.0;
+
+    /**
      * Multiplier applied to subsystem power drains.
-     * Subsystems currently report drain values on a 0..1-ish scale; applying
+     * Subsystems report drain values on a 0..1-ish scale; applying
      * a multiplier keeps gameplay playable without changing subsystem APIs/tests.
      */
-    private static final double SYSTEM_POWER_DRAIN_MULTIPLIER = 0.10;
+    private static final double SYSTEM_POWER_DRAIN_MULTIPLIER = 0.05;
 
     private static GameSession instance;
 
@@ -74,7 +80,7 @@ public class GameSession {
 
     // ── Game state (FX thread only) ───────────────────────────────────
     private GameState currentState = GameState.MAIN_MENU;
-    private double power       = 1.0;
+    private double power       = BATTERY_CAPACITY;
     private double coffeeLevel = 1.0;
     private int frameCount     = 0;
 
@@ -128,7 +134,7 @@ public class GameSession {
     public void startNight() {
         hour       = 12;
         minute     = 0;
-        power      = 1.0;
+        power      = BATTERY_CAPACITY;
         coffeeLevel= 1.0;
         frameCount = 0;
         active     = true;
@@ -193,12 +199,13 @@ public class GameSession {
      */
     private void updatePower() {
         // Base drain + per-system drain converted from per-second to per-frame
-        power -= 0.000005;
+        power -= 0.000003;
         power -= (vents.getPowerDrain()    * SYSTEM_POWER_DRAIN_MULTIPLIER) / (double)TICKS_PER_SECOND;
         power -= (elevator.getPowerDrain() * SYSTEM_POWER_DRAIN_MULTIPLIER) / (double)TICKS_PER_SECOND;
+        power -= (stairSystem.getPowerDrain() * SYSTEM_POWER_DRAIN_MULTIPLIER) / (double)TICKS_PER_SECOND;
         if (leftDoorClosed) {
             // Small continuous drain when the door is shut
-            power -= 0.02 / (double)TICKS_PER_SECOND;
+            power -= 0.008 / (double)TICKS_PER_SECOND;
         }
         power  = Math.max(0.0, power);
     }
@@ -478,7 +485,9 @@ public class GameSession {
     public boolean isActive() { return active; }
 
     /** @return current power fraction (0..1) */
-    public double getPower() { return power; }
+    public double getPower() {
+        return Math.max(0.0, Math.min(1.0, power / BATTERY_CAPACITY));
+    }
 
     /** @return current coffee level fraction (0..1) */
     public double getCoffeeLevel() { return coffeeLevel; }

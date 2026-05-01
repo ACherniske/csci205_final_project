@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.canvas.Canvas?>
 
 <!--
     GameView.fxml — Office gameplay screen.
@@ -61,19 +62,15 @@
                -fx-font-size: 14px;
                -fx-text-fill: #00ff41;"/>
 
-    <ProgressBar
-        fx:id="powerBar"
-        progress="1.0"
-        layoutX="20" layoutY="660"
-        prefWidth="200" prefHeight="18"
-        style="-fx-accent: #00ff41;
-               -fx-background-color: #1a1a1a;
-               -fx-border-color: #333333;"/>
+    <Canvas
+        fx:id="powerBatteryCanvas"
+        width="72" height="22"
+        layoutX="20" layoutY="656" />
 
     <Label
         fx:id="powerLabel"
         text="100%"
-        layoutX="228" layoutY="658"
+        layoutX="98" layoutY="658"
         style="-fx-font-family: 'Courier New';
                -fx-font-size: 13px;
                -fx-text-fill: #00ff41;"/>
@@ -145,7 +142,7 @@
                -fx-border-width: 2px;
                -fx-cursor: hand;"/>
 
-    <!-- Left Stairwell — Emergency Lights (3 charges) -->
+    <!-- Left Stairwell — Emergency Lights -->
     <Button
         fx:id="leftStairwellButton"
         text="L-STAIR&#10;LIGHTS"
@@ -209,14 +206,5 @@
         style="-fx-accent: #ff8800;
                -fx-background-color: #1a1a1a;
                -fx-border-color: #333333;"/>
-
-    <!-- ── STAIRWELL CHARGES DISPLAY ────────────────────────────────── -->
-    <Label
-        fx:id="stairChargesLabel"
-        text="Stair Charges: ● ● ●"
-        layoutX="885" layoutY="620"
-        style="-fx-font-family: 'Courier New';
-               -fx-font-size: 12px;
-               -fx-text-fill: #aaddff;"/>
 
 </AnchorPane>
