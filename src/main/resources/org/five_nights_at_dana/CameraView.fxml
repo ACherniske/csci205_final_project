@@ -43,9 +43,6 @@
         <Button fx:id="camSL2" layoutX="115.0" layoutY="108.0" text="SL2" /> <Button fx:id="camSM2" layoutX="35.0" layoutY="168.0" text="SM2" />
         <Button fx:id="camSR2" layoutX="114.0" layoutY="180.0" text="SR2" />
         <ImageView fitHeight="240.0" fitWidth="322.0" layoutX="1.0" layoutY="1.0">
-            <image>
-                <Image url="@../../assets/images/Map_Floor3.png" />
-            </image>
         </ImageView>
     </Pane>
 

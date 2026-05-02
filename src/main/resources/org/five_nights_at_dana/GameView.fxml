@@ -145,7 +145,7 @@
     <!-- Left Stairwell — Emergency Lights -->
     <Button
         fx:id="leftStairwellButton"
-        text="STAIR LOCATION&#10;LIGHTS"
+        text="LEFT STAIR&#10;LIGHTS"
         onAction="#onLeftStairwellLights"
         layoutX="885" layoutY="640"
         prefWidth="110" prefHeight="54"
@@ -161,7 +161,7 @@
     <!-- Middle Stairwell — Emergency Lighting (stuns students) -->
     <Button
         fx:id="middleStairwellButton"
-        text="STAIR LOCATION&#10;LIGHTS"
+        text="MID STAIR&#10;LIGHTS"
         onAction="#onMiddleStairwellLights"
         layoutX="1005" layoutY="640"
         prefWidth="110" prefHeight="54"
@@ -177,7 +177,7 @@
     <!-- Right Stairwell — Sensor Check -->
     <Button
         fx:id="rightStairwellButton"
-        text="STAIR LOCATION&#10;LIGHTS"
+        text="RIGHT STAIR&#10;LIGHTS"
         onAction="#onRightStairwellSensor"
         layoutX="1125" layoutY="640"
         prefWidth="110" prefHeight="54"
