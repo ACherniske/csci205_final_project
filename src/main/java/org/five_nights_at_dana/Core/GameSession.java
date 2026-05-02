@@ -149,9 +149,14 @@ public class GameSession {
         vents.reset();
         classroom.reset();
         studentManager.reset();
+        studentManager.applyNight1StartingAiLevels();
         NotificationManager.clear();
         SensorHelper.reset();
         wireRunner();
+
+        // Runner is dormant at the start of Night 1.
+        classroom.setRunnerActive(false);
+        classroom.setRunnerDifficultyMultiplier(1.0);
 
         startNightClock();
         startGameLoop();
@@ -177,6 +182,10 @@ public class GameSession {
         NotificationManager.update();
 
         maybeIncreaseDifficulty();
+
+        // Runner should only become active once the night is underway (2 AM+),
+        // and the activity meter should scale up with difficulty.
+        syncRunnerDifficulty();
 
         // Door can prevent office entry by pushing students back before AI updates
         applyLeftDoorBlock();
@@ -246,6 +255,21 @@ public class GameSession {
             studentManager.applyNight1AggressionGrowth(hour);
             NotificationManager.push("Students are getting bolder...", Notification.Type.SYSTEM);
         }
+    }
+
+    /**
+     * Keeps the runner activity meter aligned with the difficulty schedule.
+     * Dormant until 2 AM; then scales the fill rate as hours progress.
+     */
+    private void syncRunnerDifficulty() {
+        // 12 AM and 1 AM: dormant.
+        boolean activeNow = (hour >= 2 && hour <= 6);
+        classroom.setRunnerActive(activeNow);
+
+        // Simple difficulty scale by hour: 2AM=1.0x, 3AM=1.3x, 4AM=1.6x, 5AM=1.9x.
+        int hourIndex = Math.max(0, hour - 2);
+        double multiplier = 1.0 + 0.30 * hourIndex;
+        classroom.setRunnerDifficultyMultiplier(multiplier);
     }
 
     /**

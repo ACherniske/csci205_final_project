@@ -185,6 +185,24 @@ public class StudentManager {
     }
 
     /**
+     * Applies a small Night-1 baseline so students can move before 2 AM.
+     * FNAF uses per-character starting AI; with a 1..20 roll system, AI=0 means "never moves".
+     */
+    public void applyNight1StartingAiLevels() {
+        for (Student s : students) {
+            int start = switch (s.getPersonality()) {
+                case EAGER -> 2;
+                case PERSISTENT, CONFUSED -> 1;
+                default -> 0;
+            };
+
+            if (start > 0) {
+                s.setAiLevel(start);
+            }
+        }
+    }
+
+    /**
      * Resets all students to their initial state.
      */
     public void reset() {

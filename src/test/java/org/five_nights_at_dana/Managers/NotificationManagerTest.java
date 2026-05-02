@@ -261,6 +261,8 @@ class NotificationManagerTest {
         Student runner = new Student("Runner", "Q", Personality.RUNNER);
 
         mech.setRunner(runner);
+        mech.setRunnerActive(true);
+        mech.setRunnerDifficultyMultiplier(1.0);
 
         // Run long enough to trigger warning
         for (int i = 0; i < 2000; i++) {

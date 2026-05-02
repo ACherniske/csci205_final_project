@@ -22,6 +22,8 @@ public class ClassroomMechanicTest {
         mechanic = new ClassroomMechanic();
         runner = new Student("Runner", "Why did I fail?", Personality.RUNNER);
         mechanic.setRunner(runner);
+        mechanic.setRunnerActive(true);
+        mechanic.setRunnerDifficultyMultiplier(1.0);
 
         // Reset global systems
         NotificationManager.clear();

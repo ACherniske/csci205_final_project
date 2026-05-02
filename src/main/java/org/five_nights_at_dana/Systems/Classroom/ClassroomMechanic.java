@@ -31,8 +31,8 @@ public class ClassroomMechanic {
     /** Maximum activity threshold before the runner charges. */
     private static final int MAX_ACTIVITY = 100;
 
-    /** Rate at which activity increases per frame when not watched. */
-    private static final double ACTIVITY_INCREASE_RATE = 0.05;
+    /** Base rate at which activity increases per frame when not watched. */
+    private static final double BASE_ACTIVITY_INCREASE_RATE = 0.05;
 
     /** Frames to wait before activity begins increasing (3s). */
     private static final int RESET_COOLDOWN = 180; // frames -> 3s
@@ -44,6 +44,12 @@ public class ClassroomMechanic {
     private int currentFrame;
 
     private Student runner;
+
+    /** If false, the runner is dormant and the activity meter should not rise. */
+    private boolean runnerActive = false;
+
+    /** Difficulty multiplier applied to the runner meter fill rate. */
+    private double runnerDifficultyMultiplier = 1.0;
 
     /**
      * Constructs a new ClassroomMechanic and initializes default state.
@@ -65,6 +71,17 @@ public class ClassroomMechanic {
         }
     }
 
+    /** Enables/disables runner activity meter progression (dormant until active). */
+    public void setRunnerActive(boolean active) {
+        this.runnerActive = active;
+    }
+
+    /** Sets the runner meter difficulty scaling. Values are clamped to a sane range. */
+    public void setRunnerDifficultyMultiplier(double multiplier) {
+        if (Double.isNaN(multiplier) || Double.isInfinite(multiplier)) return;
+        this.runnerDifficultyMultiplier = Math.max(0.25, Math.min(5.0, multiplier));
+    }
+
     /**
      * Updates the classroom behavior logic. Increments activity levels and
      * handles the threshold triggers for warnings and charging.
@@ -75,10 +92,13 @@ public class ClassroomMechanic {
 
         if (eventTriggered) return;
 
+        // Runner is dormant until activated by the session difficulty schedule.
+        if (!runnerActive) return;
+
         framesSinceCheck++;
 
         if (framesSinceCheck > RESET_COOLDOWN) {
-            activityLevel += ACTIVITY_INCREASE_RATE;
+            activityLevel += BASE_ACTIVITY_INCREASE_RATE * runnerDifficultyMultiplier;
 
             if (activityLevel >= MAX_ACTIVITY) {
                 activityLevel = MAX_ACTIVITY;
@@ -173,5 +193,7 @@ public class ClassroomMechanic {
         framesSinceCheck = 0;
         currentFrame = 0;
         runner = null;
+        runnerActive = false;
+        runnerDifficultyMultiplier = 1.0;
     }
 }
