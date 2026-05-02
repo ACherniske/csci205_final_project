@@ -1,11 +1,10 @@
 package org.five_nights_at_dana.Tools;
 
-import org.five_nights_at_dana.AI.*;
-import org.five_nights_at_dana.Managers.NavigationManager;
-
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
+import org.five_nights_at_dana.AI.*;
+import org.five_nights_at_dana.Managers.NavigationManager;
 
 /**
  * View graphs at <a href="https://dreampuf.github.io/GraphvizOnline/">...</a>
@@ -15,11 +14,11 @@ public class GraphExporter {
     private static final String OUTPUT_DIR =
             "src/main/java/org/five_nights_at_dana/Tools/";
 
-        /**
-         * Generates GraphViz `.dot` files and heatmap reports for each personality.
-         *
-         * @param args unused
-         */
+    /**
+     * Generates GraphViz `.dot` files and heatmap reports for each personality.
+     *
+     * @param args unused
+     */
     public static void main(String[] args) {
 
         exportBaseGraph();

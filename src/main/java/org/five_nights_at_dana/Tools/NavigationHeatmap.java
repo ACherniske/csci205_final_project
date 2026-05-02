@@ -1,10 +1,12 @@
 package org.five_nights_at_dana.Tools;
 
+import java.util.*;
 import org.five_nights_at_dana.AI.*;
 import org.five_nights_at_dana.Managers.NavigationManager;
 
-import java.util.*;
-
+/**
+ * Heatmap generated for GraphViz to help tune AI behavior
+ */
 public class NavigationHeatmap {
 
     /**
@@ -66,7 +68,9 @@ public class NavigationHeatmap {
                 }
 
                 // stop once office reached (prevents heat inflation)
-                if (next == Location.IN_OFFICE) break;
+                if (next == Location.IN_OFFICE) {
+                    break;
+                }
             }
         }
 
