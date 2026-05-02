@@ -19,6 +19,7 @@
 
 package org.five_nights_at_dana.Systems.Stairwells;
 
+import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
@@ -31,6 +32,15 @@ import java.util.*;
  * activation of shared emergency light charges to deter students.
  */
 public class StairSystem {
+
+    private static String floorFromLocation(Location loc) {
+        if (loc == null) return "Unknown floor";
+        String name = loc.name();
+        if (name.startsWith("FLOOR1_")) return "Floor 1";
+        if (name.startsWith("FLOOR2_")) return "Floor 2";
+        if (name.startsWith("FLOOR3_")) return "Floor 3";
+        return "Unknown floor";
+    }
 
     /** Power drain reported while emergency lights are active. */
     private static final double LIGHTS_POWER_DRAIN = 0.12;
@@ -189,9 +199,11 @@ public class StairSystem {
         if (!list.contains(student)) {
             list.add(student);
 
+            String floor = floorFromLocation(student.getCurrentLocation());
+
             SensorHelper.trigger(
                     "stair_" + stairwell,
-                    student.getName() + " detected in " + stairwell + " stairwell",
+                    student.getName() + " moved to " + floor + " (" + stairwell + " stairs)",
                     Notification.Type.STAIR_SENSOR,
                     currentFrame
             );

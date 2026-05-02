@@ -23,6 +23,7 @@ public class Notification {
         WARNING,
         DANGER,
         STAIR_SENSOR,
+        ELEVATOR,
         RUNNER_CHARGING,
         RUNNER_SPRINTING,
         SYSTEM

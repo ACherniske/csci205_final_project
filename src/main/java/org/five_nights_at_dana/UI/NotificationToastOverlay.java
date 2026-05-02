@@ -201,6 +201,7 @@ public final class NotificationToastOverlay {
             case DANGER -> Color.web("#ED4245");
             case WARNING -> Color.web("#FEE75C");
             case STAIR_SENSOR -> Color.web("#57F287");
+            case ELEVATOR -> Color.web("#22D3EE");
             case RUNNER_CHARGING, RUNNER_SPRINTING -> Color.web("#5865F2");
             case SYSTEM -> Color.web("#A78BFA");
             case INFO -> Color.web("#99AAB5");
@@ -215,7 +216,8 @@ public final class NotificationToastOverlay {
      */
     private static String titleForType(Notification.Type t) {
         return switch (t) {
-            case STAIR_SENSOR -> "STAIR SENSOR";
+            case STAIR_SENSOR -> "STAIR LOCATION LIGHTS";
+            case ELEVATOR -> "ELEVATOR";
             case RUNNER_CHARGING -> "RUNNER";
             case RUNNER_SPRINTING -> "RUNNER";
             case WARNING -> "WARNING";

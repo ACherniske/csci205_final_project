@@ -145,7 +145,7 @@
     <!-- Left Stairwell — Emergency Lights -->
     <Button
         fx:id="leftStairwellButton"
-        text="L-STAIR&#10;LIGHTS"
+        text="STAIR LOCATION&#10;LIGHTS"
         onAction="#onLeftStairwellLights"
         layoutX="885" layoutY="640"
         prefWidth="110" prefHeight="54"
@@ -161,7 +161,7 @@
     <!-- Middle Stairwell — Emergency Lighting (stuns students) -->
     <Button
         fx:id="middleStairwellButton"
-        text="M-STAIR&#10;LIGHTS"
+        text="STAIR LOCATION&#10;LIGHTS"
         onAction="#onMiddleStairwellLights"
         layoutX="1005" layoutY="640"
         prefWidth="110" prefHeight="54"
@@ -177,7 +177,7 @@
     <!-- Right Stairwell — Sensor Check -->
     <Button
         fx:id="rightStairwellButton"
-        text="R-STAIR&#10;SENSOR"
+        text="STAIR LOCATION&#10;LIGHTS"
         onAction="#onRightStairwellSensor"
         layoutX="1125" layoutY="640"
         prefWidth="110" prefHeight="54"
@@ -194,6 +194,7 @@
     <Label
         text="CLASS ACTIVITY"
         layoutX="960" layoutY="18"
+        visible="false" managed="false"
         style="-fx-font-family: 'Courier New';
                -fx-font-size: 13px;
                -fx-text-fill: #ff8800;"/>
@@ -203,6 +204,7 @@
         progress="0.0"
         layoutX="960" layoutY="38"
         prefWidth="200" prefHeight="14"
+        visible="false" managed="false"
         style="-fx-accent: #ff8800;
                -fx-background-color: #1a1a1a;
                -fx-border-color: #333333;"/>

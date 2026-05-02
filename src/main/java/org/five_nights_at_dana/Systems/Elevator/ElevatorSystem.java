@@ -19,6 +19,8 @@ package org.five_nights_at_dana.Systems.Elevator;
 
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.Notification;
+import org.five_nights_at_dana.Systems.SensorHelper;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,17 @@ public class ElevatorSystem {
     private Student studentInElevator;
     private Location elevatorEntry;
 
+    private int currentFrame;
+
+    private static String floorFromLocation(Location loc) {
+        if (loc == null) return "Unknown floor";
+        String name = loc.name();
+        if (name.startsWith("FLOOR1_")) return "Floor 1";
+        if (name.startsWith("FLOOR2_")) return "Floor 2";
+        if (name.startsWith("FLOOR3_")) return "Floor 3";
+        return "Unknown floor";
+    }
+
 
     /**
      * Constructor
@@ -50,6 +63,7 @@ public class ElevatorSystem {
      * Updates elevator logic.
      */
     public void update() {
+        currentFrame++;
         if (isEmergencyStopped) {
             emergencyTimer --;
             if (emergencyTimer <= 0) {
@@ -97,6 +111,13 @@ public class ElevatorSystem {
             studentInElevator = student;
             elevatorEntry = entryPoint;
             System.out.println("ElevatorSystem: " + student.getName() + " entered elevator.");
+
+            SensorHelper.trigger(
+                    "elevator_enter",
+                    student.getName() + " entered the Elevator (" + floorFromLocation(entryPoint) + ")",
+                    Notification.Type.ELEVATOR,
+                    currentFrame
+            );
             // TODO AudioManager.play("elevator_enter");
             return true;
         }
@@ -121,6 +142,13 @@ public class ElevatorSystem {
         } else {
             studentInElevator.setLocation(Location.FLOOR1_ELEVATOR);
         }
+
+        SensorHelper.trigger(
+                "elevator_exit",
+                studentInElevator.getName() + " exited the Elevator (" + floorFromLocation(studentInElevator.getCurrentLocation()) + ")",
+            Notification.Type.ELEVATOR,
+                currentFrame
+        );
 
 
 
@@ -148,6 +176,13 @@ public class ElevatorSystem {
         //TODO AudioManager.play("Elevator_STOP);
         System.out.println("ElevatorSystem: STOPPED (10s)");
 
+        SensorHelper.trigger(
+            "elevator_stop",
+            "Elevator Emergency Stop engaged (10s)",
+            Notification.Type.ELEVATOR,
+            currentFrame
+        );
+
         if (studentInElevator != null) {
             ejectStudent();
         }
@@ -164,6 +199,13 @@ public class ElevatorSystem {
 
         System.out.println("ElevatorSystem: EJECTED " + studentInElevator.getName());
         // TODO AudioManager.play("elevator_eject");
+
+        SensorHelper.trigger(
+            "elevator_eject",
+            "Elevator ejected " + studentInElevator.getName() + " (" + floorFromLocation(elevatorEntry) + ")",
+            Notification.Type.ELEVATOR,
+            currentFrame
+        );
 
         studentInElevator.setLocation(elevatorEntry);
 
@@ -253,5 +295,6 @@ public class ElevatorSystem {
         elevatorTimer = 0;
         emergencyTimer = 0;
         emergencyStopCooldown = 0;
+        currentFrame = 0;
     }
 }
