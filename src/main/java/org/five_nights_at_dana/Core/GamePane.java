@@ -25,12 +25,14 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import org.five_nights_at_dana.AI.Student;
 
+/**
+ * Game pane for rendering the graphics
+ */
 public class GamePane extends Pane {
 
     private static final double WIDTH  = 1280;
     private static final double HEIGHT = 720;
 
-    private final Canvas canvas;
     private final GraphicsContext gc;
 
     /**
@@ -38,7 +40,7 @@ public class GamePane extends Pane {
      * The pane is mouse-transparent so underlying FXML controls remain clickable.
      */
     public GamePane() {
-        canvas = new Canvas(WIDTH, HEIGHT);
+        Canvas canvas = new Canvas(WIDTH, HEIGHT);
         gc     = canvas.getGraphicsContext2D();
         getChildren().add(canvas);
         // Let mouse events fall through to the FXML buttons beneath

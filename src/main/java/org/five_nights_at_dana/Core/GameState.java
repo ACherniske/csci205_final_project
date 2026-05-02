@@ -16,6 +16,9 @@
 
 package org.five_nights_at_dana.Core;
 
+/**
+ * All possible game states
+ */
 public enum GameState {
     MAIN_MENU,
     PLAYING,
