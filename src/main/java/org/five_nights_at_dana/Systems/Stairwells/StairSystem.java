@@ -19,12 +19,11 @@
 
 package org.five_nights_at_dana.Systems.Stairwells;
 
+import java.util.*;
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
-
-import java.util.*;
 
 /**
  * Manages the "Stair" mechanic across the facility.
@@ -34,11 +33,19 @@ import java.util.*;
 public class StairSystem {
 
     private static String floorFromLocation(Location loc) {
-        if (loc == null) return "Unknown floor";
+        if (loc == null) {
+            return "Unknown floor";
+        }
         String name = loc.name();
-        if (name.startsWith("FLOOR1_")) return "Floor 1";
-        if (name.startsWith("FLOOR2_")) return "Floor 2";
-        if (name.startsWith("FLOOR3_")) return "Floor 3";
+        if (name.startsWith("FLOOR1_")) {
+            return "Floor 1";
+        }
+        if (name.startsWith("FLOOR2_")) {
+            return "Floor 2";
+        }
+        if (name.startsWith("FLOOR3_")) {
+            return "Floor 3";
+        }
         return "Unknown floor";
     }
 

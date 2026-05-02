@@ -16,6 +16,9 @@
 
 package org.five_nights_at_dana.Systems.Stairwells;
 
+/**
+ * Locations of sensors in stairwell
+ */
 public enum SensorLocation {
     LEFT_F1_TO_F2,
     LEFT_F2_TO_F3,

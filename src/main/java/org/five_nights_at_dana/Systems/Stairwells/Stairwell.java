@@ -16,6 +16,9 @@
 
 package org.five_nights_at_dana.Systems.Stairwells;
 
+/**
+ * Stairwell locations
+ */
 public enum Stairwell {
     LEFT,
     MIDDLE,

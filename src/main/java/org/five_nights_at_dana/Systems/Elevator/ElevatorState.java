@@ -31,37 +31,31 @@ public enum ElevatorState {
     DOORS_OPENING;
 
     /**
-     * Determines whether the elevator state machine is allowed to transition to the given next state.
+     * Determines whether the elevator state machine is
+     * allowed to transition to the given next state.
      *
      * @param next proposed next state
      * @return true if the transition is valid
      */
     public boolean canTransitionTo(ElevatorState next) {
-        switch (this) {
-            case FIRST_FLOOR:
-                return next == MOVING_UP || next == DOORS_OPENING || next == STOPPED_EMERGENCY;
+        return switch (this) {
+            case FIRST_FLOOR -> next == MOVING_UP
+                    || next == DOORS_OPENING
+                    || next == STOPPED_EMERGENCY;
 
+            case MOVING_UP -> next == STOPPED_EMERGENCY || next == THIRD_FLOOR;
 
-            case MOVING_UP:
-                return next == STOPPED_EMERGENCY || next == THIRD_FLOOR;
+            case MOVING_DOWN -> next == STOPPED_EMERGENCY || next == FIRST_FLOOR;
 
+            case STOPPED_EMERGENCY -> next == MOVING_UP
+                    || next == DOORS_OPENING
+                    || next == FIRST_FLOOR;
 
-            case MOVING_DOWN:
-                return next == STOPPED_EMERGENCY || next == FIRST_FLOOR;
-
-
-            case STOPPED_EMERGENCY:
-                return next == MOVING_UP || next == DOORS_OPENING || next == FIRST_FLOOR;
-
-
-            case THIRD_FLOOR:
-                return next == DOORS_OPENING || next == MOVING_DOWN || next == STOPPED_EMERGENCY;
-
-
-            case DOORS_OPENING:
-                return next == FIRST_FLOOR || next == THIRD_FLOOR;
-
-        }
-        return false;
+            case THIRD_FLOOR -> next == DOORS_OPENING
+                    || next == MOVING_DOWN
+                    || next == STOPPED_EMERGENCY;
+            
+            case DOORS_OPENING -> next == FIRST_FLOOR || next == THIRD_FLOOR;
+        };
     }
 }

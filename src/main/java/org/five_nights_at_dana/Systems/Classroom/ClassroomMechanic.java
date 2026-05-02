@@ -64,7 +64,9 @@ public class ClassroomMechanic {
      * @param runner The Student object representing the runner.
      */
     public void setRunner(Student runner) {
-        if (this.runner == runner) return;
+        if (this.runner == runner) {
+            return;
+        }
         this.runner = runner;
         if (runner != null) {
             System.out.println("ClassroomMechanic: Runner set to " + runner.getName());
@@ -78,7 +80,9 @@ public class ClassroomMechanic {
 
     /** Sets the runner meter difficulty scaling. Values are clamped to a sane range. */
     public void setRunnerDifficultyMultiplier(double multiplier) {
-        if (Double.isNaN(multiplier) || Double.isInfinite(multiplier)) return;
+        if (Double.isNaN(multiplier) || Double.isInfinite(multiplier)) {
+            return;
+        }
         this.runnerDifficultyMultiplier = Math.max(0.25, Math.min(5.0, multiplier));
     }
 
@@ -90,10 +94,14 @@ public class ClassroomMechanic {
         // Always increment frame for consistent timestamps
         currentFrame++;
 
-        if (eventTriggered) return;
+        if (eventTriggered) {
+            return;
+        }
 
         // Runner is dormant until activated by the session difficulty schedule.
-        if (!runnerActive) return;
+        if (!runnerActive) {
+            return;
+        }
 
         framesSinceCheck++;
 
@@ -123,7 +131,9 @@ public class ClassroomMechanic {
      * Initiates the charging phase for the runner.
      */
     private void triggerCharge() {
-        if (eventTriggered || runner == null) return;
+        if (eventTriggered || runner == null) {
+            return;
+        }
 
         eventTriggered = true;
         runner.startSprint();

@@ -21,8 +21,6 @@ import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Controls elevator behavior.
@@ -44,12 +42,26 @@ public class ElevatorSystem {
 
     private int currentFrame;
 
+    /**
+     * Gets the floor from a location a student enters the elevator from
+     * for notifications
+     * @param loc the location
+     * @return String Floor + Floor Number
+     */
     private static String floorFromLocation(Location loc) {
-        if (loc == null) return "Unknown floor";
+        if (loc == null) {
+            return "Unknown floor";
+        }
         String name = loc.name();
-        if (name.startsWith("FLOOR1_")) return "Floor 1";
-        if (name.startsWith("FLOOR2_")) return "Floor 2";
-        if (name.startsWith("FLOOR3_")) return "Floor 3";
+        if (name.startsWith("FLOOR1_")) {
+            return "Floor 1";
+        }
+        if (name.startsWith("FLOOR2_")) {
+            return "Floor 2";
+        }
+        if (name.startsWith("FLOOR3_")) {
+            return "Floor 3";
+        }
         return "Unknown floor";
     }
 
@@ -57,7 +69,9 @@ public class ElevatorSystem {
     /**
      * Constructor
      */
-    public ElevatorSystem() { reset(); }
+    public ElevatorSystem() {
+        reset();
+    }
 
     /**
      * Updates elevator logic.
@@ -65,13 +79,13 @@ public class ElevatorSystem {
     public void update() {
         currentFrame++;
         if (isEmergencyStopped) {
-            emergencyTimer --;
+            emergencyTimer--;
             if (emergencyTimer <= 0) {
                 unEmergencyStop();
             }
         }
         if (emergencyStopCooldown > 0) {
-            emergencyStopCooldown --;
+            emergencyStopCooldown--;
         }
 
         // Handle transit
@@ -98,7 +112,7 @@ public class ElevatorSystem {
      * @param student The student object entering the elevator.
      * @param entryPoint The specific location the student is using
      * @return true if teh student succesfully entered, false if the elevator is stopped,
-     * already occupied, or entry point is invalid.
+     *      already occupied, or entry point is invalid.
      */
     public boolean studentEnterElevator(Student student, Location entryPoint) {
         if (isEmergencyStopped || studentInElevator != null) {
@@ -114,7 +128,9 @@ public class ElevatorSystem {
 
             SensorHelper.trigger(
                     "elevator_enter",
-                    student.getName() + " entered the Elevator (" + floorFromLocation(entryPoint) + ")",
+                    student.getName() + " entered the Elevator ("
+                            + floorFromLocation(entryPoint)
+                            + ")",
                     Notification.Type.ELEVATOR,
                     currentFrame
             );
@@ -131,9 +147,13 @@ public class ElevatorSystem {
      * Triggers the exit audio and clears the student from the system.
      */
     private void studentExitElevator() {
-        if (studentInElevator == null) return;
+        if (studentInElevator == null) {
+            return;
+        }
 
-        System.out.println("ElevatorSystem: " + studentInElevator.getName() + " arrived at destination!");
+        System.out.println("ElevatorSystem: "
+                + studentInElevator.getName()
+                + " arrived at destination!");
         // TODO AudioManager.play("elevator_exit");
 
         // Logic to determine destination based on entry
@@ -145,7 +165,10 @@ public class ElevatorSystem {
 
         SensorHelper.trigger(
                 "elevator_exit",
-                studentInElevator.getName() + " exited the Elevator (" + floorFromLocation(studentInElevator.getCurrentLocation()) + ")",
+                studentInElevator.getName()
+                        + " exited the Elevator ("
+                        + floorFromLocation(studentInElevator.getCurrentLocation())
+                        + ")",
             Notification.Type.ELEVATOR,
                 currentFrame
         );
@@ -162,7 +185,7 @@ public class ElevatorSystem {
      * Emergency stops the vent preventing entry and ejecting any students
      *
      * @return true if the elevator was successfully stopped; false if the
-     * elevator is already sealed or the system is on cooldown.
+     *      elevator is already sealed or the system is on cooldown.
      */
     public boolean emergencyStop() {
         if (emergencyStopCooldown > 0 || isEmergencyStopped) {
@@ -195,14 +218,20 @@ public class ElevatorSystem {
      * Forcefully ejects a student from the elevator if the seal is activated.
      */
     private void ejectStudent() {
-        if (studentInElevator == null) return;
+        if (studentInElevator == null) {
+            return;
+        }
 
         System.out.println("ElevatorSystem: EJECTED " + studentInElevator.getName());
         // TODO AudioManager.play("elevator_eject");
 
         SensorHelper.trigger(
             "elevator_eject",
-            "Elevator ejected " + studentInElevator.getName() + " (" + floorFromLocation(elevatorEntry) + ")",
+            "Elevator ejected "
+                    + studentInElevator.getName()
+                    + " ("
+                    + floorFromLocation(elevatorEntry)
+                    + ")",
             Notification.Type.ELEVATOR,
             currentFrame
         );
@@ -274,7 +303,9 @@ public class ElevatorSystem {
      *
      * @return true if stoppig is permitted.
      */
-    public boolean canStop() { return emergencyStopCooldown == 0 && !isEmergencyStopped;}
+    public boolean canStop() {
+        return emergencyStopCooldown == 0 && !isEmergencyStopped;
+    }
 
     /**
      * Gets the remaining time on the seal cooldown.

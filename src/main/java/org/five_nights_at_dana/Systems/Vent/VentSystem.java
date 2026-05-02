@@ -18,12 +18,15 @@
 
 package org.five_nights_at_dana.Systems.Vent;
 
-import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.AI.Location;
+import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Managers.NotificationManager;
 // TODO import org.five_nights_at_dana.Managers.AudioManager;
 
+/**
+ * Defines the vent system timing and logic
+ */
 public class VentSystem {
 
     private static final int SEAL_DURATION = 480; // frames -> 8s
@@ -70,7 +73,8 @@ public class VentSystem {
             // Threshold warning
             if (travelTimer == 180) {
                 System.out.println("VentSystem: Student exiting in 3s");
-                NotificationManager.push("Vent movement detected — near office", Notification.Type.WARNING);
+                NotificationManager.push("Vent movement detected — near office",
+                        Notification.Type.WARNING);
                 // TODO AudioManager.play("vent_close");
             }
 
@@ -87,7 +91,7 @@ public class VentSystem {
      * @param student    The student object entering the vent.
      * @param entryPoint The specific location (vent entrance) the student is using.
      * @return true if the student successfully entered; false if the vent is sealed,
-     * already occupied, or the entry point is invalid.
+     *      already occupied, or the entry point is invalid.
      */
     public boolean studentEnterVent(Student student, Location entryPoint) {
         if (isSealed || studentInVent != null) {
@@ -98,12 +102,16 @@ public class VentSystem {
             case FLOOR1_GARDNER:  // V1
                 travelTimer = V1_TRAVEL_TIME;
                 System.out.println("VentSystem: " + student.getName() + " entered V1 (15s)");
-                NotificationManager.push(student.getName() + " entered vents (V1)", Notification.Type.SYSTEM);
+                NotificationManager.push(student.getName()
+                        + " entered vents (V1)",
+                        Notification.Type.SYSTEM);
                 break;
             case FLOOR2_CLASSROOM:  // V2
                 travelTimer = V2_TRAVEL_TIME;
                 System.out.println("VentSystem: " + student.getName() + " entered V2 (10s)");
-                NotificationManager.push(student.getName() + " entered vents (V2)", Notification.Type.SYSTEM);
+                NotificationManager.push(student.getName()
+                        + " entered vents (V2)",
+                        Notification.Type.SYSTEM);
                 break;
             default:
                 System.out.println("VentSystem: Invalid entry attempt from " + entryPoint);
@@ -122,7 +130,9 @@ public class VentSystem {
      * Triggers the exit audio and clears the student from the system.
      */
     private void studentExitVent() {
-        if (studentInVent == null) return;
+        if (studentInVent == null) {
+            return;
+        }
 
         System.out.println("VentSystem: " + studentInVent.getName() + " exited at office!");
         NotificationManager.push("Vent exit at office!", Notification.Type.DANGER);
@@ -140,7 +150,7 @@ public class VentSystem {
      * Seals the vent, preventing student entry and ejecting any student currently inside.
      *
      * @return true if the seal was successfully applied; false if the vent is already
-     * sealed or the system is on cooldown.
+     *      sealed or the system is on cooldown.
      */
     public boolean sealVent() {
         if (sealCooldown > 0 || isSealed) {
@@ -166,7 +176,9 @@ public class VentSystem {
      * Forcefully ejects a student from the vent if the seal is activated.
      */
     private void ejectStudent() {
-        if (studentInVent == null) return;
+        if (studentInVent == null) {
+            return;
+        }
 
         System.out.println("VentSystem: EJECTED " + studentInVent.getName());
         NotificationManager.push("Vent eject: " + studentInVent.getName(), Notification.Type.INFO);
