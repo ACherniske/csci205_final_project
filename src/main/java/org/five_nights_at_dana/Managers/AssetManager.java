@@ -16,18 +16,20 @@
 
 package org.five_nights_at_dana.Managers;
 
-import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
-
-import javafx.scene.image.Image;
-import javafx.scene.media.AudioClip;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
 
+/**
+ * Asset manager to provide all images and sounds for the game views
+ */
 public class AssetManager {
 
-    private static final Map<String, Image> images = new HashMap<>();
-    private static final Map<String, AudioClip> sounds = new HashMap<>();
+    private static final Map<String, Image> IMAGES = new HashMap<>();
+    private static final Map<String, AudioClip> SOUNDS = new HashMap<>();
 
     // Base paths inside your resources directory
     private static final String IMAGE_PATH = "/assets/images/";
@@ -64,18 +66,21 @@ public class AssetManager {
         //loadSound("camera_switch", "camera_switch.wav");
         // loadSound("jumpscare", "jumpscare.mp3");
 
-        System.out.println("AssetManager: Preload complete. Images: " + images.size() + " | Sounds: " + sounds.size());
+        System.out.println("AssetManager: Preload complete. Images: "
+                + IMAGES.size()
+                + " | Sounds: "
+                + SOUNDS.size());
     }
 
     /**
      * Retrieves an image. Falls back to a "cam_error" image if key not found.
      */
     public static Image getImage(String key) {
-        if (!images.containsKey(key)) {
+        if (!IMAGES.containsKey(key)) {
             System.err.println("AssetManager: Warning - Image key not found: " + key);
-            return images.getOrDefault("cam_error", null);
+            return IMAGES.getOrDefault("cam_error", null);
         }
-        return images.get(key);
+        return IMAGES.get(key);
     }
 
     /**
@@ -85,7 +90,7 @@ public class AssetManager {
      * @return audio clip, or null if not present
      */
     public static AudioClip getSound(String key) {
-        return sounds.get(key);
+        return SOUNDS.get(key);
     }
 
     /**
@@ -96,8 +101,10 @@ public class AssetManager {
      */
     private static void loadImage(String key, String fileName) {
         try {
-            Image img = new Image(Objects.requireNonNull(AssetManager.class.getResourceAsStream(IMAGE_PATH + fileName)));
-            images.put(key, img);
+            Image img = new Image(Objects.requireNonNull(AssetManager.class.getResourceAsStream(
+                    IMAGE_PATH + fileName))
+            );
+            IMAGES.put(key, img);
         } catch (Exception e) {
             System.err.println("AssetManager: Failed to load image: " + fileName);
         }
@@ -111,8 +118,10 @@ public class AssetManager {
      */
     private static void loadSound(String key, String fileName) {
         try {
-            AudioClip clip = new AudioClip(Objects.requireNonNull(AssetManager.class.getResource(SOUND_PATH + fileName)).toString());
-            sounds.put(key, clip);
+            AudioClip clip = new AudioClip(Objects.requireNonNull(AssetManager.class.getResource(
+                    SOUND_PATH + fileName)).toString()
+            );
+            SOUNDS.put(key, clip);
         } catch (Exception e) {
             System.err.println("AssetManager: Failed to load sound: " + fileName);
         }

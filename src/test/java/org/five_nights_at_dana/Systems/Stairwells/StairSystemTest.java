@@ -110,8 +110,8 @@ class StairSystemTest {
 
         assertTrue(
                 notifs.stream().anyMatch(n ->
-                        n.getType() == Notification.Type.STAIR_SENSOR &&
-                                n.getMessage().contains("TestStudent")
+                        n.type() == Notification.Type.STAIR_SENSOR &&
+                                n.message().contains("TestStudent")
                 ),
                 "Expected stair sensor notification when student enters"
         );
@@ -127,7 +127,7 @@ class StairSystemTest {
         List<Notification> notifs = NotificationManager.getNotifications();
 
         long count = notifs.stream()
-                .filter(n -> n.getType() == Notification.Type.STAIR_SENSOR)
+                .filter(n -> n.type() == Notification.Type.STAIR_SENSOR)
                 .count();
 
         // Should be LOW due to cooldown
@@ -149,12 +149,12 @@ class StairSystemTest {
         List<Notification> notifs = NotificationManager.getNotifications();
 
         assertTrue(
-                notifs.stream().anyMatch(n -> n.getMessage().contains("LeftGuy")),
+                notifs.stream().anyMatch(n -> n.message().contains("LeftGuy")),
                 "Expected LEFT stair notification"
         );
 
         assertTrue(
-                notifs.stream().anyMatch(n -> n.getMessage().contains("RightGuy")),
+                notifs.stream().anyMatch(n -> n.message().contains("RightGuy")),
                 "Expected RIGHT stair notification"
         );
     }

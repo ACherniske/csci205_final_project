@@ -18,13 +18,15 @@
 
 package org.five_nights_at_dana.Managers;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * Manages all student objects, locations and movement intervals
+ */
 public class StudentManager {
 
     /** List containing all active student AI entities. */
@@ -44,12 +46,11 @@ public class StudentManager {
      */
     private void createStudents() {
         // TODO RENAME STUDENTS
-        students.add(new Student("Student1", "JumpscareEager", Personality.EAGER));
-        students.add(new Student("Student2", "JumpscarePersistent", Personality.PERSISTENT));
-        students.add(new Student("Student3", "JumpscareConfused", Personality.CONFUSED));
-        students.add(new Student("Student4", "JumpscareShy", Personality.SHY));
-        students.add(new Student("Student5", "JumpscareEager?", Personality.EAGER));
-        students.add(new Student("Student6", "JumpscareRunner", Personality.RUNNER));
+        students.add(new Student("Cyrus", "JumpscareEager", Personality.EAGER));
+        students.add(new Student("Bryson", "JumpscarePersistent", Personality.PERSISTENT));
+        students.add(new Student("Maxwell", "JumpscareConfused", Personality.CONFUSED));
+        students.add(new Student("Molly", "JumpscareShy", Personality.SHY));
+        students.add(new Student("Tommy", "JumpscareRunner", Personality.RUNNER));
     }
 
     /**

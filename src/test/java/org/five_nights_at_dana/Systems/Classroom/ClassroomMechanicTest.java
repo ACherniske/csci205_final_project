@@ -138,7 +138,7 @@ public class ClassroomMechanicTest {
 
         assertTrue(
                 notifs.stream().anyMatch(n ->
-                        n.getMessage().contains("restless")
+                        n.message().contains("restless")
                 ),
                 "Expected runner warning notification"
         );
@@ -154,7 +154,7 @@ public class ClassroomMechanicTest {
 
         assertTrue(
                 notifs.stream().anyMatch(n ->
-                        n.getMessage().contains("charging")
+                        n.message().contains("charging")
                 ),
                 "Expected runner charging notification"
         );
@@ -169,7 +169,7 @@ public class ClassroomMechanicTest {
         List<Notification> notifs = NotificationManager.getNotifications();
 
         long warningCount = notifs.stream()
-                .filter(n -> n.getMessage().contains("restless"))
+                .filter(n -> n.message().contains("restless"))
                 .count();
 
         // Should NOT spam dozens of warnings

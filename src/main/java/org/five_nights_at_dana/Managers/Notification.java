@@ -16,8 +16,14 @@
 
 package org.five_nights_at_dana.Managers;
 
-public class Notification {
+/**
+ * Defines notifications provided by the game for debug and player viewing
+ */
+public record Notification(String message, Type type, int timestamp) {
 
+    /**
+     * Notification Types
+     */
     public enum Type {
         INFO,
         WARNING,
@@ -29,10 +35,6 @@ public class Notification {
         SYSTEM
     }
 
-    private final String message;
-    private final Type type;
-    private final int timestamp;
-
     /**
      * Constructs a notification.
      *
@@ -40,10 +42,7 @@ public class Notification {
      * @param type      notification type
      * @param timestamp simulation frame timestamp
      */
-    public Notification(String message, Type type, int timestamp) {
-        this.message = message;
-        this.type = type;
-        this.timestamp = timestamp;
+    public Notification {
     }
 
     /**
@@ -51,21 +50,30 @@ public class Notification {
      *
      * @return message
      */
-    public String getMessage() { return message; }
+    @Override
+    public String message() {
+        return message;
+    }
 
     /**
      * Gets the notification type.
      *
      * @return type
      */
-    public Type getType() { return type; }
+    @Override
+    public Type type() {
+        return type;
+    }
 
     /**
      * Gets the timestamp (frame count) at which the notification was created.
      *
      * @return timestamp
      */
-    public int getTimestamp() { return timestamp; }
+    @Override
+    public int timestamp() {
+        return timestamp;
+    }
 
     /**
      * Returns a readable string representation.
@@ -85,24 +93,17 @@ public class Notification {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Notification that)) return false;
+        if (this == o) {
+            return true;
+        }
 
-        return timestamp == that.timestamp &&
-                message.equals(that.message) &&
-                type == that.type;
+        if (!(o instanceof Notification(String message1, Type type1, int timestamp1))) {
+            return false;
+        }
+
+        return timestamp == timestamp1 &&
+                message.equals(message1) &&
+                type == type1;
     }
 
-    /**
-     * Computes a hash code consistent with {@link #equals(Object)}.
-     *
-     * @return hash code
-     */
-    @Override
-    public int hashCode() {
-        int result = message.hashCode();
-        result = 31 * result + type.hashCode();
-        result = 31 * result + timestamp;
-        return result;
-    }
 }

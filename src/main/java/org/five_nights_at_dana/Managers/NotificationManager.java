@@ -33,14 +33,17 @@ public class NotificationManager {
     private static final int MAX_NOTIFICATIONS = 50;
 
     /** The internal queue used to store notifications chronologically. */
-    private static final Deque<Notification> notifications = new ArrayDeque<>();
+    private static final Deque<Notification> NOTIFICATIONS = new ArrayDeque<>();
 
     /** Keeps track of the current frame count for timestamping notifications. */
     private static int currentFrame = 0;
 
     /** Optional listeners for real-time UI/audio notification reactions. */
-    private static final List<NotificationListener> listeners = new CopyOnWriteArrayList<>();
+    private static final List<NotificationListener> LISTENERS = new CopyOnWriteArrayList<>();
 
+    /**
+     * Listens for notifications added
+     */
     @FunctionalInterface
     public interface NotificationListener {
         /**
@@ -67,15 +70,15 @@ public class NotificationManager {
      * @param type    The severity/category of the notification.
      */
     public static void push(String message, Notification.Type type) {
-        if (notifications.size() >= MAX_NOTIFICATIONS) {
-            notifications.removeFirst();
+        if (NOTIFICATIONS.size() >= MAX_NOTIFICATIONS) {
+            NOTIFICATIONS.removeFirst();
         }
 
         Notification n = new Notification(message, type, currentFrame);
-        notifications.addLast(n);
+        NOTIFICATIONS.addLast(n);
 
         // Notify listeners (UI toasts, audio, etc.). Keep it resilient in tests/headless runs.
-        for (NotificationListener l : listeners) {
+        for (NotificationListener l : LISTENERS) {
             try {
                 l.onNotification(n);
             } catch (RuntimeException ignored) {
@@ -90,7 +93,7 @@ public class NotificationManager {
      * @return A list containing all active notifications in order of arrival.
      */
     public static List<Notification> getNotifications() {
-        return new ArrayList<>(notifications);
+        return new ArrayList<>(NOTIFICATIONS);
     }
 
     /**
@@ -99,7 +102,9 @@ public class NotificationManager {
      * @param listener callback invoked whenever a notification is pushed
      */
     public static void addListener(NotificationListener listener) {
-        if (listener != null) listeners.add(listener);
+        if (listener != null) {
+            LISTENERS.add(listener);
+        }
     }
 
     /**
@@ -108,7 +113,7 @@ public class NotificationManager {
      * @param listener the listener instance to remove
      */
     public static void removeListener(NotificationListener listener) {
-        listeners.remove(listener);
+        LISTENERS.remove(listener);
     }
 
     /**
@@ -160,6 +165,6 @@ public class NotificationManager {
      * Clears all existing notifications from the queue.
      */
     public static void clear() {
-        notifications.clear();
+        NOTIFICATIONS.clear();
     }
 }

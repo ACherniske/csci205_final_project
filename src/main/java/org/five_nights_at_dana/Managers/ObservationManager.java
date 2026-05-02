@@ -17,6 +17,10 @@ public final class ObservationManager {
     private ObservationManager() {
     }
 
+    /**
+     * Check if the camera screen is up in order to determine watched location
+     * @param up whether or not the cameraview is up
+     */
     public static void setCamerasUp(boolean up) {
         camerasUp = up;
         if (!up) {
@@ -24,6 +28,10 @@ public final class ObservationManager {
         }
     }
 
+    /**
+     * Boolean to return if the cameras are up
+     * @return true if cameras are up, false otherwise
+     */
     public static boolean areCamerasUp() {
         return camerasUp;
     }
@@ -32,15 +40,22 @@ public final class ObservationManager {
         watchedLocation = location;
     }
 
+    /**
+     * Get the location being watched
+     * @return Location player is watching
+     */
     public static Location getWatchedLocation() {
         return watchedLocation;
     }
 
     /**
+     * Boolean that returns if the player is watching a location
      * @return true iff cameras are up and the given location is the active camera location.
      */
     public static boolean isWatching(Location location) {
-        if (!camerasUp) return false;
+        if (!camerasUp) {
+            return false;
+        }
         return location != null && location == watchedLocation;
     }
 }

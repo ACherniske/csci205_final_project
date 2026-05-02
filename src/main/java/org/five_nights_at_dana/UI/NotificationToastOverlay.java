@@ -149,11 +149,11 @@ public final class NotificationToastOverlay {
         if (n == null) {
             return false;
         }
-        if (n.getType() == Notification.Type.STAIR_SENSOR) {
+        if (n.type() == Notification.Type.STAIR_SENSOR) {
             return true;
         }
 
-        String msg = n.getMessage();
+        String msg = n.message();
         if (msg == null) {
             return false;
         }
@@ -183,13 +183,13 @@ public final class NotificationToastOverlay {
         );
 
         Circle dot = new Circle(4);
-        dot.setFill(colorForType(n.getType()));
+        dot.setFill(colorForType(n.type()));
 
         VBox text = new VBox(2);
-        Label title = new Label(titleForType(n.getType()));
+        Label title = new Label(titleForType(n.type()));
         title.setStyle("-fx-text-fill: #e6e6e6; -fx-font-weight: bold; -fx-font-size: 12px;");
 
-        Label message = new Label(n.getMessage());
+        Label message = new Label(n.message());
         message.setWrapText(true);
         message.setMaxWidth(270);
         message.setStyle("-fx-text-fill: #c9cdd4; -fx-font-size: 12px;");

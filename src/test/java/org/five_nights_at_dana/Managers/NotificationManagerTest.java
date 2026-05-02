@@ -31,7 +31,7 @@ class NotificationManagerTest {
         List<Notification> notifications = NotificationManager.getNotifications();
 
         assertEquals(1, notifications.size());
-        assertEquals("Test message", notifications.getFirst().getMessage());
+        assertEquals("Test message", notifications.getFirst().message());
     }
 
     @Test
@@ -42,9 +42,9 @@ class NotificationManagerTest {
 
         List<Notification> notifications = NotificationManager.getNotifications();
 
-        assertEquals("First", notifications.get(0).getMessage());
-        assertEquals("Second", notifications.get(1).getMessage());
-        assertEquals("Third", notifications.get(2).getMessage());
+        assertEquals("First", notifications.get(0).message());
+        assertEquals("Second", notifications.get(1).message());
+        assertEquals("Third", notifications.get(2).message());
     }
 
     // =========================
@@ -63,8 +63,8 @@ class NotificationManagerTest {
         List<Notification> notifications = NotificationManager.getNotifications();
 
         assertTrue(
-                notifications.get(1).getTimestamp() >
-                        notifications.get(0).getTimestamp()
+                notifications.get(1).timestamp() >
+                        notifications.get(0).timestamp()
         );
     }
 
@@ -99,7 +99,7 @@ class NotificationManagerTest {
         assertEquals(max, notifications.size());
 
         // Oldest should be trimmed
-        assertEquals("Msg 10", notifications.getFirst().getMessage());
+        assertEquals("Msg 10", notifications.getFirst().message());
     }
 
     // =========================
@@ -134,7 +134,7 @@ class NotificationManagerTest {
         List<Notification> notifications = NotificationManager.getNotifications();
 
         assertEquals(1, notifications.size());
-        assertEquals("", notifications.getFirst().getMessage());
+        assertEquals("", notifications.getFirst().message());
     }
 
     // =========================
@@ -187,7 +187,7 @@ class NotificationManagerTest {
         List<Notification> notifications = NotificationManager.getNotifications();
 
         assertEquals(1, notifications.size());
-        assertEquals("Sensor triggered", notifications.getFirst().getMessage());
+        assertEquals("Sensor triggered", notifications.getFirst().message());
     }
 
     @Test
@@ -224,8 +224,8 @@ class NotificationManagerTest {
 
         assertTrue(
                 notifications.stream().anyMatch(n ->
-                        n.getType() == Notification.Type.STAIR_SENSOR &&
-                                n.getMessage().contains("Tester")
+                        n.type() == Notification.Type.STAIR_SENSOR &&
+                                n.message().contains("Tester")
                 ),
                 "Expected stair sensor notification from StairSystem"
         );
@@ -246,7 +246,7 @@ class NotificationManagerTest {
         List<Notification> notifications = NotificationManager.getNotifications();
 
         long count = notifications.stream()
-                .filter(n -> n.getType() == Notification.Type.STAIR_SENSOR)
+                .filter(n -> n.type() == Notification.Type.STAIR_SENSOR)
                 .count();
 
         assertTrue(count <= 2, "Stair sensor should be rate-limited");
@@ -273,8 +273,8 @@ class NotificationManagerTest {
 
         assertTrue(
                 notifications.stream().anyMatch(n ->
-                        n.getMessage().contains("restless") ||
-                                n.getMessage().contains("charging")
+                        n.message().contains("restless") ||
+                                n.message().contains("charging")
                 ),
                 "Expected classroom notifications from mechanic"
         );
