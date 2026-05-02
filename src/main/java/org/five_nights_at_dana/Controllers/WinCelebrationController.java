@@ -64,7 +64,9 @@ public class WinCelebrationController {
     }
 
     private void goToWinScreen() {
-        if (transitioning) return;
+        if (transitioning) {
+            return;
+        }
         transitioning = true;
 
         try {

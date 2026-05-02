@@ -16,11 +16,10 @@
 
 package org.five_nights_at_dana.Controllers;
 
-import org.five_nights_at_dana.Core.GameSession;
-import org.five_nights_at_dana.Core.GameState;
-import org.five_nights_at_dana.Managers.ObservationManager;
-import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
-import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
 import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,22 +28,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-
-import org.five_nights_at_dana.UI.NotificationToastOverlay;
+import org.five_nights_at_dana.Core.GameSession;
+import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.Managers.ObservationManager;
+import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
+import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
 import org.five_nights_at_dana.UI.FadeUtil;
+import org.five_nights_at_dana.UI.NotificationToastOverlay;
+
 
 /**
  * Controller for CameraView.fxml — the security camera tablet.
@@ -59,7 +59,8 @@ public class CameraViewController {
 
     /**
      * Injects the camera system dependency and wires button actions.
-     * Also registers session callbacks so jumpscare/win/game-over can transition while cameras are up.
+     * Also registers session callbacks so jumpscare/win/game-over
+     * can transition while cameras are up.
      *
      * @param system active camera system
      */
@@ -165,21 +166,27 @@ public class CameraViewController {
      *
      * @param e action event
      */
-    @FXML private void onSelectFloor1(ActionEvent e) { switchFloor(1, "Map_Floor1.png", floor1Pane); }
+    @FXML private void onSelectFloor1(ActionEvent e) {
+        switchFloor(1, "Map_Floor1.png", floor1Pane);
+    }
 
     /**
      * Switches the map UI to floor 2.
      *
      * @param e action event
      */
-    @FXML private void onSelectFloor2(ActionEvent e) { switchFloor(2, "Map_Floor2.png", floor2Pane); }
+    @FXML private void onSelectFloor2(ActionEvent e) {
+        switchFloor(2, "Map_Floor2.png", floor2Pane);
+    }
 
     /**
      * Switches the map UI to floor 3.
      *
      * @param e action event
      */
-    @FXML private void onSelectFloor3(ActionEvent e) { switchFloor(3, "Map_Floor3.png", floor3Pane); }
+    @FXML private void onSelectFloor3(ActionEvent e) {
+        switchFloor(3, "Map_Floor3.png", floor3Pane);
+    }
 
     /**
      * Updates the floor tab styles, visible button pane, and map image.
@@ -189,7 +196,9 @@ public class CameraViewController {
      * @param activePane the pane containing the active floor's camera buttons
      */
     private void switchFloor(int floor, String mapName, Pane activePane) {
-        floorMapImage.setImage(new Image(getClass().getResourceAsStream("/assets/images/" + mapName)));
+        floorMapImage.setImage(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/assets/images/" + mapName)))
+        );
 
         // Update tab styles
         floor1Button.setStyle(floor == 1 ? STYLE_ACTIVE : STYLE_INACTIVE);
@@ -225,7 +234,9 @@ public class CameraViewController {
             // Lower cameras should be instant (no fade).
             Stage stage = (Stage) lowerCamerasButton.getScene().getWindow();
             stage.setScene(new Scene(root, 1280, 720));
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -234,9 +245,13 @@ public class CameraViewController {
     private void returnToMainMenu() {
         try {
             ObservationManager.setCamerasUp(false);
-            Parent root = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/org/five_nights_at_dana/MainMenu.fxml"))
+            );
             FadeUtil.fadeOutAndSwitch(lowerCamerasButton, root, 1280, 720, 0.30);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -259,7 +274,9 @@ public class CameraViewController {
      * @param studentQuestion question text displayed during the jumpscare
      */
     private void triggerJumpscare(String studentQuestion) {
-        if (jumpscareTransitionInProgress) return;
+        if (jumpscareTransitionInProgress) {
+            return;
+        }
         jumpscareTransitionInProgress = true;
 
         // Freeze camera interaction and flash static briefly (FNAF-style)
