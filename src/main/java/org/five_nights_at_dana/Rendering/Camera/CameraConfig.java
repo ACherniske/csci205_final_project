@@ -18,13 +18,13 @@
 
 package org.five_nights_at_dana.Rendering.Camera;
 
-import org.five_nights_at_dana.AI.Location;
 import java.util.Map;
+import org.five_nights_at_dana.AI.Location;
 
 /**
  * Configuration registry for all camera metadata.
  *
- * <p> Total cameras: 22
+ *  <p>Total cameras: 22
  * - Floor 1: 9 cameras (6 rooms + 3 stairs)
  * - Floor 2: 7 cameras (4 rooms + 3 stairs)
  * - Floor 3: 6 cameras (4 rooms + 3 stairs - no hallway right cam)
@@ -40,7 +40,13 @@ public class CameraConfig {
      * @param location Location this camera monitors
      * @param floor Floor number (1, 2, or 3)
      */
-    public record CameraEntry(String id, String label, String imageFilename, Location location, int floor) {}
+    public record CameraEntry(String id,
+                              String label,
+                              String imageFilename,
+                              Location location,
+                              int floor) {
+
+    }
 
     /**
      * Complete camera registry.
@@ -249,15 +255,15 @@ public class CameraConfig {
      * Useful for camera grid layout and iteration.
      */
     public static final String[] CAMERA_IDS = {
-            // Floor 1
-            "1A", "1B", "1C", "1D", "1E", "1F",
-            "SL1", "SM1", "SR1",
-            // Floor 2
-            "2A", "2B", "2C", "BUCKY",
-            "SL2", "SM2", "SR2",
-            // Floor 3
-            "3A", "3B", "3C", "3D",
-            "SL3", "SM3", "SR3"
+        // Floor 1
+        "1A", "1B", "1C", "1D", "1E", "1F",
+        "SL1", "SM1", "SR1",
+        // Floor 2
+        "2A", "2B", "2C", "BUCKY",
+        "SL2", "SM2", "SR2",
+        // Floor 3
+        "3A", "3B", "3C", "3D",
+        "SL3", "SM3", "SR3"
     };
 
     /**

@@ -17,22 +17,25 @@
 
 package org.five_nights_at_dana.Rendering.Camera;
 
+import java.util.List;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.image.Image;
 import org.five_nights_at_dana.AI.Student;
-import org.five_nights_at_dana.Managers.AssetManager; // ADDED
+import org.five_nights_at_dana.Managers.AssetManager;
 import org.five_nights_at_dana.Managers.StudentManager;
-import javafx.scene.image.Image; // ADDED
 
-import java.util.List;
-
+/**
+ * Camera system using student manager to provide information about visibilty of students
+ */
 public class CameraSystem {
 
     private String currentCameraId = "1A";
     private final StudentManager studentManager;
 
     /**
-     * Constructs a camera system that uses the given student manager for visibility/occupancy queries.
+     * Constructs a camera system that uses the given
+     * student manager for visibility/occupancy queries.
      *
      * @param studentManager student manager to query for occupants
      */
