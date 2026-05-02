@@ -35,7 +35,9 @@ public final class FadeUtil {
      * Fades in a node (typically the root) from 0 → 1.
      */
     public static void fadeIn(Node node, double seconds) {
-        if (node == null) return;
+        if (node == null) {
+            return;
+        }
         node.setOpacity(0.0);
 
         FadeTransition ft = new FadeTransition(Duration.seconds(Math.max(0.0, seconds)), node);
@@ -49,7 +51,9 @@ public final class FadeUtil {
      */
     public static void fadeOut(Node node, double seconds, Runnable after) {
         if (node == null) {
-            if (after != null) after.run();
+            if (after != null) {
+                after.run();
+            }
             return;
         }
 
@@ -57,7 +61,9 @@ public final class FadeUtil {
         ft.setFromValue(node.getOpacity());
         ft.setToValue(0.0);
         ft.setOnFinished(e -> {
-            if (after != null) after.run();
+            if (after != null) {
+                after.run();
+            }
         });
         ft.play();
     }
@@ -65,15 +71,25 @@ public final class FadeUtil {
     /**
      * Fade out the current scene root, swap to a new scene, and fade the new root in.
      */
-    public static void fadeOutAndSwitch(Node anyNodeInCurrentScene, Parent nextRoot, double width, double height, double seconds) {
-        if (anyNodeInCurrentScene == null || anyNodeInCurrentScene.getScene() == null) return;
+    public static void fadeOutAndSwitch(Node anyNodeInCurrentScene,
+                                        Parent nextRoot,
+                                        double width,
+                                        double height,
+                                        double seconds) {
+        if (anyNodeInCurrentScene == null || anyNodeInCurrentScene.getScene() == null) {
+            return;
+        }
         Scene currentScene = anyNodeInCurrentScene.getScene();
         Parent currentRoot = currentScene.getRoot();
         Stage stage = (Stage) currentScene.getWindow();
 
         fadeOut(currentRoot, seconds, () -> {
-            if (stage == null) return;
-            if (nextRoot == null) return;
+            if (stage == null) {
+                return;
+            }
+            if (nextRoot == null) {
+                return;
+            }
 
             nextRoot.setOpacity(0.0);
             stage.setScene(new Scene(nextRoot, width, height));
@@ -81,7 +97,17 @@ public final class FadeUtil {
         });
     }
 
-    public static void fadeOutAndSwitch(Node anyNodeInCurrentScene, Parent nextRoot, double width, double height) {
+    /**
+     * Fade out a scene and switch to another
+     * @param anyNodeInCurrentScene A node in the current scene
+     * @param nextRoot The node to switch to
+     * @param width Width of node
+     * @param height Height of node
+     */
+    public static void fadeOutAndSwitch(Node anyNodeInCurrentScene,
+                                        Parent nextRoot,
+                                        double width,
+                                        double height) {
         fadeOutAndSwitch(anyNodeInCurrentScene, nextRoot, width, height, DEFAULT_SECONDS);
     }
 }

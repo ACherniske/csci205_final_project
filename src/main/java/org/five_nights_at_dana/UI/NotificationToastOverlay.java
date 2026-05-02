@@ -48,7 +48,9 @@ public final class NotificationToastOverlay {
      * Safe to call multiple times; each call installs a separate overlay.
      */
     public static void install(AnchorPane root) {
-        if (root == null) return;
+        if (root == null) {
+            return;
+        }
 
         VBox stack = new VBox(10);
         stack.setMouseTransparent(true);
@@ -61,7 +63,9 @@ public final class NotificationToastOverlay {
         root.getChildren().add(stack);
 
         // Small trick so the lambda can remove itself.
-        final NotificationManager.NotificationListener[] handle = new NotificationManager.NotificationListener[1];
+        final NotificationManager.NotificationListener[] handle =
+                new NotificationManager.NotificationListener[1];
+
         handle[0] = n -> {
             // Auto-unregister if this overlay is no longer attached.
             if (stack.getScene() == null) {
@@ -142,11 +146,17 @@ public final class NotificationToastOverlay {
      * @return true if a sound should play
      */
     private static boolean shouldPlayDiscordSound(Notification n) {
-        if (n == null) return false;
-        if (n.getType() == Notification.Type.STAIR_SENSOR) return true;
+        if (n == null) {
+            return false;
+        }
+        if (n.getType() == Notification.Type.STAIR_SENSOR) {
+            return true;
+        }
 
         String msg = n.getMessage();
-        if (msg == null) return false;
+        if (msg == null) {
+            return false;
+        }
 
         // Vent-related messages (enter/exit/seal) should pop like a Discord notification.
         return msg.contains("Vent") || msg.contains("vents");
@@ -163,13 +173,13 @@ public final class NotificationToastOverlay {
         root.setAlignment(Pos.TOP_LEFT);
         root.setMaxWidth(320);
         root.setStyle(
-                "-fx-background-color: rgba(43,45,49,0.94);" +
-                        "-fx-background-radius: 10;" +
-                        "-fx-border-color: #1e1f22;" +
-                        "-fx-border-radius: 10;" +
-                        "-fx-border-width: 1;" +
-                        "-fx-padding: 10 12 10 12;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 18, 0.25, 0, 6);"
+                "-fx-background-color: rgba(43,45,49,0.94);"
+                        + "-fx-background-radius: 10;"
+                        + "-fx-border-color: #1e1f22;"
+                        + "-fx-border-radius: 10;"
+                        + "-fx-border-width: 1;"
+                        + "-fx-padding: 10 12 10 12;"
+                        + "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.45), 18, 0.25, 0, 6);"
         );
 
         Circle dot = new Circle(4);

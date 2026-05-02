@@ -13,18 +13,17 @@
 
 package org.five_nights_at_dana.UI;
 
+import java.util.Random;
 import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
 import javafx.animation.Timeline;
-import javafx.animation.KeyFrame;
 import javafx.animation.TranslateTransition;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
-
-import java.util.Random;
 
 /**
  * Simple particle-based fireworks animation.
@@ -34,6 +33,9 @@ public class FireworksPane extends Pane {
     private final Random random = new Random();
     private Timeline launcher;
 
+    /**
+     * Construction for the Fireworks animation pane
+     */
     public FireworksPane() {
         setPickOnBounds(false);
         setMouseTransparent(true);
@@ -52,11 +54,16 @@ public class FireworksPane extends Pane {
         PauseTransition stopAfter = new PauseTransition(duration);
         stopAfter.setOnFinished(e -> {
             stop();
-            if (onFinished != null) onFinished.run();
+            if (onFinished != null) {
+                onFinished.run();
+            }
         });
         stopAfter.play();
     }
 
+    /**
+     * Stops the animation
+     */
     public void stop() {
         if (launcher != null) {
             launcher.stop();
