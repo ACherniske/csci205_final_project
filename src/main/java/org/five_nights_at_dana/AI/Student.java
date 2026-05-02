@@ -16,9 +16,9 @@
 
 package org.five_nights_at_dana.AI;
 
+import java.util.*;
 import org.five_nights_at_dana.Managers.NavigationManager;
 import org.five_nights_at_dana.Managers.ObservationManager;
-import java.util.*;
 
 /**
  * Represents an individual student AI.
@@ -70,7 +70,9 @@ public class Student {
     /** When a student reaches the office door, they must "linger" for N movement opportunities. */
     private int doorLingerMovesRemaining = 0;
 
-    /** One-shot flag used by GameSession to emit a warning toast when a student arrives at the door. */
+    /** One-shot flag used by GameSession to emit a warning toast
+     * when a student arrives at the door.
+     * */
     private boolean justArrivedAtDoor = false;
 
     // Memory system for tracking recent path history
@@ -111,7 +113,7 @@ public class Student {
         this.question = question;
         this.personality = personality;
 
-    this.aiLevel = 0;
+        this.aiLevel = 0;
         this.awarenessLevel = 0.5;
         this.charging = false;
         this.chargeTimer = 0;
@@ -162,7 +164,9 @@ public class Student {
      * @param steps Number of locations to move back.
      */
     public void pushBack(int steps) {
-        if (steps <= 0 || recentLocations.isEmpty()) return;
+        if (steps <= 0 || recentLocations.isEmpty()) {
+            return;
+        }
 
         List<Location> history = new ArrayList<>(recentLocations);
 
@@ -175,8 +179,8 @@ public class Student {
 
             rememberLocation(fallback); // keep memory consistent
 
-            System.out.println(name + " pushed back " + steps +
-                    " step(s) to " + currentLocation);
+            System.out.println(name + " pushed back " + steps
+                    + " step(s) to " + currentLocation);
 
             resetMovementTimer(); // movement penalty
         }
@@ -196,7 +200,9 @@ public class Student {
      * @param max Maximum steps (inclusive)
      */
     public void pushBackRandom(int min, int max) {
-        if (min < 1) min = 1;
+        if (min < 1) {
+            min = 1;
+        }
 
         if (min > max) {
             int temp = min;
@@ -223,8 +229,13 @@ public class Student {
 
         // RUNNER special state machine
         if (personality == Personality.RUNNER) {
-            if (isRunnerDoneCharging()) return;
-            if (!sprinting) return;
+            if (isRunnerDoneCharging()) {
+                return;
+            }
+
+            if (!sprinting) {
+                return;
+            }
         }
 
         movementTimer--;
@@ -263,8 +274,8 @@ public class Student {
         // Camera stalling: some personalities cannot move while being watched.
         if (personality.stallsWhenWatched() && ObservationManager.isWatching(currentLocation)) {
             if (debugMoveLogs) {
-                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
-                        " | STALL watched");
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before
+                        + " | STALL watched");
             }
             return;
         }
@@ -274,30 +285,38 @@ public class Student {
         if (currentLocation == Location.FLOOR3_AT_DOOR && doorLingerMovesRemaining > 0) {
             doorLingerMovesRemaining--;
             if (debugMoveLogs) {
-                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
-                        " | DOOR linger (remaining=" + doorLingerMovesRemaining + ")");
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before
+                        + " | DOOR linger (remaining=" + doorLingerMovesRemaining + ")");
             }
             return;
         }
 
         // RUNNER sprint is deterministic and always succeeds.
         if (personality == Personality.RUNNER) {
-            if (!sprinting) return;
+            if (!sprinting) {
+                return;
+            }
+
             doMoveStep();
             if (currentLocation == Location.IN_OFFICE) {
                 sprinting = false;
             }
             if (debugMoveLogs) {
-                System.out.println("[AI-MOVE] " + name + " (RUNNER) " + before + " -> " + currentLocation +
-                        " | sprinting=" + sprinting);
+                System.out.println("[AI-MOVE] "
+                        + name
+                        + " (RUNNER) "
+                        + before
+                        + " -> "
+                        + currentLocation
+                        + " | sprinting=" + sprinting);
             }
             return;
         }
 
         if (aiLevel <= 0) {
             if (debugMoveLogs) {
-                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before +
-                        " | AI=" + aiLevel + " (no move)");
+                System.out.println("[AI-MOVE] " + name + " (" + personality + ") @ " + before
+                        + " | AI=" + aiLevel + " (no move)");
             }
             return;
         }
@@ -305,12 +324,14 @@ public class Student {
         int roll = rand.nextInt(20) + 1; // 1..20
         boolean willMove = roll <= aiLevel;
 
-        if (willMove) doMoveStep();
+        if (willMove) {
+            doMoveStep();
+        }
 
         if (debugMoveLogs) {
-            System.out.println("[AI-MOVE] " + name + " (" + personality + ") " + before +
-                    " | roll=" + roll + " <= AI=" + aiLevel + " ? " + (willMove ? "MOVE" : "STAY") +
-                    (willMove ? (" -> " + currentLocation) : ""));
+            System.out.println("[AI-MOVE] " + name + " (" + personality + ") " + before
+                    + " | roll=" + roll + " <= AI=" + aiLevel + " ? " + (willMove ? "MOVE" : "STAY")
+                    + (willMove ? (" -> " + currentLocation) : ""));
         }
 
         if (currentLocation == Location.IN_OFFICE) {
@@ -320,7 +341,9 @@ public class Student {
 
     private void doMoveStep() {
         Location nextLocation = NavigationManager.getNextLocation(this);
-        if (nextLocation == null) return;
+        if (nextLocation == null) {
+            return;
+        }
 
         setLocation(nextLocation);
         System.out.println(name + " moved to " + currentLocation);
@@ -369,7 +392,10 @@ public class Student {
      * Increases AI level by a delta amount.
      */
     public void increaseAiLevel(int delta) {
-        if (delta <= 0) return;
+        if (delta <= 0) {
+            return;
+        }
+
         setAiLevel(aiLevel + delta);
     }
 
@@ -397,7 +423,9 @@ public class Student {
      * Intended for when the player successfully blocks the runner at the office door.
      */
     public void resetRunnerToInitialState() {
-        if (personality != Personality.RUNNER) return;
+        if (personality != Personality.RUNNER) {
+            return;
+        }
 
         charging = false;
         sprinting = false;
@@ -441,7 +469,10 @@ public class Student {
      * Returns true exactly once when this student transitions into the office door node.
      */
     public boolean consumeJustArrivedAtDoor() {
-        if (!justArrivedAtDoor) return false;
+        if (!justArrivedAtDoor) {
+            return false;
+        }
+
         justArrivedAtDoor = false;
         return true;
     }
@@ -452,48 +483,76 @@ public class Student {
      *
      * @param t new movement timer value (frames)
      */
-    void setMovementTimer(int t) { this.movementTimer = t; }
+    void setMovementTimer(int t) {
+        this.movementTimer = t;
+    }
 
     // ========== GETTERS ==========
 
     /** @return student display name */
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
     /** @return student jumpscare question/dialogue */
-    public String getQuestion() { return question; }
+    public String getQuestion() {
+        return question;
+    }
 
     /** @return student personality */
-    public Personality getPersonality() { return personality; }
+    public Personality getPersonality() {
+        return personality;
+    }
 
     /** @return current location */
-    public Location getCurrentLocation() { return currentLocation; }
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
 
     /** @return previous location (may be null at start) */
-    public Location getPreviousLocation() { return previousLocation; }
+    public Location getPreviousLocation() {
+        return previousLocation;
+    }
 
     /** @return preferred path type derived from personality */
-    public PathType getPreferredPath() { return preferredPath; }
+    public PathType getPreferredPath() {
+        return preferredPath;
+    }
 
     /** @return current AI level (0..20) */
-    public int getDifficulty() { return aiLevel; }
+    public int getDifficulty() {
+        return aiLevel;
+    }
 
     /** @return current AI level (0..20) */
-    public int getAiLevel() { return aiLevel; }
+    public int getAiLevel() {
+        return aiLevel;
+    }
 
     /** @return awareness level (tuning value used by AI) */
-    public double getAwarenessLevel() { return awarenessLevel; }
+    public double getAwarenessLevel() {
+        return awarenessLevel;
+    }
 
     /** @return true if currently sprinting */
-    public boolean isSprinting() { return sprinting; }
+    public boolean isSprinting() {
+        return sprinting;
+    }
 
     /** @return movement timer value in frames */
-    public int getMovementTimer() { return movementTimer; }
+    public int getMovementTimer() {
+        return movementTimer;
+    }
 
     /** @return true if currently charging (RUNNER only) */
-    public boolean isCharging() { return charging; }
+    public boolean isCharging() {
+        return charging;
+    }
 
     /** @return remaining charge timer in frames */
-    public int getChargeTimer() { return chargeTimer; }
+    public int getChargeTimer() {
+        return chargeTimer;
+    }
 
     /**
      * Counts how often a location appears in the student's short-term memory window.
@@ -504,7 +563,9 @@ public class Student {
     public int getRecentVisitCount(Location loc) {
         int count = 0;
         for (Location l : recentLocations) {
-            if (l == loc) count++;
+            if (l == loc) {
+                count++;
+            }
         }
         return count;
     }

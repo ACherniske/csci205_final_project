@@ -134,15 +134,30 @@ public enum Location {
      * Used by AI to prioritize movement based on their personality preferences.
         *
         * @return the {@link PathType} assigned to this location, or null if it
-        * is a neutral zone (like a hallway or office)
+        *       is a neutral zone (like a hallway or office)
      */
     public PathType getPathType() {
         String name = this.name();
-        if (name.contains("STAIR_LEFT")) return PathType.LEFT_STAIRS;
-        if (name.contains("STAIR_MID")) return PathType.MIDDLE_STAIRS;
-        if (name.contains("STAIR_RIGHT")) return PathType.RIGHT_STAIRS;
-        if (name.contains("ELEVATOR")) return PathType.ELEVATOR;
-        if (name.contains("VENT")) return PathType.VENT;
+        if (name.contains("STAIR_LEFT")) {
+            return PathType.LEFT_STAIRS;
+        }
+
+        if (name.contains("STAIR_MID")) {
+            return PathType.MIDDLE_STAIRS;
+        }
+
+        if (name.contains("STAIR_RIGHT")) {
+            return PathType.RIGHT_STAIRS;
+        }
+
+        if (name.contains("ELEVATOR")) {
+            return PathType.ELEVATOR;
+        }
+
+        if (name.contains("VENT")) {
+            return PathType.VENT;
+        }
+
         return null; // For general hallways or special locations
     }
 
@@ -162,19 +177,36 @@ public enum Location {
     /**
      * Gets the floor number for this location.
      *
-     * @return 1-3 for standard floor nodes, 4 for office (goal layer), -1 for transitional nodes, 0 otherwise
+     * @return 1-3 for standard floor nodes, 4 for office (goal layer), -1 for transitional nodes,
+     *      0 otherwise
      */
     public int getFloor() {
         String name = this.name();
 
-        if (name.startsWith("FLOOR1")) return 1;
-        if (name.startsWith("FLOOR2")) return 2;
-        if (name.startsWith("FLOOR3")) return 3;
+        if (name.startsWith("FLOOR1")) {
+            return 1;
+        }
+
+        if (name.startsWith("FLOOR2")) {
+            return 2;
+        }
+
+        if (name.startsWith("FLOOR3")) {
+            return 3;
+        }
 
         // Special nodes
-        if (this == IN_OFFICE) return 4;       // treat as goal layer
-        if (this == IN_ELEVATOR) return -1;    // transitional
-        if (this == IN_VENT) return -1;        // transitional
+        if (this == IN_OFFICE) {
+            return 4;       // treat as goal layer
+        }
+
+        if (this == IN_ELEVATOR) {
+            return -1;    // transitional
+        }
+
+        if (this == IN_VENT) {
+            return -1;        // transitional
+        }
 
         return 0; // fallback / unknown
     }
