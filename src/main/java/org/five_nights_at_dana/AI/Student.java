@@ -393,6 +393,29 @@ public class Student {
     }
 
     /**
+     * Resets the RUNNER back to its initial (Night start) state in the classroom.
+     * Intended for when the player successfully blocks the runner at the office door.
+     */
+    public void resetRunnerToInitialState() {
+        if (personality != Personality.RUNNER) return;
+
+        charging = false;
+        sprinting = false;
+        chargeTimer = 0;
+
+        doorLingerMovesRemaining = 0;
+        justArrivedAtDoor = false;
+
+        // Return to the classroom and reset memory so pushbacks/pathing start fresh.
+        previousLocation = currentLocation;
+        currentLocation = Location.FLOOR3_COMPUTER_LAB;
+        recentLocations.clear();
+        rememberLocation(currentLocation);
+
+        resetMovementTimer();
+    }
+
+    /**
      * Sets the student's current location and updates history.
      *
      * @param location new location

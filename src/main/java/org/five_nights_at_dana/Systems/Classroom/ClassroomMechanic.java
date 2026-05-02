@@ -156,6 +156,18 @@ public class ClassroomMechanic {
     }
 
     /**
+     * Force-resets the runner event state back to its initial state.
+     * This is stronger than {@link #resetActivity()} and is intended for
+     * successful door blocks against the runner.
+     */
+    public void forceResetRunnerState() {
+        activityLevel = 0;
+        eventTriggered = false;
+        warningTriggered = false;
+        framesSinceCheck = 0;
+    }
+
+    /**
      * Checks if the runner event has been triggered.
      *
      * @return true if triggered, false otherwise.

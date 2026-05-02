@@ -20,6 +20,7 @@ package org.five_nights_at_dana.Core;
 
 import javafx.animation.AnimationTimer;
 import org.five_nights_at_dana.AI.Location;
+import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Managers.NotificationManager;
@@ -477,13 +478,21 @@ public class GameSession {
         Student atDoor = studentManager.getStudentAtDoor();
         if (atDoor == null) return;
 
-        // Bounce the student back into the hallway.
-        atDoor.setLocation(Location.FLOOR3_HALLWAY_RIGHT);
+        if (atDoor.getPersonality() == Personality.RUNNER) {
+            // Runner: successful block sends them back to the classroom and clears charge.
+            atDoor.resetRunnerToInitialState();
+            classroom.forceResetRunnerState();
+        } else {
+            // Bounce the student back into the hallway.
+            atDoor.setLocation(Location.FLOOR3_HALLWAY_RIGHT);
+        }
 
         // Rate-limited message
         SensorHelper.trigger(
                 "left_door_block",
-                "Left door blocked a student.",
+            (atDoor.getPersonality() == Personality.RUNNER)
+                ? "Left door blocked the Runner (reset to classroom)."
+                : "Left door blocked a student.",
                 Notification.Type.SYSTEM,
                 frameCount
         );
