@@ -56,7 +56,7 @@ public final class NotificationToastOverlay {
         VBox stack = new VBox(10);
         stack.setMouseTransparent(true);
         stack.setPickOnBounds(false);
-        stack.setAlignment(Pos.BOTTOM_RIGHT);
+        stack.setAlignment(Pos.TOP_RIGHT);
 
         AnchorPane.setRightAnchor(stack, 18.0);
         AnchorPane.setBottomAnchor(stack, 18.0);
