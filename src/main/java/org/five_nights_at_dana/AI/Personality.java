@@ -80,10 +80,7 @@ public enum Personality {
      * This varies by character in the original games.
      */
     public boolean stallsWhenWatched() {
-        return switch (this) {
-            case SHY -> true;
-            default -> false;
-        };
+        return this == SHY;
     }
 
     /**
