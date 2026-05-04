@@ -23,6 +23,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.UI.FadeUtil;
 import org.five_nights_at_dana.UI.FireworksPane;
 
@@ -56,6 +57,7 @@ public class WinCelebrationController {
             linger.setOnFinished(e -> goToWinScreen());
             linger.play();
         });
+        AudioManager.play("yippie", true);
     }
 
     @FXML
@@ -71,6 +73,7 @@ public class WinCelebrationController {
 
         try {
             Stage stage = (Stage) root.getScene().getWindow();
+            AudioManager.play("hooray", true);
             Parent nextRoot = FXMLLoader.load(getClass().getResource("/org/five_nights_at_dana/WinView.fxml"));
             FadeUtil.fadeOutAndSwitch(root, nextRoot, 1280, 720, 0.30);
         } catch (Exception ex) {

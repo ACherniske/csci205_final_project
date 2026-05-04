@@ -38,6 +38,7 @@ import javafx.stage.Stage;
 import org.five_nights_at_dana.Core.GamePane;
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.UI.FadeUtil;
 import org.five_nights_at_dana.UI.NotificationToastOverlay;
 import org.five_nights_at_dana.Systems.Stairwells.Stairwell;
@@ -188,6 +189,7 @@ public class GameViewController {
     @FXML
     private void onToggleLeftDoor(ActionEvent event) {
         session.toggleLeftDoor();
+        AudioManager.play("door_lock", true);
         refreshDoorButton();
     }
 

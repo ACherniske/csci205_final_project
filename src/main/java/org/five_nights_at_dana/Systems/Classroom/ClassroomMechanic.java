@@ -18,9 +18,9 @@
 package org.five_nights_at_dana.Systems.Classroom;
 
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
-// TODO import org.five_nights_at_dana.Managers.AudioManager;
 
 /**
  * Manages the "Runner" mechanic in the Computer Lab.
@@ -137,6 +137,7 @@ public class ClassroomMechanic {
 
         eventTriggered = true;
         runner.startSprint();
+        AudioManager.play("hallway_fast", true);
 
         SensorHelper.trigger(
                 "runner_charge",

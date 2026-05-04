@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class AudioManager {
 
-    private static Map<String, AudioClip> soundEffects = new HashMap<>();
     private static Map<String, AudioClip> loopingSounds = new HashMap<>();
 
     private static double masterVolume = 1.0;
@@ -34,25 +33,96 @@ public class AudioManager {
      * Plays a sound effect.
      * @param key sound key
      */
-    public static void play(String key) {
-        // TODO play sound with volume scaling
+    public static void play(String key, boolean isSFX) {
+        play(key, 1, isSFX);
+
     }
 
     /**
      * Plays a sound at specified volume.
      * @param key sound key
      * @param volume volume multiplier
+     * @param isSFX true if audio clip is a sfx, false if it is a music clip
      */
-    public static void play(String key, double volume) {
-        // TODO implement custom volume playback
+    public static void play(String key, double volume, boolean isSFX) {
+        try {
+            AudioClip soundClip = AssetManager.getSound(key);
+
+            if (soundClip == null) {
+                System.err.println("AudioManager: Failed to load sound: " + key);
+                return;
+            }
+
+            double clipVolume = 0;
+            if (isSFX) {
+                clipVolume = calculateVolume(volume, sfxVolume);
+            } else {
+                clipVolume = calculateVolume(volume, musicVolume);
+            }
+            soundClip.play(clipVolume);
+
+        } catch (Exception e) {
+            System.err.println("AudioManger: Failed to load sound: " + key);
+        }
+    }
+
+    /**
+     * Stops an audio clip from playing
+     * @param key of the audio clip to be stopped
+     */
+    public static void stop(String key) {
+        try {
+            AudioClip soundClip = AssetManager.getSound(key);
+            if (soundClip != null) {
+                soundClip.stop();
+            }
+        } catch (Exception e) {
+            System.err.println("AudioManger: Failed to stop sound: " + key);
+        }
     }
 
     /**
      * Starts looping a sound.
      * @param key sound key
      */
-    public static void playLoop(String key) {
-        // TODO loop audio clip
+    public static void playLoop(String key, boolean isSFX) {
+        try {
+            AudioClip soundClip = AssetManager.getSound(key);
+
+            if (soundClip == null) {
+                System.err.println("AudioManager: Failed to load sound: " + key);
+                return;
+            }
+
+            if (loopingSounds.containsKey(key)) {
+                System.err.println("AudioManager: Sound is already looping. " + key);
+                return;
+            }
+
+            double clipVolume = 0;
+            if (isSFX) {
+                clipVolume = calculateVolume(1, sfxVolume);
+            } else {
+                clipVolume = calculateVolume(1, musicVolume);
+            }
+
+            soundClip.setVolume(clipVolume);
+            soundClip.setCycleCount(AudioClip.INDEFINITE);
+            soundClip.play();
+            loopingSounds.put(key, soundClip);
+        } catch (Exception e) {
+            System.err.println("AudioManger: Failed to loop sound: " + key);
+        }
+    }
+
+    /**
+     * Gets the volume to be played
+     * @param volume local to the call
+     * @param categoryVolume whether its sfx sound or a music sound
+     * @return the calculated volume limited between [0, 1]
+     */
+    private static double calculateVolume(double volume, double categoryVolume) {
+        return Math.max(0.0, Math.min(1, volume * categoryVolume * masterVolume));
     }
 
     /**
@@ -60,34 +130,52 @@ public class AudioManager {
      * @param key sound key
      */
     public static void stopLoop(String key) {
-        // TODO stop loop
+        try {
+            if (!loopingSounds.containsKey(key)) {
+                System.err.println("AudioManager: Cant stop looping a sound that isn't being looped: " + key);
+                return;
+            }
+            AudioClip soundClip = loopingSounds.remove(key);
+            soundClip.stop();
+        }  catch (Exception e) {
+            System.err.println("AudioManager: Failed to stop looping sound: " + key);
+        }
     }
 
     /**
      * Stops all looping sounds.
      */
     public static void stopAllLoops() {
-        // TODO iterate and stop all loops
+        try {
+            for (AudioClip soundClip : loopingSounds.values()) {
+                if (soundClip != null) {
+                    soundClip.stop();
+                }
+            }
+            loopingSounds.clear();
+        }  catch (Exception e) {
+            System.err.println("AudioManager: Failed to stop all looping sounds: " + e.getMessage());
+        }
     }
 
     /**
      * Sets master volume.
      */
     public static void setMasterVolume(double v) {
-        masterVolume = v;
+        masterVolume = Math.max(0.0, Math.min(1.0, v));
     }
 
     /**
      * Sets SFX volume.
      */
     public static void setSfxVolume(double v) {
-        sfxVolume = v;
+        sfxVolume = Math.max(0.0, Math.min(1.0, v));
     }
 
     /**
      * Sets music volume.
      */
     public static void setMusicVolume(double v) {
-        musicVolume = v;
+        musicVolume = Math.max(0.0, Math.min(1.0, v));
     }
 }

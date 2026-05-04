@@ -63,8 +63,45 @@ public class AssetManager {
         loadImage("char_shy", "character_shy.png");
 
         // Load Sounds
-        //loadSound("camera_switch", "camera_switch.wav");
-        // loadSound("jumpscare", "jumpscare.mp3");
+        loadSound("door_bang", "door_bang.m4a");
+        loadSound("door_handle", "door_handle.m4a");
+        loadSound("elevator_alert", "elevator_alert.mp3");
+        loadSound("elevator_ambient", "elevator_ambient.m4a");
+        loadSound("elevator_call", "elevator_call.m4a");
+        loadSound("elevator_close", "elevator_close.m4a");
+        loadSound("elevator_door_open", "elevator_door_open.m4a");
+        loadSound("elevator_open", "elevator_open.m4a");
+        loadSound("elevator_ridedown", "elevator_ridedown.m4a");
+        loadSound("elevator_rideup", "elevator_rideup.m4a");
+        loadSound("hallway_ambient", "hallway_ambient.m4a");
+        loadSound("hallway_fast", "hallway_fast.mp3");
+        loadSound("hallway_slow", "hallway_slow.m4a");
+        loadSound("heavy_stairs", "heavy_stairs.m4a");
+        loadSound("keyboard_noise", "keyboard_noise.m4a");
+        loadSound("light_switch", "light_switch.mp3");
+        loadSound("main_entrance_enter", "main_entrance_enter.m4a");
+        loadSound("metallic_stairs", "metallic_stairs.m4a");
+        loadSound("phone_call", "PhoneCall.wav");
+        loadSound("staircase_door", "staircase_door.m4a");
+        loadSound("stairs_ambient", "stairs_ambient.m4a");
+        loadSound("stairs_up_n_down", "stairs_up_n_down.m4a");
+        loadSound("vent_enter", "vent_enter.mp3");
+        loadSound("vent_exit", "vent_exit.mp3");
+        loadSound("vent_seal", "vent_seal.mp3");
+        loadSound("discord_notification", "discord_notification.mp3");
+        loadSound("change_cams", "change_cams.mp3");
+        loadSound("stairs_up", "stairs_up.m4a");
+        loadSound("door_lock", "door_lock.mp3");
+        loadSound("yippie", "yippie.mp3");
+        loadSound("hooray", "hooray.mp3");
+        loadSound("jumpscare", "jumpscare.mp3");
+        loadSound("menu", "menu.mp3");
+        loadSound("vent_unseal", "vent_unseal.mp3");
+
+
+
+
+
 
         System.out.println("AssetManager: Preload complete. Images: "
                 + IMAGES.size()

@@ -19,6 +19,7 @@ package org.five_nights_at_dana.Systems.Elevator;
 
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
 
@@ -95,7 +96,7 @@ public class ElevatorSystem {
             // Threshold warning
             if (elevatorTimer == 180) {
                 System.out.println("ElevatorSystem: Student arriving in 3s");
-                // TODO AudioManager.play("elevator_open");
+                AudioManager.play("elevator_open", true);
             }
 
             // Transit complete
@@ -134,7 +135,7 @@ public class ElevatorSystem {
                     Notification.Type.ELEVATOR,
                     currentFrame
             );
-            // TODO AudioManager.play("elevator_enter");
+            AudioManager.play("elevator_rideup", true);
             return true;
         }
 
@@ -154,7 +155,7 @@ public class ElevatorSystem {
         System.out.println("ElevatorSystem: "
                 + studentInElevator.getName()
                 + " arrived at destination!");
-        // TODO AudioManager.play("elevator_exit");
+        AudioManager.play("elevator_close", true);
 
         // Logic to determine destination based on entry
         if (elevatorEntry == Location.FLOOR1_ELEVATOR) {
@@ -196,7 +197,10 @@ public class ElevatorSystem {
         emergencyTimer = EMERGENCY_STOP_DURATION;
         emergencyStopCooldown = EMERGENCY_STOP_COOLDOWN;
 
-        //TODO AudioManager.play("Elevator_STOP);
+        AudioManager.stop("elevator_open");
+        AudioManager.stop("elevator_rideup");
+        AudioManager.stop("elevator_close");
+        AudioManager.play("elevator_alert", 0.03, true);
         System.out.println("ElevatorSystem: STOPPED (10s)");
 
         SensorHelper.trigger(
@@ -223,7 +227,7 @@ public class ElevatorSystem {
         }
 
         System.out.println("ElevatorSystem: EJECTED " + studentInElevator.getName());
-        // TODO AudioManager.play("elevator_eject");
+        AudioManager.play("elevator_close", true);
 
         SensorHelper.trigger(
             "elevator_eject",
@@ -249,11 +253,10 @@ public class ElevatorSystem {
     void unEmergencyStop() {
         isEmergencyStopped = false;
         emergencyTimer = 0;
-        // TODO AudioManager.play("unstop");
     }
 
     /**
-     * Checks if the elevator is currently in a emergency state.
+     * Checks if the elevator is currently in an emergency state.
      *
      * @return true if sealed, false otherwise.
      */

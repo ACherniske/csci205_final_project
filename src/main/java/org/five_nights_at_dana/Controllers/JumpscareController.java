@@ -27,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.UI.FadeUtil;
 
 /**
@@ -70,6 +71,7 @@ public class JumpscareController {
         }
 
         studentNameLabel.setText("Caught by " + studentName);
+        AudioManager.play("jumpscare", true);
 
         // 1s scare image shown → fade in "GAME OVER" → wait → return to menu
         PauseTransition holdScare = new PauseTransition(Duration.seconds(1.5));

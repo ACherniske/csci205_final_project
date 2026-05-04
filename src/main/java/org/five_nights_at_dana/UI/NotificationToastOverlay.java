@@ -25,6 +25,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Managers.NotificationManager;
 
@@ -105,8 +106,7 @@ public final class NotificationToastOverlay {
         toast.setTranslateX(18.0);
 
         if (shouldPlayDiscordSound(n)) {
-            // TODO AudioManager.play("discord_notification");
-            // (Audio manager is being implemented separately.)
+            AudioManager.play("discord_notification", 0.3,  true);
         }
 
         FadeTransition fadeIn = new FadeTransition(IN_DURATION, toast);

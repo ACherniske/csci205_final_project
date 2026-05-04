@@ -22,7 +22,7 @@ import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Managers.NotificationManager;
-// TODO import org.five_nights_at_dana.Managers.AudioManager;
+import org.five_nights_at_dana.Managers.AudioManager;
 
 /**
  * Defines the vent system timing and logic
@@ -75,7 +75,7 @@ public class VentSystem {
                 System.out.println("VentSystem: Student exiting in 3s");
                 NotificationManager.push("Vent movement detected — near office",
                         Notification.Type.WARNING);
-                // TODO AudioManager.play("vent_close");
+                AudioManager.play("vent_seal", 0.5, true);
             }
 
             // Transit complete
@@ -121,7 +121,7 @@ public class VentSystem {
         studentInVent = student;
         ventEntryPoint = entryPoint;
 
-        // TODO AudioManager.play("vent_enter");
+        AudioManager.play("vent_enter", true);
         return true;
     }
 
@@ -136,7 +136,7 @@ public class VentSystem {
 
         System.out.println("VentSystem: " + studentInVent.getName() + " exited at office!");
         NotificationManager.push("Vent exit at office!", Notification.Type.DANGER);
-        // TODO AudioManager.play("vent_exit");
+        AudioManager.play("vent_exit", 0.5, true);
 
         // Student now at door
         studentInVent.setLocation(Location.FLOOR3_AT_DOOR);
@@ -161,7 +161,7 @@ public class VentSystem {
         sealTimer = SEAL_DURATION;
         sealCooldown = SEAL_COOLDOWN;
 
-        // TODO AudioManager.play("vent_seal");
+        AudioManager.play("vent_seal", 0.5, true);
         System.out.println("VentSystem: SEALED (8s)");
         NotificationManager.push("Vent sealed", Notification.Type.SYSTEM);
 
@@ -182,7 +182,7 @@ public class VentSystem {
 
         System.out.println("VentSystem: EJECTED " + studentInVent.getName());
         NotificationManager.push("Vent eject: " + studentInVent.getName(), Notification.Type.INFO);
-        // TODO AudioManager.play("vent_eject");
+        AudioManager.play("vent_exit", 0.5, true);
 
         if (ventEntryPoint != null) {
             studentInVent.setLocation(ventEntryPoint);
@@ -200,7 +200,7 @@ public class VentSystem {
     void unsealVent() {
         isSealed = false;
         sealTimer = 0;
-        // TODO AudioManager.play("vent_unseal");
+        AudioManager.play("vent_unseal",0.5, true);
         NotificationManager.push("Vent unsealed", Notification.Type.SYSTEM);
     }
 

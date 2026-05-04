@@ -39,6 +39,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.five_nights_at_dana.Core.GameSession;
 import org.five_nights_at_dana.Core.GameState;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.ObservationManager;
 import org.five_nights_at_dana.Rendering.Camera.CameraConfig;
 import org.five_nights_at_dana.Rendering.Camera.CameraSystem;
@@ -152,7 +153,7 @@ public class CameraViewController {
         // Mark the current camera location as being "watched" for AI stalling.
         ObservationManager.setCamerasUp(true);
         ObservationManager.setWatchedLocation(CameraConfig.getLocation(cameraSystem.getActiveCamera().id()));
-
+        AudioManager.play("change_cams", true);
         // Watching CAM 3D resets the runner's activity meter
         if ("3D".equals(cameraSystem.getActiveCamera().id())) {
             GameSession.getInstance().getClassroom().resetActivity();

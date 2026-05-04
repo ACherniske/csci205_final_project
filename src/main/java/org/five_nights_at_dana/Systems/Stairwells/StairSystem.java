@@ -22,6 +22,7 @@ package org.five_nights_at_dana.Systems.Stairwells;
 import java.util.*;
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Systems.SensorHelper;
 
@@ -107,6 +108,8 @@ public class StairSystem {
         if (!canActivateLights()) return false;
         activeLightsStairwell = stairwell;
         lightTimer = LIGHT_DURATION;
+        AudioManager.play("light_switch", true);
+
 
         System.out.println("StairSystem: Lights ON in " + stairwell);
 
@@ -207,6 +210,7 @@ public class StairSystem {
             list.add(student);
 
             String floor = floorFromLocation(student.getCurrentLocation());
+            AudioManager.play("stairs_up", true);
 
             SensorHelper.trigger(
                     "stair_" + stairwell,

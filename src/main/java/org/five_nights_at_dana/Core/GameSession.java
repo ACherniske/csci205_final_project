@@ -26,6 +26,7 @@ import javafx.animation.AnimationTimer;
 import org.five_nights_at_dana.AI.Location;
 import org.five_nights_at_dana.AI.Personality;
 import org.five_nights_at_dana.AI.Student;
+import org.five_nights_at_dana.Managers.AudioManager;
 import org.five_nights_at_dana.Managers.Notification;
 import org.five_nights_at_dana.Managers.NotificationManager;
 import org.five_nights_at_dana.Managers.StudentManager;
@@ -137,6 +138,8 @@ public class GameSession {
     public void startNight() {
         // Enable verbose AI movement roll logging for debugging.
         Student.setDebugMoveLogs(true);
+        AudioManager.play("light_switch", true);
+        AudioManager.playLoop("hallway_ambient", false);
 
         hour = 12;
         minute = 0;
@@ -169,6 +172,7 @@ public class GameSession {
     /** Stops the frame loop and the background clock. */
     public void stopNight() {
         active = false;
+        AudioManager.stopLoop("hallway_ambient");
         if (nightClock != null) {
             nightClock.shutdownNow();
             nightClock = null;
@@ -545,10 +549,12 @@ public class GameSession {
         if (atDoor.getPersonality() == Personality.RUNNER) {
             // Runner: successful block sends them back to the classroom and clears charge.
             atDoor.resetRunnerToInitialState();
+            AudioManager.play("door_bang", true);
             classroom.forceResetRunnerState();
         } else {
             // Bounce the student back into the hallway.
             atDoor.setLocation(Location.FLOOR3_HALLWAY_RIGHT);
+            AudioManager.play("door_handle", true);
         }
 
         // Rate-limited message
