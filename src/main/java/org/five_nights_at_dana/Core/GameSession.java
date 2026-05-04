@@ -259,7 +259,7 @@ public class GameSession {
 
         if (leftDoorClosed) {
             // Small continuous drain when the door is shut
-            power -= 0.008 / (double) TICKS_PER_SECOND;
+            power -= 0.01 / (double) TICKS_PER_SECOND;
         }
         power  = Math.max(0.0, power);
     }
