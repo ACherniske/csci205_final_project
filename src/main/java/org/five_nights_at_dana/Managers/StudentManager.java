@@ -174,7 +174,7 @@ public class StudentManager {
         for (Student s : students) {
             int delta = switch (s.getPersonality()) {
                 case EAGER -> (hour == 2 || hour == 3 || hour == 4) ? (1 * SCALE) : 0;
-                case PERSISTENT, CONFUSED -> (hour == 3 || hour == 4) ? (1 * SCALE) : 0;
+                case PERSISTENT, CONFUSED, SHY -> (hour == 3 || hour == 4) ? (1 * SCALE) : 0;
                 default -> 0;
             };
 
@@ -192,7 +192,7 @@ public class StudentManager {
         for (Student s : students) {
             int start = switch (s.getPersonality()) {
                 case EAGER -> 2;
-                case PERSISTENT, CONFUSED -> 1;
+                case PERSISTENT, CONFUSED, SHY -> 1;
                 default -> 0;
             };
 
