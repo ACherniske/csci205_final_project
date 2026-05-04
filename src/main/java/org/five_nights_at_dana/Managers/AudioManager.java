@@ -32,6 +32,7 @@ public class AudioManager {
     /**
      * Plays a sound effect.
      * @param key sound key
+     * @param isSFX true if audio clip is a sfx, false if it is a music clip
      */
     public static void play(String key, boolean isSFX) {
         play(key, 1, isSFX);
@@ -84,6 +85,7 @@ public class AudioManager {
     /**
      * Starts looping a sound.
      * @param key sound key
+     * @param isSFX true if audio clip is a sfx, false if it is a music clip
      */
     public static void playLoop(String key, boolean isSFX) {
         try {
