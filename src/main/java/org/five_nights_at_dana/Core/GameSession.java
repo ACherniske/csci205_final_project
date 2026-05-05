@@ -139,7 +139,7 @@ public class GameSession {
         // Enable verbose AI movement roll logging for debugging.
         Student.setDebugMoveLogs(true);
         AudioManager.play("light_switch", true);
-        AudioManager.playLoop("hallway_ambient", false);
+        AudioManager.playLoop("hallway_ambient", 1, false);
 
         hour = 12;
         minute = 0;
