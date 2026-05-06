@@ -45,7 +45,7 @@ public class StudentManager {
      * Instantiates all student AI with predefined personalities and dialogue.
      */
     private void createStudents() {
-        students.add(new Student("Kaidou", "JumpscareEager", Personality.EAGER));
+        students.add(new Student("Faris", "JumpscareEager", Personality.EAGER));
         students.add(new Student("Sean", "JumpscarePersistent", Personality.PERSISTENT));
         students.add(new Student("Cyrus", "JumpscareConfused", Personality.CONFUSED));
         students.add(new Student("Tyler", "JumpscareShy", Personality.SHY));

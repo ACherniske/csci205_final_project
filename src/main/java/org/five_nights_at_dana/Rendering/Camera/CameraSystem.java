@@ -30,7 +30,7 @@ import org.five_nights_at_dana.Managers.StudentManager;
  */
 public class CameraSystem {
 
-    private static final double CHARACTER_SPRITE_MAX_SIZE = 260.0;
+    private static final double CHARACTER_SPRITE_MAX_SIZE = 780.0;
     private static final String INSTANT_CAMERA_ID = "1D";
 
     private String currentCameraId = "1A";
@@ -114,7 +114,7 @@ public class CameraSystem {
                 }
 
                 double spriteX = (roomImage.getWidth() - spriteWidth) / 2.0;
-                double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0;
+                double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0 + 20.0;
 
                 if (spriteX < 0) {
                     spriteX = 0;
@@ -143,7 +143,7 @@ public class CameraSystem {
                 }
 
                 double spriteX = (roomImage.getWidth() - spriteWidth) / 2.0;
-                double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0;
+                double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0 + 100.0;
 
                 if (spriteX < 0) {
                     spriteX = 0;
