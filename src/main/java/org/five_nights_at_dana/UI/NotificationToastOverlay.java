@@ -44,46 +44,42 @@ public final class NotificationToastOverlay {
     private NotificationToastOverlay() {
     }
 
+    /** Global notification toast stack instance. */
+    private static VBox globalStack = null;
+
+    /** Global listener that persists across scene switches. */
+    private static NotificationManager.NotificationListener globalListener = null;
+
     /**
      * Adds the overlay nodes to {@code root} and registers a NotificationManager listener.
-     * Safe to call multiple times; each call installs a separate overlay.
+     * Safe to call multiple times; creates or reuses a global overlay instance.
      */
     public static void install(AnchorPane root) {
         if (root == null) {
             return;
         }
 
-        VBox stack = new VBox(10);
-        stack.setMouseTransparent(true);
-        stack.setPickOnBounds(false);
-        stack.setAlignment(Pos.TOP_RIGHT);
+        // If this is the first install, set up the global toast stack and listener
+        if (globalStack == null) {
+            globalStack = new VBox(10);
+            globalStack.setMouseTransparent(true);
+            globalStack.setPickOnBounds(false);
+            globalStack.setAlignment(Pos.TOP_RIGHT);
 
-        AnchorPane.setRightAnchor(stack, 18.0);
-        AnchorPane.setBottomAnchor(stack, 18.0);
+            // Register a persistent listener that will work across scene switches
+            globalListener = n -> showToast(globalStack, n);
+            NotificationManager.addListener(globalListener);
+        }
 
-        root.getChildren().add(stack);
+        // Remove the stack from its old parent if it exists in one
+        if (globalStack.getParent() != null) {
+            ((AnchorPane) globalStack.getParent()).getChildren().remove(globalStack);
+        }
 
-        // Small trick so the lambda can remove itself.
-        final NotificationManager.NotificationListener[] handle =
-                new NotificationManager.NotificationListener[1];
-
-        handle[0] = n -> {
-            // Auto-unregister if this overlay is no longer attached.
-            if (stack.getScene() == null) {
-                NotificationManager.removeListener(handle[0]);
-                return;
-            }
-
-            showToast(stack, n);
-        };
-
-        stack.sceneProperty().addListener((obs, oldScene, newScene) -> {
-            if (newScene == null) {
-                NotificationManager.removeListener(handle[0]);
-            }
-        });
-
-        NotificationManager.addListener(handle[0]);
+        // Add the stack to the new root
+        AnchorPane.setRightAnchor(globalStack, 18.0);
+        AnchorPane.setTopAnchor(globalStack, 18.0);
+        root.getChildren().add(globalStack);
     }
 
     /**
