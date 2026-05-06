@@ -27,7 +27,7 @@ public class NavigationManager {
 
     private static final double BASE_EDGE_WEIGHT = 1.0;
     private static final double PATH_MATCH_WEIGHT = 3.0;
-    private static final double SHY_VENT_BOOST = 6.0;
+    private static final double SHY_VENT_BOOST = 9.0;
     private static final double EAGER_ELEVATOR_BOOST = 8.0;
     private static final double PERSISTENT_LEFT_STAIRS_BOOST = 6.0;
     private static final double RUNNER_RIGHT_STAIRS_BOOST = 4.0;
