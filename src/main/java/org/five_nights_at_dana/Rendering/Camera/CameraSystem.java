@@ -30,6 +30,8 @@ import org.five_nights_at_dana.Managers.StudentManager;
  */
 public class CameraSystem {
 
+    private static final double CHARACTER_SPRITE_SCALE = 1.15;
+
     private String currentCameraId = "1A";
     private final StudentManager studentManager;
 
@@ -87,8 +89,20 @@ public class CameraSystem {
         Image sprite = AssetManager.getImage("char_" + personality);
 
         if (sprite != null) {
-            // You can adjust these coordinates based on your room layout
-            gc.drawImage(sprite, 50, 100);
+            double spriteWidth = sprite.getWidth() * CHARACTER_SPRITE_SCALE;
+            double spriteHeight = sprite.getHeight() * CHARACTER_SPRITE_SCALE;
+            double spriteX = (roomImage.getWidth() - spriteWidth) / 2.0;
+            double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0;
+
+            if (spriteX < 0) {
+                spriteX = 0;
+            }
+
+            if (spriteY < 0) {
+                spriteY = 0;
+            }
+
+            gc.drawImage(sprite, spriteX, spriteY, spriteWidth, spriteHeight);
         }
 
         // Snapshot the canvas into an Image object
