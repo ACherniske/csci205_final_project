@@ -30,7 +30,7 @@ import org.five_nights_at_dana.Managers.StudentManager;
  */
 public class CameraSystem {
 
-    private static final double CHARACTER_SPRITE_SCALE = 1.15;
+    private static final double CHARACTER_SPRITE_MAX_SIZE = 260.0;
 
     private String currentCameraId = "1A";
     private final StudentManager studentManager;
@@ -89,8 +89,18 @@ public class CameraSystem {
         Image sprite = AssetManager.getImage("char_" + personality);
 
         if (sprite != null) {
-            double spriteWidth = sprite.getWidth() * CHARACTER_SPRITE_SCALE;
-            double spriteHeight = sprite.getHeight() * CHARACTER_SPRITE_SCALE;
+            double spriteRatio = sprite.getWidth() / sprite.getHeight();
+            double spriteWidth = CHARACTER_SPRITE_MAX_SIZE;
+            double spriteHeight = CHARACTER_SPRITE_MAX_SIZE;
+
+            if (spriteRatio >= 1.0) {
+                spriteHeight = spriteWidth / spriteRatio;
+            } else {
+                spriteWidth = spriteHeight * spriteRatio;
+            }
+
+            System.out.println("[CAMERA] " + personality + " sprite: native " + sprite.getWidth() + "x" + sprite.getHeight() + ", ratio=" + spriteRatio + ", render size=" + spriteWidth + "x" + spriteHeight);
+
             double spriteX = (roomImage.getWidth() - spriteWidth) / 2.0;
             double spriteY = (roomImage.getHeight() - spriteHeight) / 2.0;
 
