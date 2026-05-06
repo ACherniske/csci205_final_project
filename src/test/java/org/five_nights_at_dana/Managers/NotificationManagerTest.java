@@ -1,3 +1,20 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/26/2026
+ * Time: 12:21 AM
+ *
+ * Project: csci205_final_project
+ * Package: Managers
+ * Class: NotificationManagerTest
+ *
+ * Description:
+ * This file will test the notification manager
+ *
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Managers;
 
 import org.five_nights_at_dana.AI.Personality;

@@ -10,6 +10,7 @@
  * Class: NavigationManagerTest
  *
  * Description:
+ * This class will test the navigation manager
  *
  * ****************************************
  */

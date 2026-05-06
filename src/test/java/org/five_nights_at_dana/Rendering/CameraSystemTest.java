@@ -1,3 +1,20 @@
+/* *****************************************
+ * CSCI 205 - Software Engineering and Design
+ * Spring 2026
+ *
+ * Date: 4/26/2026
+ * Time: 12:21 AM
+ *
+ * Project: csci205_final_project
+ * Package: Rendering
+ * Class: CameraSystemTest
+ *
+ * Description:
+ * This file will test the notification manager
+ *
+ * ****************************************
+ */
+
 package org.five_nights_at_dana.Rendering;
 
 import org.five_nights_at_dana.AI.Student;
@@ -103,4 +120,42 @@ public class CameraSystemTest {
         assertNotNull(cameraSystem.getActiveCamera());
         // Depending on your implementation, it might still return the previous valid camera
     }
+
+    /**
+     * This test will test the default camera
+     */
+    @Test
+    public void testDefaultCamera() {
+        assertNotNull(cameraSystem.getActiveCamera());
+        assertEquals("1A", cameraSystem.getActiveCamera().id(), "Default camera should be 1A.");
+    }
+
+    @Test
+    public void testSwitchBetweenValidCameras() {
+        cameraSystem.setActiveCamera("2C");
+        assertEquals("2C", cameraSystem.getActiveCamera().id());
+        cameraSystem.setActiveCamera("1A");
+        assertEquals("1A", cameraSystem.getActiveCamera().id());
+    }
+
+    @Test
+    public void testIsStudentVisible_NoStudentsAnywhere() {
+        // students list is empty
+        cameraSystem.setActiveCamera("1A");
+        assertFalse(cameraSystem.isStudentVisible(), "No students exist, so nothing should be visible.");
+    }
+
+    @Test
+    public void testIsStudentVisible_WrongCamera() {
+        Student s1 = new Student("Test Student", "Q?", Personality.EAGER);
+        s1.setLocation(Location.FLOOR2_COMPUTER_LAB);
+        students.add(s1);
+
+        cameraSystem.setActiveCamera("1A"); // not the computer lab
+        assertFalse(cameraSystem.isStudentVisible());
+
+        cameraSystem.setActiveCamera("2C"); // now pointing at the right place
+        assertTrue(cameraSystem.isStudentVisible());
+    }
+
 }
