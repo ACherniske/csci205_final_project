@@ -55,8 +55,13 @@ import org.five_nights_at_dana.UI.NotificationToastOverlay;
  */
 public class CameraViewController {
 
+    private static final String INSTANT_EVENT_CAMERA_ID = "1D";
+    private static final int INSTANT_EVENT_ROLL = 1_000_000;
+
     private CameraSystem cameraSystem;
     private boolean jumpscareTransitionInProgress = false;
+    private boolean instantEventArmed = false;
+    private final Random instantEventRandom = new Random();
 
     /**
      * Injects the camera system dependency and wires button actions.
@@ -147,7 +152,16 @@ public class CameraViewController {
      * Refreshes the feed image and label to match the currently active camera.
      */
     private void updateView() {
-        cameraFeedImage.setImage(cameraSystem.getFeedImage());
+        String activeCameraId = cameraSystem.getActiveCamera().id();
+
+        if (!instantEventArmed && INSTANT_EVENT_CAMERA_ID.equals(activeCameraId)) {
+            if (instantEventRandom.nextInt(INSTANT_EVENT_ROLL) == 0) {
+                instantEventArmed = true;
+                System.out.println("CameraViewController: instant event armed in Maker-E");
+            }
+        }
+
+        cameraFeedImage.setImage(cameraSystem.getFeedImage(instantEventArmed));
         activeCameraLabel.setText(cameraSystem.getActiveCamera().label());
 
         // Mark the current camera location as being "watched" for AI stalling.
@@ -155,7 +169,7 @@ public class CameraViewController {
         ObservationManager.setWatchedLocation(CameraConfig.getLocation(cameraSystem.getActiveCamera().id()));
         AudioManager.play("change_cams", true);
         // Watching CAM 3D resets the runner's activity meter
-        if ("3D".equals(cameraSystem.getActiveCamera().id())) {
+        if ("3D".equals(activeCameraId)) {
             GameSession.getInstance().getClassroom().resetActivity();
         }
     }
@@ -221,6 +235,12 @@ public class CameraViewController {
      */
     @FXML
     private void onLowerCameras(ActionEvent event) {
+        if (instantEventArmed) {
+            instantEventArmed = false;
+            GameSession.getInstance().triggerJumpscare("character_instant");
+            return;
+        }
+
         GameSession.getInstance().setCurrentState(GameState.PLAYING);
         ObservationManager.setCamerasUp(false);
         returnToGameView();

@@ -98,7 +98,6 @@ public class GameSession {
     private Runnable onWin;
     private Runnable onGameOver;
     private Runnable onFrameRender;
-    private Runnable onRandomEvent;
 
 
     // ── Timers ────────────────────────────────────────────────────────
@@ -324,24 +323,11 @@ public class GameSession {
             return;
         }
 
-        // 1-in-1000 random instant-lose like golden freddy
-        if (new java.util.Random().nextInt(1000000) == 0) {
-            Runnable cb = onRandomEvent;   // capture BEFORE endGame() nulls it
-            endGame(GameState.GAME_OVER);
-            if (cb != null) cb.run();
-            return;                        // stop — don't check other conditions
-        }
-
 
         // Jumpscare checked first — student in office always wins.
         Student inOffice = studentManager.getStudentInOffice();
         if (inOffice != null) {
-            String question = inOffice.getQuestion();
-            Consumer<String> cb = onJumpscare;
-            endGame(GameState.JUMPSCARE);
-            if (cb != null) {
-                cb.accept(question);
-            }
+            triggerJumpscare(inOffice.getQuestion());
             return;
         }
 
@@ -374,7 +360,6 @@ public class GameSession {
         onWin          = null;
         onGameOver     = null;
         onFrameRender  = null;   // stops render from running on a detached scene
-        onRandomEvent = null;
         stopNight();
     }
 
@@ -725,7 +710,18 @@ public class GameSession {
      *
      * @param r runnable callback
      */
-    public void setOnRandomEvent(Runnable r) {
-        onRandomEvent = r;
+    // Removed legacy random event callback registration
+
+    /**
+     * Triggers the jumpscare end state and notifies the registered callback.
+     *
+     * @param question text shown during the jumpscare
+     */
+    public void triggerJumpscare(String question) {
+        Consumer<String> cb = onJumpscare;
+        endGame(GameState.JUMPSCARE);
+        if (cb != null) {
+            cb.accept(question);
+        }
     }
 }

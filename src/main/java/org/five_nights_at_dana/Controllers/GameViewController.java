@@ -94,7 +94,6 @@ public class GameViewController {
         session.setOnJumpscare(this::triggerJumpscare);
         session.setOnWin(this::handleWin);
         session.setOnGameOver(this::handleGameOver);
-        session.setOnRandomEvent(this::handleRandomEvent);
 
         // Discord-style toasts for the notification system
         NotificationToastOverlay.install(root);
@@ -320,33 +319,7 @@ public class GameViewController {
      * Handles the 1-in-1000000 random instant-lose event.
      * Shows a special image of aiden for 2.5 seconds, then goes to the game over screen.
      */
-    private void handleRandomEvent() {
-        try {
-            // Load and show a full-screen overlay image
-            ImageView specialImage = new ImageView(
-                    new Image(getClass().getResourceAsStream("/assets/images/RandomEventScreen.png"))
-            );
-            specialImage.setFitWidth(1280);
-            specialImage.setFitHeight(720);
-            specialImage.setPreserveRatio(false);
-
-            AnchorPane root = (AnchorPane) timeLabel.getParent();
-            root.getChildren().add(specialImage);   // overlays everything
-
-            // After 2.5 seconds, remove the image and go to game over
-            javafx.animation.PauseTransition hold =
-                    new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.5));
-            hold.setOnFinished(e -> {
-                root.getChildren().remove(specialImage);
-                returnToMainMenu();
-            });
-            hold.play();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            returnToMainMenu();   // fallback if image is missing
-        }
-    }
+    // Removed legacy random event handling
 
     /**
      * Goes to the short win animation scene ("6:00 AM" + fireworks), then to the win screen.
