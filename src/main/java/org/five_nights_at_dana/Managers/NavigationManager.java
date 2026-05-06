@@ -25,6 +25,27 @@ import org.five_nights_at_dana.AI.*;
  */
 public class NavigationManager {
 
+    private static final double BASE_EDGE_WEIGHT = 1.0;
+    private static final double PATH_MATCH_WEIGHT = 3.0;
+    private static final double SHY_VENT_BOOST = 6.0;
+    private static final double EAGER_ELEVATOR_BOOST = 8.0;
+    private static final double PERSISTENT_LEFT_STAIRS_BOOST = 6.0;
+    private static final double RUNNER_RIGHT_STAIRS_BOOST = 4.0;
+    private static final double NORMAL_PATH_WEIGHT = 0.8;
+    private static final double FLOOR2_WEIGHT_BOOST = 1.2;
+    private static final double FLOOR3_WEIGHT_BOOST = 1.3;
+    private static final double HALLWAY_WEIGHT_MULTIPLIER = 0.65;
+    private static final double LEAF_NODE_WEIGHT_BOOST = 1.3;
+    private static final double RECENT_LOCATION_PENALTY = 0.4;
+    private static final double BACKTRACK_PENALTY = 0.3;
+    private static final double RECENT_VISIT_DECAY_STEP = 0.5;
+    private static final double ENTROPY_BASE = 0.9;
+    private static final double ENTROPY_VARIATION = 0.2;
+    private static final double MIN_EDGE_WEIGHT = 0.0001;
+    private static final int MAX_DEGREE_DIVISOR = 1;
+    private static final int MIN_DOT_HEATMAP_MAX = 1;
+    private static final int COLOR_CHANNEL_MAX = 255;
+
     private record Edge(Location to, PathType type) {
         /**
          * Constructs an outgoing edge in the navigation graph.
@@ -317,7 +338,7 @@ public class NavigationManager {
         double total = 0;
         double[] weights = new double[edges.size()];
         for (int i = 0; i < edges.size(); i++) {
-            double w = Math.max(getWeight(student, edges.get(i)), 0.0001);
+            double w = Math.max(getWeight(student, edges.get(i)), MIN_EDGE_WEIGHT);
             weights[i] = w;
             total += w;
         }
@@ -338,71 +359,71 @@ public class NavigationManager {
     private static double getWeight(Student student, Edge e) {
         Personality p = student.getPersonality();
         PathType preferred = student.getPreferredPath();
-        double weight = 1.0;
+        double weight = BASE_EDGE_WEIGHT;
 
         if (e.type == preferred) {
-            weight *= 3.0;
+            weight *= PATH_MATCH_WEIGHT;
         }
 
         if (p == Personality.SHY && e.to.hasVentAccess()) {
-            weight *= 6.0;
+            weight *= SHY_VENT_BOOST;
         }
 
         if (p == Personality.EAGER && e.type == PathType.ELEVATOR) {
-            weight *= 8.0;
+            weight *= EAGER_ELEVATOR_BOOST;
         }
 
         if (p == Personality.PERSISTENT && e.type == PathType.LEFT_STAIRS) {
-            weight *= 6.0;
+            weight *= PERSISTENT_LEFT_STAIRS_BOOST;
         }
         if (p == Personality.RUNNER && e.type == PathType.RIGHT_STAIRS) {
-            weight *= 4.0;
+            weight *= RUNNER_RIGHT_STAIRS_BOOST;
         }
 
         if (e.type == PathType.NORMAL) {
-            weight *= 0.8;
+            weight *= NORMAL_PATH_WEIGHT;
         }
 
         // ===== FLOOR PROGRESSION =====
         int targetFloor = e.to.getFloor();
         if (targetFloor == 2) {
-            weight *= 1.2;
+            weight *= FLOOR2_WEIGHT_BOOST;
         }
         if (targetFloor == 3) {
-            weight *= 1.3;
+            weight *= FLOOR3_WEIGHT_BOOST;
         }
 
         // ===== HALLWAY DAMPENING =====
         if (e.to.name().contains("HALLWAY")) {
-            weight *= 0.65;
+            weight *= HALLWAY_WEIGHT_MULTIPLIER;
         }
 
         // ===== LEAF BOOST =====
         if (getNeighbors(e.to).size() <= 2) {
-            weight *= 1.3;
+            weight *= LEAF_NODE_WEIGHT_BOOST;
         }
 
         // ===== SHORT-TERM MEMORY PENALTY =====
         Set<Location> recent = student.getRecentLocations();
         if (recent.contains(e.to)) {
-            weight *= 0.4; // strong discouragement
+            weight *= RECENT_LOCATION_PENALTY; // strong discouragement
         }
 
         // stronger penalty for immediate backtracking (extra safety)
         if (e.to == student.getPreviousLocation()) {
-            weight *= 0.3;
+            weight *= BACKTRACK_PENALTY;
         }
 
         // recent visit decay
         int visits = student.getRecentVisitCount(e.to); // last N steps
-        weight *= (1.0 / (1 + 0.5 * visits));
+        weight *= (1.0 / (1 + RECENT_VISIT_DECAY_STEP * visits));
 
         // ===== ENTROPY =====
-        weight *= (0.9 + rand.nextDouble() * 0.2);
+        weight *= (ENTROPY_BASE + rand.nextDouble() * ENTROPY_VARIATION);
 
         // ===== DEGREE NORMALIZATION =====
         int degree = NavigationManager.getNeighbors(e.to).size();
-        weight /= Math.max(degree, 1);
+        weight /= Math.max(degree, MAX_DEGREE_DIVISOR);
 
         return weight;
     }
@@ -527,7 +548,7 @@ public class NavigationManager {
         sb.append("    rankdir=TB;\n");
         sb.append("    node [shape=box, style=filled];\n\n");
 
-        int max = heatmap.values().stream().max(Integer::compareTo).orElse(1);
+        int max = heatmap.values().stream().max(Integer::compareTo).orElse(MIN_DOT_HEATMAP_MAX);
 
         // Nodes with color
         for (Location loc : Location.values()) {
@@ -536,9 +557,9 @@ public class NavigationManager {
             double intensity = (double) value / max;
 
             // red heat scale
-            int red = 255;
-            int green = (int) (255 * (1 - intensity));
-            int blue = (int) (255 * (1 - intensity));
+            int red = COLOR_CHANNEL_MAX;
+            int green = (int) (COLOR_CHANNEL_MAX * (1 - intensity));
+            int blue = (int) (COLOR_CHANNEL_MAX * (1 - intensity));
 
             String color = String.format("#%02x%02x%02x", red, green, blue);
 
