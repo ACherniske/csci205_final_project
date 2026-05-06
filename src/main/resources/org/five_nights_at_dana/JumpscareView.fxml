@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Label?>
+
+<!--
+    JumpscareView.fxml — Shown when a student reaches the office.
+    The controller plays the jumpscare sequence then transitions to Game Over.
+    No close button — transition is driven entirely by the controller.
+-->
+<AnchorPane
+    xmlns="http://javafx.com/javafx/21"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="org.five_nights_at_dana.Controllers.JumpscareController"
+    prefWidth="1280" prefHeight="720"
+    style="-fx-background-color: #000000;">
+
+    <!-- Full-screen jumpscare image — swap for animated sprite sheet when art is ready -->
+    <ImageView
+        fx:id="jumpscareImage"
+        fitWidth="1280" fitHeight="720"
+        preserveRatio="false"
+        pickOnBounds="true"
+        layoutX="0" layoutY="0"/>
+
+
+    <!-- "GAME OVER" overlay — controller fades this in after the scare -->
+    <Label
+        fx:id="gameOverLabel"
+        text="GAME OVER"
+        layoutX="390" layoutY="300"
+        prefWidth="500"
+        opacity="0.0"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 72px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #cc2200;
+               -fx-alignment: center;
+               -fx-effect: dropshadow(gaussian, #ff0000, 30, 0.8, 0, 0);"/>
+
+    <!-- Student name label — controller sets this to show which AI caught you -->
+    <Label
+        fx:id="studentNameLabel"
+        text=""
+        layoutX="390" layoutY="420"
+        prefWidth="500"
+        opacity="0.0"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 24px;
+               -fx-text-fill: #ffffff;
+               -fx-alignment: center;"/>
+
+</AnchorPane>

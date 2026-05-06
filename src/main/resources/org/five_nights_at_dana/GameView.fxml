@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.canvas.Canvas?>
+
+<!--
+    GameView.fxml — Office gameplay screen.
+    All HUD elements use layoutX/layoutY so they can be freely repositioned
+    in SceneBuilder once final art arrives. No AnchorPane constraints are set.
+-->
+<AnchorPane
+    xmlns="http://javafx.com/javafx/21"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:controller="org.five_nights_at_dana.Controllers.GameViewController"
+    prefWidth="1280" prefHeight="720"
+    style="-fx-background-color: #000000;">
+
+    <!-- ── BACKGROUND ───────────────────────────────────────────────── -->
+    <ImageView
+        fx:id="officeBackground"
+        fitWidth="1280" fitHeight="720"
+        preserveRatio="false"
+        pickOnBounds="true"
+        layoutX="0" layoutY="0"/>
+
+
+    <!-- ── COFFEE MUG (clickable desk object) ───────────────────────── -->
+    <!-- Move this over the mug in the final office art -->
+    <ImageView
+        fx:id="coffeeMugImage"
+        fitWidth="80" fitHeight="80"
+        preserveRatio="true"
+        pickOnBounds="true"
+        layoutX="590" layoutY="460"
+        onMouseClicked="#onCoffeeMugClicked"
+        style="-fx-cursor: hand; -fx-opacity: 0.9;"/>
+
+
+    <!-- ── TIME DISPLAY (top center) ────────────────────────────────── -->
+    <Label
+        fx:id="timeLabel"
+        text="12:00 AM"
+        layoutX="555" layoutY="18"
+        prefWidth="170"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 26px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #ffcc00;
+               -fx-alignment: center;
+               -fx-effect: dropshadow(gaussian, #ffcc00, 8, 0.4, 0, 0);"/>
+
+    <!-- ── POWER DISPLAY (bottom left) ──────────────────────────────── -->
+    <Label
+        text="POWER"
+        layoutX="20" layoutY="640"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 14px;
+               -fx-text-fill: #00ff41;"/>
+
+    <Canvas
+        fx:id="powerBatteryCanvas"
+        width="72" height="22"
+        layoutX="20" layoutY="656" />
+
+    <Label
+        fx:id="powerLabel"
+        text="100%"
+        layoutX="98" layoutY="658"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 13px;
+               -fx-text-fill: #00ff41;"/>
+
+    <!-- ── LEFT DOOR BUTTON (left wall) ─────────────────────────────── -->
+    <Button
+        fx:id="leftDoorButton"
+        text="CLOSE&#10;DOOR"
+        onAction="#onToggleLeftDoor"
+        layoutX="30" layoutY="330"
+        prefWidth="110" prefHeight="60"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 13px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #ffffff;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #888888;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- ── CAMERAS BUTTON (bottom center) ───────────────────────────── -->
+    <Button
+        fx:id="cameraButton"
+        text="▲  CAMERAS"
+        onAction="#onOpenCameras"
+        layoutX="565" layoutY="668"
+        prefWidth="150" prefHeight="44"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 15px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #ffcc00;
+               -fx-background-color: #1a1a1a;
+               -fx-border-color: #ffcc00;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- ── VENT SEAL BUTTON ──────────────────────────────────────────── -->
+    <Button
+        fx:id="ventSealButton"
+        text="SEAL VENT"
+        onAction="#onToggleVentSeal"
+        layoutX="400" layoutY="668"
+        prefWidth="130" prefHeight="44"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 13px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #ffffff;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #888888;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- ── SPECIAL SYSTEMS PANEL (bottom right cluster) ─────────────── -->
+    <!-- Each button can be dragged independently in SceneBuilder -->
+
+    <!-- Elevator Emergency Stop -->
+    <Button
+        fx:id="elevatorStopButton"
+        text="ELEVATOR&#10;STOP"
+        onAction="#onElevatorEmergencyStop"
+        layoutX="760" layoutY="640"
+        prefWidth="110" prefHeight="54"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 12px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #ff4444;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #ff4444;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- Left Stairwell — Emergency Lights -->
+    <Button
+        fx:id="leftStairwellButton"
+        text="LEFT STAIR&#10;LIGHTS"
+        onAction="#onLeftStairwellLights"
+        layoutX="885" layoutY="640"
+        prefWidth="110" prefHeight="54"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 12px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #aaddff;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #aaddff;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- Middle Stairwell — Emergency Lighting (stuns students) -->
+    <Button
+        fx:id="middleStairwellButton"
+        text="MID STAIR&#10;LIGHTS"
+        onAction="#onMiddleStairwellLights"
+        layoutX="1005" layoutY="640"
+        prefWidth="110" prefHeight="54"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 12px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #aaddff;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #aaddff;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- Right Stairwell — Sensor Check -->
+    <Button
+        fx:id="rightStairwellButton"
+        text="RIGHT STAIR&#10;LIGHTS"
+        onAction="#onRightStairwellSensor"
+        layoutX="1125" layoutY="640"
+        prefWidth="110" prefHeight="54"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 12px;
+               -fx-font-weight: bold;
+               -fx-text-fill: #aaddff;
+               -fx-background-color: #2d2d2d;
+               -fx-border-color: #aaddff;
+               -fx-border-width: 2px;
+               -fx-cursor: hand;"/>
+
+    <!-- ── CLASSROOM ACTIVITY (top right) ───────────────────────────── -->
+    <Label
+        text="CLASS ACTIVITY"
+        layoutX="960" layoutY="18"
+        visible="false" managed="false"
+        style="-fx-font-family: 'Courier New';
+               -fx-font-size: 13px;
+               -fx-text-fill: #ff8800;"/>
+
+    <ProgressBar
+        fx:id="classroomActivityBar"
+        progress="0.0"
+        layoutX="960" layoutY="38"
+        prefWidth="200" prefHeight="14"
+        visible="false" managed="false"
+        style="-fx-accent: #ff8800;
+               -fx-background-color: #1a1a1a;
+               -fx-border-color: #333333;"/>
+
+</AnchorPane>

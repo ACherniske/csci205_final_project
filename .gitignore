@@ -1,0 +1,137 @@
+#
+# .gitignore file for CSCI 205
+#
+# This file tells Git which files should not be shared with your teammates.
+# These are typically files that are:
+#   - Generated when building/running your code
+#   - Specific to your computer or IDE setup
+#   - Operating system files
+#
+# Last updated:
+# CLD - 2018-fall
+# BRK - 2020-fall - added support to ignore Gradle folder
+# LR  - 2025-spring - refreshed based on new standards
+# LR  - 2026-spring - fixed order
+#
+
+#########################
+### Java Source Files ###
+#########################
+
+# Compiled Java files - these are generated when you run your code and shouldn't be shared
+*.class
+
+# Output log files from running your program - these are generated locally
+*.log
+
+# Backup and temporary files created by editors (like "MyCode.java~" or "MyCode.bak")
+*.tmp
+*.bak
+*~
+
+##########################
+### Visual Studio Code ###
+##########################
+
+# Most VSCode settings should stay local to your computer
+.vscode/*
+
+# Editor settings like indentation, formatting
+!.vscode/settings.json
+# Build and test task configurations
+!.vscode/tasks.json
+# Debug configurations for Java programs
+!.vscode/launch.json
+
+# VSCode's local history feature (tracks your changes)
+.history/
+
+#####################
+### IntelliJ IDEA ###
+#####################
+
+# Personal IntelliJ settings that shouldn't be shared with teammates
+# Your window layouts and recent files
+.idea/**/workspace.xml
+# Your personal TODO lists
+.idea/**/tasks.xml
+# Custom spelling dictionaries
+.idea/**/dictionaries
+
+# IntelliJ's output directory for compiled code (also used by JavaFX)
+out/
+
+# IntelliJ's Gradle configuration files
+# Local Gradle settings
+.idea/**/gradle.xml
+# Local dependency information
+.idea/**/libraries
+
+#####################
+### Miscellaneous ###
+#####################
+
+# Ignore package files
+*.jar
+*.war
+*.zip
+*.tar.gz
+*.rar
+
+# Ignore virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Files automatically created by Mac OS
+.DS_Store
+._*
+
+# Files automatically created by Windows
+Thumbs.db
+[Dd]esktop.ini
+
+##############
+### Gradle ###
+##############
+
+# NOTE: This section must come AFTER Miscellaneous because we need to
+# override the *.jar rule to keep gradle-wrapper.jar
+
+# Gradle's temporary files and caches
+.gradle/
+# Where Gradle puts compiled code
+build/
+
+# Ignore gradle directory contents but keep wrapper files
+gradle/*
+!gradle/wrapper/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+# Ignore Kotlin plugin data
+.kotlin
+
+# Ignore .idea/ and .iml generated
+.idea/
+*.iml
+
+# Ignore AI files
+.ai
+.claude
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_ALL_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_BASE.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_CONFUSED_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_CONFUSED_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_EAGER_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_EAGER_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_PERSISTENT_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_PERSISTENT_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_RUNNER_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_RUNNER_STATS.txt
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_SHY_HEAT.dot
+/src/main/java/org/five_nights_at_dana/Tools/Navigation_SHY_STATS.txt

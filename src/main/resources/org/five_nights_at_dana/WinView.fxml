@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<!--
+    WinView.fxml
+    Dedicated win screen after the end-of-night celebration.
+-->
+<AnchorPane
+        fx:id="root"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="org.five_nights_at_dana.Controllers.WinViewController"
+        prefWidth="1280" prefHeight="720"
+        style="-fx-background-color: #000000;">
+
+    <Label
+            text="YOU SURVIVED THE NIGHT"
+            layoutX="0" layoutY="230"
+            prefWidth="1280" prefHeight="80"
+            style="-fx-font-family: 'Courier New';
+                   -fx-font-size: 44px;
+                   -fx-font-weight: bold;
+                   -fx-text-fill: #ffcc00;
+                   -fx-alignment: center;
+                   -fx-effect: dropshadow(gaussian, rgba(255,204,0,0.35), 20, 0.25, 0, 0);"/>
+
+    <Label
+            text="Night Complete"
+            layoutX="0" layoutY="320"
+            prefWidth="1280" prefHeight="40"
+            style="-fx-font-family: 'Courier New';
+                   -fx-font-size: 22px;
+                   -fx-text-fill: #ffffff;
+                   -fx-alignment: center;"/>
+
+    <Button
+            fx:id="mainMenuButton"
+            text="RETURN TO MAIN MENU"
+            onAction="#onReturnToMainMenu"
+            layoutX="465" layoutY="420"
+            prefWidth="350" prefHeight="60"
+            style="-fx-font-family: 'Courier New';
+                   -fx-font-size: 18px;
+                   -fx-font-weight: bold;
+                   -fx-text-fill: #ffffff;
+                   -fx-background-color: #1a1a1a;
+                   -fx-border-color: #ffcc00;
+                   -fx-border-width: 2px;
+                   -fx-cursor: hand;"/>
+
+</AnchorPane>
