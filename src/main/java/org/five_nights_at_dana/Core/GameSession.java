@@ -98,6 +98,8 @@ public class GameSession {
     private Runnable onWin;
     private Runnable onGameOver;
     private Runnable onFrameRender;
+    private Runnable onRandomEvent;
+
 
     // ── Timers ────────────────────────────────────────────────────────
     private ScheduledExecutorService nightClock;
@@ -106,6 +108,7 @@ public class GameSession {
     // Fixed-step timekeeping for AnimationTimer
     private long lastNowNanos = 0L;
     private long accumulatedNanos = 0L;
+
 
     /**
      * Constructs the singleton game session and initializes all subsystems.
@@ -321,6 +324,15 @@ public class GameSession {
             return;
         }
 
+        // 1-in-1000 random instant-lose like golden freddy
+        if (new java.util.Random().nextInt(1000000) == 0) {
+            Runnable cb = onRandomEvent;   // capture BEFORE endGame() nulls it
+            endGame(GameState.GAME_OVER);
+            if (cb != null) cb.run();
+            return;                        // stop — don't check other conditions
+        }
+
+
         // Jumpscare checked first — student in office always wins.
         Student inOffice = studentManager.getStudentInOffice();
         if (inOffice != null) {
@@ -362,6 +374,7 @@ public class GameSession {
         onWin          = null;
         onGameOver     = null;
         onFrameRender  = null;   // stops render from running on a detached scene
+        onRandomEvent = null;
         stopNight();
     }
 
@@ -705,5 +718,14 @@ public class GameSession {
      */
     public void setOnFrameRender(Runnable r) {
         onFrameRender = r;
+    }
+
+    /**
+     * Registers a callback invoked on the 1-in-10 random instant-lose event.
+     *
+     * @param r runnable callback
+     */
+    public void setOnRandomEvent(Runnable r) {
+        onRandomEvent = r;
     }
 }
