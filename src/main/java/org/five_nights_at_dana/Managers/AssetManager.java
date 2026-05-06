@@ -58,6 +58,7 @@ public class AssetManager {
         // NEW: Add character assets
         loadImage("char_confused", "character_confused.png");
         loadImage("char_eager", "character_eager.png");
+        loadImage("char_instant", "character_instant.png");
         loadImage("char_persistent", "character_persistent.png");
         loadImage("char_runner", "character_runner.png");
         loadImage("char_shy", "character_shy.png");
