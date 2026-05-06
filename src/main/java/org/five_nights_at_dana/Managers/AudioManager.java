@@ -18,12 +18,15 @@
 package org.five_nights_at_dana.Managers;
 
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class AudioManager {
 
-    private static Map<String, AudioClip> loopingSounds = new HashMap<>();
+    private static Map<String, MediaPlayer> loopingSounds = new HashMap<>();
 
     private static double masterVolume = 1.0;
     private static double sfxVolume = 1.0;
@@ -85,9 +88,10 @@ public class AudioManager {
     /**
      * Starts looping a sound.
      * @param key sound key
+     * @param volume of the sound
      * @param isSFX true if audio clip is a sfx, false if it is a music clip
      */
-    public static void playLoop(String key, boolean isSFX) {
+    public static void playLoop(String key, double volume, boolean isSFX) {
         try {
             AudioClip soundClip = AssetManager.getSound(key);
 
@@ -101,17 +105,20 @@ public class AudioManager {
                 return;
             }
 
+            Media media = new Media(soundClip.getSource());
+            MediaPlayer player = new MediaPlayer(media);
+
             double clipVolume = 0;
             if (isSFX) {
-                clipVolume = calculateVolume(1, sfxVolume);
+                clipVolume = calculateVolume(volume, sfxVolume);
             } else {
-                clipVolume = calculateVolume(1, musicVolume);
+                clipVolume = calculateVolume(volume, musicVolume);
             }
 
-            soundClip.setVolume(clipVolume);
-            soundClip.setCycleCount(AudioClip.INDEFINITE);
-            soundClip.play();
-            loopingSounds.put(key, soundClip);
+            player.setVolume(clipVolume);
+            player.setCycleCount(MediaPlayer.INDEFINITE);
+            player.play();
+            loopingSounds.put(key, player);
         } catch (Exception e) {
             System.err.println("AudioManger: Failed to loop sound: " + key);
         }
@@ -137,8 +144,8 @@ public class AudioManager {
                 System.err.println("AudioManager: Cant stop looping a sound that isn't being looped: " + key);
                 return;
             }
-            AudioClip soundClip = loopingSounds.remove(key);
-            soundClip.stop();
+            MediaPlayer player = loopingSounds.remove(key);
+            player.stop();
         }  catch (Exception e) {
             System.err.println("AudioManager: Failed to stop looping sound: " + key);
         }
@@ -149,9 +156,9 @@ public class AudioManager {
      */
     public static void stopAllLoops() {
         try {
-            for (AudioClip soundClip : loopingSounds.values()) {
-                if (soundClip != null) {
-                    soundClip.stop();
+            for (MediaPlayer player : loopingSounds.values()) {
+                if (player != null) {
+                    player.stop();
                 }
             }
             loopingSounds.clear();
@@ -161,10 +168,24 @@ public class AudioManager {
     }
 
     /**
+     * Updates the volume of the loops for when they are changed
+     */
+    private static void updateLoopVolume() {
+        for (Map.Entry<String, MediaPlayer> entry : loopingSounds.entrySet()) {
+            MediaPlayer player = entry.getValue();
+            if (player != null) {
+                double volume = masterVolume * musicVolume;
+                player.setVolume(volume);
+            }
+        }
+    }
+
+    /**
      * Sets master volume.
      */
     public static void setMasterVolume(double v) {
         masterVolume = Math.max(0.0, Math.min(1.0, v));
+        updateLoopVolume();
     }
 
     /**
@@ -172,6 +193,7 @@ public class AudioManager {
      */
     public static void setSfxVolume(double v) {
         sfxVolume = Math.max(0.0, Math.min(1.0, v));
+        updateLoopVolume();
     }
 
     /**
@@ -179,5 +201,6 @@ public class AudioManager {
      */
     public static void setMusicVolume(double v) {
         musicVolume = Math.max(0.0, Math.min(1.0, v));
+        updateLoopVolume();
     }
 }
