@@ -46,10 +46,10 @@ public class StudentManager {
      */
     private void createStudents() {
         students.add(new Student("Kaidou", "JumpscareEager", Personality.EAGER));
-        students.add(new Student("Kobeni", "JumpscarePersistent", Personality.PERSISTENT));
-        students.add(new Student("Yuuko", "JumpscareConfused", Personality.CONFUSED));
-        students.add(new Student("Piccolo", "JumpscareShy", Personality.SHY));
-        students.add(new Student("A-Train", "JumpscareRunner", Personality.RUNNER));
+        students.add(new Student("Sean", "JumpscarePersistent", Personality.PERSISTENT));
+        students.add(new Student("Cyrus", "JumpscareConfused", Personality.CONFUSED));
+        students.add(new Student("Tyler", "JumpscareShy", Personality.SHY));
+        students.add(new Student("Mason", "JumpscareRunner", Personality.RUNNER));
     }
 
     /**

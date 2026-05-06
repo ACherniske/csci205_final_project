@@ -101,8 +101,6 @@ public class AssetManager {
 
 
 
-
-
         System.out.println("AssetManager: Preload complete. Images: "
                 + IMAGES.size()
                 + " | Sounds: "
